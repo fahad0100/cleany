@@ -396,6 +396,60 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
+  static Future<void> setupEnvFile() async {
+    try {
+      // 1️⃣ إنشاء فولدر assets إن لم يكن موجود
+      final assetsDir = Directory('assets');
+      if (!await assetsDir.exists()) {
+        await assetsDir.create();
+        print('📁 Created assets/ folder');
+      }
+
+      // 2️⃣ إنشاء ملف .env داخل assets
+      final envFile = File('assets/.env');
+
+      final envContent = '''
+url_supabase=<xxx>
+key_supabase=<xxx>
+''';
+
+      await envFile.writeAsString(envContent);
+      print('📝 Created assets/.env file');
+
+      // 3️⃣ تحديث pubspec.yaml
+      final pubspec = File('pubspec.yaml');
+      if (await pubspec.exists()) {
+        String content = await pubspec.readAsString();
+
+        if (!content.contains('assets/.env')) {
+          // نضيفه داخل قسم flutter:
+          content = content.replaceFirst(
+            RegExp(r'flutter:\s*\n'),
+            'flutter:\n  assets:\n    - .env\n- images/\n- icons/\n',
+          );
+
+          await pubspec.writeAsString(content);
+          print('⚙️ Updated pubspec.yaml');
+        }
+      }
+
+      // 4️⃣ تعديل .gitignore وإضافة *.env
+      final gitignore = File('.gitignore');
+      if (await gitignore.exists()) {
+        String ignoreContent = await gitignore.readAsString();
+
+        if (!ignoreContent.contains('*.env')) {
+          ignoreContent += '\n*.env\n';
+          await gitignore.writeAsString(ignoreContent);
+          print('🔒 Added *.env to .gitignore');
+        }
+      }
+
+      print('✅ All steps completed successfully!');
+    } catch (e) {
+      print('❌ Error: $e');
+    }
+  }
 
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------

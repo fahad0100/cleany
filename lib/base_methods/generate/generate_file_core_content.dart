@@ -14,6 +14,7 @@ import 'package:cleany/content/core_files/network/dio_client.dart';
 import 'package:cleany/content/core_files/network/network_exceptions.dart';
 import 'package:cleany/content/core_files/services/local_keys_service.dart';
 import 'package:cleany/content/core_files/services/logger_service.dart';
+import 'package:cleany/content/core_files/setup.dart';
 import 'package:cleany/content/core_files/theme/app_text_theme.dart';
 import 'package:cleany/content/core_files/theme/app_theme.dart';
 import 'package:cleany/content/core_files/theme/cubit/theme_cubit_file.dart';
@@ -97,6 +98,11 @@ String generateFileCoreContent(String folder, String fileName) {
   if (fileName.contains('theme_state.dart')) {
     return createThemeStateFile();
   }
+  if (fileName.contains('setup.dart')) {
+    return setupFile();
+  }
 
   return '// TODO: Implement $fileName\n';
 }
+
+

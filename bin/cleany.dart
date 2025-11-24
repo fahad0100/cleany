@@ -98,14 +98,15 @@ void main(List<String> arguments) async {
           "import 'core/di/configure_dependencies.dart';",
           "import 'package:flutter/material.dart';",
           "import 'core/navigation/app_router.dart';",
-          "import 'core/navigation/app_router.dart';",
           "import 'package:flutter_bloc/flutter_bloc.dart';",
           "import 'core/theme/cubit/theme_cubit.dart';",
           "import 'core/theme/app_theme.dart';",
           "import 'package:get_it/get_it.dart';",
+          "import 'package:sizer/sizer.dart';",
         ]);
         await FileModifier.addLineInsideFunction('lib/main.dart', 'main', '''
   WidgetsFlutterBinding.ensureInitialized();\n
+  await setup();\n
   await configureDependencies();\n
 ''', atStart: true);
         await FileModifier.replaceLine(
@@ -114,20 +115,25 @@ void main(List<String> arguments) async {
           'void main() async {',
         );
         await FileModifier.replaceMaterialApp('lib/main.dart', '''
- MultiBlocProvider(
+MultiBlocProvider(
       providers: [BlocProvider<ThemeCubit>(create: (context) => GetIt.I.get())],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
-          return MaterialApp.router(
-            routerConfig: AppRouter.router,
-            themeMode: themeState.themeMode,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+          return Sizer(
+            builder: (context, orientation, screenType) {
+              return MaterialApp.router(
+                routerConfig: AppRouter.router,
+                themeMode: themeState.themeMode,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+              );
+            },
           );
         },
       ),
     );
 ''');
+        await FileModifier.setupEnvFile();
         final buildRunner = await Process.run('dart', [
           'run',
           'build_runner',
