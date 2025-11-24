@@ -27,7 +27,7 @@ Future<void> createBaseFolder() async {
       'services': ['local_keys_service.dart', 'logger_service.dart'],
       'di': ['configure_dependencies.dart', 'third_party_config.dart'],
       'common': [],
-      'setup_file': ['setup.dart'],
+      '': ['setup.dart'],
     };
 
     for (final entry in structure.entries) {
@@ -35,13 +35,9 @@ Future<void> createBaseFolder() async {
       await Directory(folderPath).create(recursive: true);
       for (final fileName in entry.value) {
         final filePath = path.join(folderPath, fileName);
-        if (entry.key == 'setup_file') {
-          final content = generateFileCoreContent('', fileName);
-          await File(filePath).writeAsString(content);
-        } else {
-          final content = generateFileCoreContent(entry.key, fileName);
-          await File(filePath).writeAsString(content);
-        }
+
+        final content = generateFileCoreContent(entry.key, fileName);
+        await File(filePath).writeAsString(content);
       }
     }
 

@@ -104,5 +104,3 @@ String generateFileCoreContent(String folder, String fileName) {
 
   return '// TODO: Implement $fileName\n';
 }
-
-

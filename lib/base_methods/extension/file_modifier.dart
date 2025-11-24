@@ -398,42 +398,63 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   static Future<void> setupEnvFile() async {
     try {
-      // 1️⃣ إنشاء فولدر assets إن لم يكن موجود
+      // 1️⃣ إنشاء فولدر assets
       final assetsDir = Directory('assets');
       if (!await assetsDir.exists()) {
         await assetsDir.create();
         print('📁 Created assets/ folder');
       }
 
-      // 2️⃣ إنشاء ملف .env داخل assets
+      // 2️⃣ إنشاء ملف .env
       final envFile = File('assets/.env');
-
       final envContent = '''
-url_supabase=<xxx>
-key_supabase=<xxx>
+url_supabase=<XXXXX>
+key_supabase=<XXXXX>
 ''';
-
       await envFile.writeAsString(envContent);
       print('📝 Created assets/.env file');
 
-      // 3️⃣ تحديث pubspec.yaml
+      // 3️⃣ تعديل pubspec.yaml
       final pubspec = File('pubspec.yaml');
       if (await pubspec.exists()) {
         String content = await pubspec.readAsString();
 
+        // إذا كان قد أضيف سابقاً لا نكرر
         if (!content.contains('assets/.env')) {
-          // نضيفه داخل قسم flutter:
-          content = content.replaceFirst(
-            RegExp(r'flutter:\s*\n'),
-            'flutter:\n  assets:\n    - .env\n    - images/\n    - icons/\n',
-          );
+          final lines = content.split('\n');
 
-          await pubspec.writeAsString(content);
-          print('⚙️ Updated pubspec.yaml');
+          // إيجاد آخر سطر يحتوي "flutter:"
+          int lastFlutterIndex = -1;
+          for (int i = 0; i < lines.length; i++) {
+            if (lines[i].trim().startsWith('flutter:')) {
+              lastFlutterIndex = i;
+            }
+          }
+
+          if (lastFlutterIndex != -1) {
+            // نحسب مستوى الـ indent المستعمل
+            final indent =
+                RegExp(
+                  r'^(\s*)',
+                ).firstMatch(lines[lastFlutterIndex])?.group(1) ??
+                '';
+
+            // نضيف بعدها مباشرة
+            lines.insertAll(lastFlutterIndex + 1, [
+              '$indent  assets:',
+              '$indent    - .env',
+              '$indent    - images/',
+              '$indent    - icons/',
+            ]);
+
+            content = lines.join('\n');
+            await pubspec.writeAsString(content);
+            print('⚙️ Updated pubspec.yaml at the last flutter: block');
+          }
         }
       }
 
-      // 4️⃣ تعديل .gitignore وإضافة *.env
+      // 4️⃣ تعديل .gitignore
       final gitignore = File('.gitignore');
       if (await gitignore.exists()) {
         String ignoreContent = await gitignore.readAsString();
