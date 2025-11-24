@@ -116,11 +116,6 @@ cleany <feature_name>
 cleany [options]
 ```
 
-### Options
-
-```
-${parser.usage}
-```
 
 ### Examples
 
