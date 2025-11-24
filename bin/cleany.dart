@@ -103,6 +103,7 @@ void main(List<String> arguments) async {
           "import 'core/theme/app_theme.dart';",
           "import 'package:get_it/get_it.dart';",
           "import 'package:sizer/sizer.dart';",
+          "import 'core/setup.dart';",
         ]);
         await FileModifier.addLineInsideFunction('lib/main.dart', 'main', '''
   WidgetsFlutterBinding.ensureInitialized();\n

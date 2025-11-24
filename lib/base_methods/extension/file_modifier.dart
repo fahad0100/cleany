@@ -448,7 +448,11 @@ key_supabase=<XXXXX>
             ]);
 
             content = lines.join('\n');
-            await pubspec.writeAsString(content);
+            await Future.wait([
+              pubspec.writeAsString(content),
+              createFolder('assets/images'),
+              createFolder('assets/icons'),
+            ]);
             print('⚙️ Updated pubspec.yaml at the last flutter: block');
           }
         }
@@ -475,6 +479,20 @@ key_supabase=<XXXXX>
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
+  static Future<void> createFolder(String folderPath) async {
+    try {
+      final dir = Directory(folderPath);
+
+      if (await dir.exists()) {
+        print('📂 Folder already exists: $folderPath');
+      } else {
+        await dir.create(recursive: true);
+        print('📁 Folder created: $folderPath');
+      }
+    } catch (e) {
+      print('❌ Error creating folder: $e');
+    }
+  }
 
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
