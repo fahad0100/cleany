@@ -1,0 +1,50 @@
+name: cleany
+description: A CLI tool to generate Clean Architecture feature structure for Flutter projects
+version: 0.0.27
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.10.0
+
+# Add regular dependencies here.
+dependencies:
+  path: ^1.9.1
+  args: ^2.7.0 
+
+
+
+
+
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.27.0
+
+
+executables:
+  cleany: cleany
+
+
+
+
+  # dart pub global deactivate cleany
+
+
+# dart pub global activate --source path .
+
+# cleany auth
+
+
+
+# # 2. ثبّت المكتبات
+# dart pub get
+
+# # 3. الغي التفعيل القديم
+# dart pub global deactivate cleany 2>/dev/null || true
+# dart pub global deactivate flutter_folder_cli 2>/dev/null || true
+
+# # 4. فعّل من جديد
+# dart pub global activate --source path .
+
+# # 5. جرّب
+# cleany --help
