@@ -324,10 +324,9 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
-
   static Future<void> replaceMaterialApp(
     String filePath,
-    String newMaterialApp,
+    String newReturnWidget,
   ) async {
     try {
       final file = File(filePath);
@@ -339,25 +338,24 @@ class FileModifier {
 
       String content = await file.readAsString();
 
-      // regex لالتقاط أي MaterialApp(...) مع أي محتوى داخله
-      final materialAppRegex = RegExp(
-        r'MaterialApp\s*\(([\s\S]*?)\)',
+      final materialReturnRegex = RegExp(
+        r'return\s+MaterialApp\s*\(([\s\S]*?)\);',
         multiLine: true,
       );
 
-      if (!materialAppRegex.hasMatch(content)) {
-        print('⚠️ No MaterialApp widget found to replace');
+      if (!materialReturnRegex.hasMatch(content)) {
+        print('⚠️ No MaterialApp return widget found to replace');
         return;
       }
 
       final updatedContent = content.replaceAll(
-        materialAppRegex,
-        newMaterialApp,
+        materialReturnRegex,
+        "return $newReturnWidget",
       );
 
       await file.writeAsString(updatedContent);
 
-      print('✅ MaterialApp replaced with MaterialApp.router');
+      print('✅ MaterialApp replaced correctly');
     } catch (e) {
       print('❌ Error: $e');
     }
