@@ -443,8 +443,8 @@ key_supabase=<XXXXX>
             lines.insertAll(lastFlutterIndex + 1, [
               '$indent  assets:',
               '$indent    - .env',
-              '$indent    - images/',
-              '$indent    - icons/',
+              '$indent    - assets/images/',
+              '$indent    - assets/icons/',
             ]);
 
             content = lines.join('\n');
