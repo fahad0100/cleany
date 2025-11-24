@@ -1,6 +1,6 @@
 name: cleany
 description: A CLI tool to generate Clean Architecture feature structure for Flutter projects
-version: 0.0.27
+version: 0.0.28
 # repository: https://github.com/my_org/my_repo
 
 environment:
