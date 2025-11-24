@@ -425,7 +425,7 @@ key_supabase=<xxx>
           // نضيفه داخل قسم flutter:
           content = content.replaceFirst(
             RegExp(r'flutter:\s*\n'),
-            'flutter:\n  assets:\n    - .env\n- images/\n- icons/\n',
+            'flutter:\n  assets:\n    - .env\n    - images/\n    - icons/\n',
           );
 
           await pubspec.writeAsString(content);
