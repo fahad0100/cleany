@@ -114,7 +114,7 @@ void main(List<String> arguments) async {
           'void main() async {',
         );
         await FileModifier.replaceMaterialApp('lib/main.dart', '''
-MultiBlocProvider(
+ MultiBlocProvider(
       providers: [BlocProvider<ThemeCubit>(create: (context) => GetIt.I.get())],
       child: BlocBuilder<ThemeCubit, ThemeState>(
         builder: (context, themeState) {
@@ -126,7 +126,7 @@ MultiBlocProvider(
           );
         },
       ),
-    )
+    );
 ''');
         final buildRunner = await Process.run('dart', [
           'run',
