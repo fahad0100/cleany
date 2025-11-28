@@ -23,7 +23,7 @@ Future<void> createBaseFolder() async {
       'global/cubit': ['public_cubit.dart', 'public_state.dart'],
       'navigation': ['app_router.dart', 'routers.dart'],
       'network': ['dio_client.dart', 'api_endpoints.dart'],
-      'services': ['local_keys_service.dart', 'logger_service.dart'],
+      'services': ['local_keys_service.dart', 'app_device_utils.dart'],
       'theme': ['app_theme.dart', 'app_text_theme.dart'],
       'utils': ['validators.dart', 'formatters.dart'],
       'widgets': ['loading_widget.dart'],
