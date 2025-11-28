@@ -32,6 +32,7 @@ executables:
 
 # dart pub global activate --source path .
 
+# dart pub global activate --source git https://github.com/fahad0100/cleany
 # cleany auth
 
 

@@ -524,6 +524,7 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
+
   static Future<void> addAssetToPubspec(String assetPath) async {
     final pubspec = File('pubspec.yaml');
 
@@ -535,7 +536,6 @@ class FileModifier {
     List<String> lines = await pubspec.readAsLines();
 
     // 1️⃣ التحقق: هل المسار موجود مسبقاً؟
-    // نتحقق من وجود السطر كاملاً لتجنب التطابق الجزئي الخاطئ
     bool isAlreadyAdded = lines.any(
       (line) => line.trim().contains('- $assetPath'),
     );
@@ -544,17 +544,22 @@ class FileModifier {
       return;
     }
 
-    // 2️⃣ البحث عن قسم flutter:
-    int flutterIndex = lines.indexWhere((line) => line.trim() == 'flutter:');
+    // 2️⃣ البحث عن "آخر" قسم flutter: باستخدام lastIndexWhere
+    // هذا هو التعديل الأساسي ليختار آخر واحد في الملف
+    int flutterIndex = lines.lastIndexWhere(
+      (line) => line.trim() == 'flutter:',
+    );
 
     if (flutterIndex != -1) {
-      // البحث عن قسم assets داخل flutter
+      // البحث عن قسم assets داخل بلوك flutter الأخير
       int assetsIndex = -1;
 
-      // نبحث بعد سطر flutter
+      // نبحث بعد سطر flutter الذي وجدناه
       for (int i = flutterIndex + 1; i < lines.length; i++) {
         final line = lines[i];
-        // نتوقف إذا وجدنا مفتاحاً رئيسياً آخر (ليس به مسافة بادئة أو مسافة بادئة مختلفة)
+
+        // نتوقف إذا وجدنا مفتاحاً رئيسياً جديداً (السطر لا يبدأ بمسافة وهو ليس فارغاً)
+        // هذا يعني أننا خرجنا من نطاق flutter:
         if (line.trim().isNotEmpty && !line.startsWith('  ')) break;
 
         if (line.trim() == 'assets:') {
@@ -566,11 +571,15 @@ class FileModifier {
       if (assetsIndex != -1) {
         // ✅ الحالة الأولى: قسم assets موجود، نضيف العنصر تحته مباشرة
         lines.insert(assetsIndex + 1, '    - $assetPath');
-        print('➕ Added "$assetPath" to existing assets list.');
+        print(
+          '➕ Added "$assetPath" to existing assets list (in last flutter block).',
+        );
       } else {
-        // ✅ الحالة الثانية: قسم assets غير موجود، نضيفه مع العنصر
+        // ✅ الحالة الثانية: قسم assets غير موجود داخل هذا الـ flutter، نضيفه
         lines.insertAll(flutterIndex + 1, ['  assets:', '    - $assetPath']);
-        print('🆕 Created assets section and added "$assetPath".');
+        print(
+          '🆕 Created assets section in last flutter block and added "$assetPath".',
+        );
       }
 
       // حفظ التعديلات
