@@ -16,6 +16,7 @@ class Log {
   static const String _red = '\x1B[31m';
   static const String _green = '\x1B[32m';
   static const String _yellow = '\x1B[33m';
+  static const String cyan = '\x1B[36m';
 
   static void success(String msg) {
     print("$_green $msg$_reset");
@@ -30,7 +31,7 @@ class Log {
   }
 
   static void info(String msg) {
-    print("ℹ $msg");
+    print("$cyanℹ $msg$_reset");
   }
 }
 
@@ -124,39 +125,69 @@ void main(List<String> arguments) async {
 
     //-------------------------create core folder----------------------------------------
     if (results.arguments.length == 1 && results.flag('core_folders')) {
-      print("\n\n\n\n** start create core folder **\n\n\n\n");
+      Log.warning('\n⚠️  WARNING: Destructive Operation');
+      Log.error('---------------------------------------------------');
+      Log.warning(
+        'This action will permanently delete and rewrite the \n* core       | directory if it exists, \n* assets     | directory if it exists and \n* main.dart  | file content',
+      );
+      Log.warning(
+        'This command is intended for fresh project initialization only.',
+      );
+      Log.warning(
+        'Running this on an existing project will result in data loss.',
+      );
 
-      try {
-        await FileModifier.replaceFileContent(
-          filePath: 'lib/main.dart',
-          newContent: mainContent(),
-        );
-        await FileModifier.replaceFileContent(
-          filePath: 'assets/translations/ar-AR.json',
-          newContent: arJsonContent(),
-          createIfNotExists: true,
-        );
-        await FileModifier.replaceFileContent(
-          filePath: 'assets/translations/en-US.json',
-          newContent: enJsonContent(),
-          createIfNotExists: true,
-        );
-        await createBaseFolder();
-        await FileModifier.setupEnvFile();
-        await FileModifier.createFolder('assets/icons/');
-        await FileModifier.createFolder('assets/images/');
-        await FileModifier.addAssetToPubspec('.env');
-        await FileModifier.addAssetToPubspec('assets/translations/');
-        await FileModifier.addAssetToPubspec('assets/images/');
-        await FileModifier.addAssetToPubspec('assets/icons/');
-        await addPackagesInit();
-      } on FormatException catch (error) {
-        Log.error(error.message);
-      } catch (error) {
-        Log.error(error.toString());
+      Log.error('---------------------------------------------------');
+      Log.success('Are you sure you want to proceed? (y/N): ');
+      final confirm = stdin.readLineSync();
+
+      switch (confirm?.toLowerCase()) {
+        case 'n':
+          Log.info(
+            'Thank you for your diligence with the code. I hope you use me in your new project',
+          );
+
+          return;
+        case 'y':
+          try {
+            await FileModifier.replaceFileContent(
+              filePath: 'lib/main.dart',
+              newContent: mainContent(),
+            );
+            await FileModifier.replaceFileContent(
+              filePath: 'assets/translations/ar-AR.json',
+              newContent: arJsonContent(),
+              createIfNotExists: true,
+            );
+            await FileModifier.replaceFileContent(
+              filePath: 'assets/translations/en-US.json',
+              newContent: enJsonContent(),
+              createIfNotExists: true,
+            );
+            await createBaseFolder();
+            await FileModifier.setupEnvFile();
+            await FileModifier.createFolder('assets/icons/');
+            await FileModifier.createFolder('assets/images/');
+            await FileModifier.addAssetToPubspec('.env');
+            await FileModifier.addAssetToPubspec('assets/translations/');
+            await FileModifier.addAssetToPubspec('assets/images/');
+            await FileModifier.addAssetToPubspec('assets/icons/');
+            await addPackagesInit();
+          } on FormatException catch (error) {
+            Log.error(error.message);
+          } catch (error) {
+            Log.error(error.toString());
+          }
+          await createFoldersCoreInit();
+
+          return;
+
+        default:
+          Log.error(
+            "Warning: Invalid input will wipe out your progress. Please pay close attention and ensure your input is accurate.",
+          );
+          return;
       }
-      await createFoldersCoreInit();
-      return;
     }
 
     //-------------------------create core----------------------------------------

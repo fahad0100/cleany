@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:injectable/injectable.dart';
-import 'public_cubit_state.dart';
 import '../../services/local_keys_service.dart';
+import 'public_state.dart';
 
 @lazySingleton
 class GlobalCubit extends Cubit<ChangeState> {
