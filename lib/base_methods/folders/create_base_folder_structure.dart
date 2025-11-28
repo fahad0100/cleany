@@ -13,7 +13,7 @@ Future<void> createBaseFolder() async {
         'app_enums.dart',
         'app_icons.dart',
       ],
-      'di': ['configure_dependencies.dart', 'third_party_config.dart'],
+      'di': ['configure_dependencies.dart', 'third_part.dart'],
       'errors': ['failure.dart', 'network_exceptions.dart'],
       'extensions': [
         'context_extensions.dart',
