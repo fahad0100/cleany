@@ -186,13 +186,18 @@ class FileModifier {
   static Future<void> replaceFileContent({
     required String filePath,
     required String newContent,
+    bool createIfNotExists = false,
   }) async {
     try {
       final file = File(filePath);
 
-      if (!await file.exists()) {
-        // await file.create(recursive: true);
-        throw FormatException('❌ File not found: $filePath');
+      if (createIfNotExists == false) {
+        if (!await file.exists()) {
+          // await file.create(recursive: true);
+          throw FormatException('❌ File not found: $filePath');
+        }
+      } else {
+        await file.create(recursive: true);
       }
 
       await file.writeAsString(newContent);
@@ -418,85 +423,85 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
-  static Future<void> setupEnvFile() async {
-    try {
-      // 1️⃣ إنشاء فولدر assets
-      final assetsDir = Directory('assets');
-      if (!await assetsDir.exists()) {
-        await assetsDir.create();
-        print('📁 Created assets/ folder');
-      }
+  //   static Future<void> setupEnvFile() async {
+  //     try {
+  //       // 1️⃣ إنشاء فولدر assets
+  //       final assetsDir = Directory('assets');
+  //       if (!await assetsDir.exists()) {
+  //         await assetsDir.create();
+  //         print('📁 Created assets/ folder');
+  //       }
 
-      // 2️⃣ إنشاء ملف .env
-      final envFile = File('assets/.env');
-      final envContent = '''
-url_supabase=<XXXXX>
-key_supabase=<XXXXX>
-''';
-      await envFile.writeAsString(envContent);
-      print('📝 Created assets/.env file');
+  //       // 2️⃣ إنشاء ملف .env
+  //       final envFile = File('.env');
+  //       final envContent = '''
+  // url_supabase=<XXXXX>
+  // key_supabase=<XXXXX>
+  // ''';
+  //       await envFile.writeAsString(envContent);
+  //       print('📝 Created .env file');
 
-      // 3️⃣ تعديل pubspec.yaml
-      final pubspec = File('pubspec.yaml');
-      if (await pubspec.exists()) {
-        String content = await pubspec.readAsString();
+  //       // 3️⃣ تعديل pubspec.yaml
+  //       final pubspec = File('pubspec.yaml');
+  //       if (await pubspec.exists()) {
+  //         String content = await pubspec.readAsString();
 
-        // إذا كان قد أضيف سابقاً لا نكرر
-        if (!content.contains('assets/.env')) {
-          final lines = content.split('\n');
+  //         // إذا كان قد أضيف سابقاً لا نكرر
+  //         if (!content.contains('assets/.env')) {
+  //           final lines = content.split('\n');
 
-          // إيجاد آخر سطر يحتوي "flutter:"
-          int lastFlutterIndex = -1;
-          for (int i = 0; i < lines.length; i++) {
-            if (lines[i].trim().startsWith('flutter:')) {
-              lastFlutterIndex = i;
-            }
-          }
+  //           // إيجاد آخر سطر يحتوي "flutter:"
+  //           int lastFlutterIndex = -1;
+  //           for (int i = 0; i < lines.length; i++) {
+  //             if (lines[i].trim().startsWith('flutter:')) {
+  //               lastFlutterIndex = i;
+  //             }
+  //           }
 
-          if (lastFlutterIndex != -1) {
-            // نحسب مستوى الـ indent المستعمل
-            final indent =
-                RegExp(
-                  r'^(\s*)',
-                ).firstMatch(lines[lastFlutterIndex])?.group(1) ??
-                '';
+  //           if (lastFlutterIndex != -1) {
+  //             // نحسب مستوى الـ indent المستعمل
+  //             final indent =
+  //                 RegExp(
+  //                   r'^(\s*)',
+  //                 ).firstMatch(lines[lastFlutterIndex])?.group(1) ??
+  //                 '';
 
-            // نضيف بعدها مباشرة
-            lines.insertAll(lastFlutterIndex + 1, [
-              '$indent  assets:',
-              '$indent    - .env',
-              '$indent    - assets/images/',
-              '$indent    - assets/icons/',
-            ]);
+  //             // نضيف بعدها مباشرة
+  //             lines.insertAll(lastFlutterIndex + 1, [
+  //               '$indent  assets:',
+  //               '$indent    - .env',
+  //               '$indent    - assets/images/',
+  //               '$indent    - assets/icons/',
+  //             ]);
 
-            content = lines.join('\n');
-            await Future.wait([
-              pubspec.writeAsString(content),
-              createFolder('assets/images'),
-              createFolder('assets/icons'),
-            ]);
-            print('⚙️ Updated pubspec.yaml at the last flutter: block');
-          }
-        }
-      }
+  //             content = lines.join('\n');
+  //             await Future.wait([
+  //               pubspec.writeAsString(content),
+  //               createFolder('assets/images'),
+  //               createFolder('assets/icons'),
+  //             ]);
+  //             print('⚙️ Updated pubspec.yaml at the last flutter: block');
+  //           }
+  //         }
+  //       }
 
-      // 4️⃣ تعديل .gitignore
-      final gitignore = File('.gitignore');
-      if (await gitignore.exists()) {
-        String ignoreContent = await gitignore.readAsString();
+  //       // 4️⃣ تعديل .gitignore
+  //       final gitignore = File('.gitignore');
+  //       if (await gitignore.exists()) {
+  //         String ignoreContent = await gitignore.readAsString();
 
-        if (!ignoreContent.contains('*.env')) {
-          ignoreContent += '\n*.env\n';
-          await gitignore.writeAsString(ignoreContent);
-          print('🔒 Added *.env to .gitignore');
-        }
-      }
+  //         if (!ignoreContent.contains('*.env')) {
+  //           ignoreContent += '\n*.env\n';
+  //           await gitignore.writeAsString(ignoreContent);
+  //           print('🔒 Added *.env to .gitignore');
+  //         }
+  //       }
 
-      print('✅ All steps completed successfully!');
-    } catch (e) {
-      print('❌ Error: $e');
-    }
-  }
+  //       print('✅ All steps completed successfully!');
+  //     } catch (e) {
+  //       print('❌ Error: $e');
+  //     }
+  //   }
 
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
@@ -519,10 +524,73 @@ key_supabase=<XXXXX>
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
+  static Future<void> addAssetToPubspec(String assetPath) async {
+    final pubspec = File('pubspec.yaml');
+
+    if (!await pubspec.exists()) {
+      print('❌ pubspec.yaml not found!');
+      return;
+    }
+
+    List<String> lines = await pubspec.readAsLines();
+
+    // 1️⃣ التحقق: هل المسار موجود مسبقاً؟
+    // نتحقق من وجود السطر كاملاً لتجنب التطابق الجزئي الخاطئ
+    bool isAlreadyAdded = lines.any(
+      (line) => line.trim().contains('- $assetPath'),
+    );
+    if (isAlreadyAdded) {
+      print('⚠️ Asset "$assetPath" is already in pubspec.yaml');
+      return;
+    }
+
+    // 2️⃣ البحث عن قسم flutter:
+    int flutterIndex = lines.indexWhere((line) => line.trim() == 'flutter:');
+
+    if (flutterIndex != -1) {
+      // البحث عن قسم assets داخل flutter
+      int assetsIndex = -1;
+
+      // نبحث بعد سطر flutter
+      for (int i = flutterIndex + 1; i < lines.length; i++) {
+        final line = lines[i];
+        // نتوقف إذا وجدنا مفتاحاً رئيسياً آخر (ليس به مسافة بادئة أو مسافة بادئة مختلفة)
+        if (line.trim().isNotEmpty && !line.startsWith('  ')) break;
+
+        if (line.trim() == 'assets:') {
+          assetsIndex = i;
+          break;
+        }
+      }
+
+      if (assetsIndex != -1) {
+        // ✅ الحالة الأولى: قسم assets موجود، نضيف العنصر تحته مباشرة
+        lines.insert(assetsIndex + 1, '    - $assetPath');
+        print('➕ Added "$assetPath" to existing assets list.');
+      } else {
+        // ✅ الحالة الثانية: قسم assets غير موجود، نضيفه مع العنصر
+        lines.insertAll(flutterIndex + 1, ['  assets:', '    - $assetPath']);
+        print('🆕 Created assets section and added "$assetPath".');
+      }
+
+      // حفظ التعديلات
+      await pubspec.writeAsString(lines.join('\n'));
+    } else {
+      print('❌ "flutter:" section not found in pubspec.yaml');
+    }
+  }
 
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
+  static Future<void> setupEnvFile() async {
+    final envFile = File('.env');
+    if (!await envFile.exists()) {
+      await envFile.writeAsString(
+        'url_supabase=<XXXXX>\nkey_supabase=<XXXXX>\n',
+      );
+    }
+  }
 
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------

@@ -4,6 +4,8 @@ import 'package:cleany/base_methods/extension/extensions.dart';
 import 'package:cleany/base_methods/extension/file_modifier.dart';
 import 'package:cleany/base_methods/folders/create_base_folder_structure.dart';
 import 'package:cleany/base_methods/print_help_method.dart';
+import 'package:cleany/content/ar-AR_json.dart';
+import 'package:cleany/content/en-US_json.dart';
 import 'package:cleany/content/main_content.dart';
 import 'package:cleany/methods/add_packages_init.dart';
 import 'package:cleany/methods/create_feature_screen_init.dart';
@@ -129,13 +131,31 @@ void main(List<String> arguments) async {
           filePath: 'lib/main.dart',
           newContent: mainContent(),
         );
+        await FileModifier.replaceFileContent(
+          filePath: 'assets/translations/ar-AR.json',
+          newContent: arJsonContent(),
+          createIfNotExists: true,
+        );
+        await FileModifier.replaceFileContent(
+          filePath: 'assets/translations/en-US.json',
+          newContent: enJsonContent(),
+          createIfNotExists: true,
+        );
         await createBaseFolder();
+        await FileModifier.setupEnvFile();
+        await FileModifier.createFolder('assets/icons/');
+        await FileModifier.createFolder('assets/images/');
+        await FileModifier.addAssetToPubspec('.env');
+        await FileModifier.addAssetToPubspec('assets/translations/');
+        await FileModifier.addAssetToPubspec('assets/images/');
+        await FileModifier.addAssetToPubspec('assets/icons/');
+        await addPackagesInit();
       } on FormatException catch (error) {
         Log.error(error.message);
       } catch (error) {
         Log.error(error.toString());
       }
-      // await createFoldersCoreInit();
+      await createFoldersCoreInit();
       return;
     }
 
