@@ -4,47 +4,41 @@ import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable {
   final String message;
-
   const Failure(this.message);
-
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure([super.message = 'Server error occurred']);
-}
-
-class CacheFailure extends Failure {
-  const CacheFailure([super.message = 'Cache error occurred']);
+  const ServerFailure([super.message = 'Internal Server Error']);
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure([super.message = 'Network connection failed']);
-}
-
-class UnauthorizedFailure extends Failure {
-  const UnauthorizedFailure([super.message = 'Unauthorized access']);
-}
-
-class NotFoundFailure extends Failure {
-  const NotFoundFailure([super.message = 'Resource not found']);
-}
-
-class ValidationFailure extends Failure {
-  const ValidationFailure([super.message = 'Validation failed']);
-}
-
-class OtherFailure extends Failure {
-  const OtherFailure([super.message = 'Validation failed']);
+  const NetworkFailure([super.message = 'No Internet Connection']);
 }
 
 class TimeoutFailure extends Failure {
-  const TimeoutFailure([super.message = 'Network connection failed']);
+  const TimeoutFailure([super.message = 'Connection Timeout']);
 }
 
-class CancelledFailure extends Failure {
-  const CancelledFailure([super.message = 'Network connection failed']);
+class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure([super.message = 'Unauthorized Access']);
+}
+
+class PermissionFailure extends Failure {
+  const PermissionFailure([super.message = 'Permission Denied']);
+}
+
+class CacheFailure extends Failure {
+  const CacheFailure([super.message = 'Cache Error']);
+}
+
+class FormatFailure extends Failure {
+  const FormatFailure([super.message = 'Data Parsing Error']);
+}
+
+class UnknownFailure extends Failure {
+  const UnknownFailure([super.message = 'Unexpected Error']);
 }
 
 ''';

@@ -5,28 +5,28 @@ import 'package:path/path.dart' as path;
 Future<void> createBaseFolder() async {
   try {
     final featurePath = path.join(Directory.current.path, 'lib/core/');
-
     final structure = {
-      'constants': ['app_colors.dart', 'app_images.dart', 'app_enums.dart'],
-      'errors': ['failure.dart'],
-      'navigation': ['app_router.dart', 'routers.dart'],
-      'theme': ['app_theme.dart', 'app_text_theme.dart'],
-      'theme/cubit': ['theme_state.dart', 'theme_cubit.dart'],
-      'network': [
-        'dio_client.dart',
-        'network_exceptions.dart',
-        'api_endpoints.dart',
+      'common': [],
+      'constants': [
+        'app_colors.dart',
+        'app_images.dart',
+        'app_enums.dart',
+        'app_icons.dart',
       ],
+      'di': ['configure_dependencies.dart', 'third_party_config.dart'],
+      'errors': ['failure.dart', 'network_exceptions.dart'],
       'extensions': [
         'context_extensions.dart',
         'string_extensions.dart',
         'color_extensions.dart',
       ],
-      'widgets': ['loading_widget.dart'],
-      'utils': ['validators.dart', 'formatters.dart'],
+      'global/cubit': ['public_cubit.dart', 'public_state.dart'],
+      'navigation': ['app_router.dart', 'routers.dart'],
+      'network': ['dio_client.dart', 'api_endpoints.dart'],
       'services': ['local_keys_service.dart', 'logger_service.dart'],
-      'di': ['configure_dependencies.dart', 'third_party_config.dart'],
-      'common': [],
+      'theme': ['app_theme.dart', 'app_text_theme.dart'],
+      'utils': ['validators.dart', 'formatters.dart'],
+      'widgets': ['loading_widget.dart'],
       '': ['setup.dart'],
     };
 
@@ -35,18 +35,20 @@ Future<void> createBaseFolder() async {
       await Directory(folderPath).create(recursive: true);
       for (final fileName in entry.value) {
         final filePath = path.join(folderPath, fileName);
-
-        final content = generateFileCoreContent(entry.key, fileName);
+        // print('entry.key: ${entry.key}');
+        // print('fileName: $fileName');
+        // print('filePath: $filePath');
+        final content = returnFileCoreContent(fileName: fileName);
         await File(filePath).writeAsString(content);
       }
     }
 
-    structure.forEach((folder, files) {
-      print('   📂 $folder/');
-      for (final file in files) {
-        print('      📄 $file');
-      }
-    });
+    // structure.forEach((folder, files) {
+    //   print('   📂 $folder/');
+    //   for (final file in files) {
+    //     print('      📄 $file');
+    //   }
+    // });
   } catch (e) {
     print('❌ Failed to create Feature: $e');
     exit(1);

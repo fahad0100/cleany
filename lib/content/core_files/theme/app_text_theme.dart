@@ -1,12 +1,9 @@
 String appTextThemeFile() {
   return '''
-// app_text_theme.dart
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 
-class AppTextTheme {
-  AppTextTheme._();
-
+abstract class AppTextTheme {
   static TextTheme lightTextTheme = const TextTheme(
     displayLarge: TextStyle(
       fontSize: 32,
@@ -55,5 +52,6 @@ class AppTextTheme {
     displayColor: Colors.white,
   );
 }
+
 ''';
 }

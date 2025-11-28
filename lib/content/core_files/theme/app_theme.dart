@@ -51,6 +51,7 @@ abstract class AppTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+
     colorScheme: ColorScheme.dark(
       primary: AppColors.primary,
       secondary: AppColors.secondary,
@@ -61,5 +62,6 @@ abstract class AppTheme {
     textTheme: AppTextTheme.darkTextTheme,
   );
 }
+
 ''';
 }

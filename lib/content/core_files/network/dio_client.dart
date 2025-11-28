@@ -56,6 +56,5 @@ class DioClient {
     return _dio.delete(path);
   }
 }
-
 ''';
 }

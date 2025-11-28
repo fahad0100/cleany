@@ -183,6 +183,28 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
 
+  static Future<void> replaceFileContent({
+    required String filePath,
+    required String newContent,
+  }) async {
+    try {
+      final file = File(filePath);
+
+      if (!await file.exists()) {
+        // await file.create(recursive: true);
+        throw FormatException('❌ File not found: $filePath');
+      }
+
+      await file.writeAsString(newContent);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  ///---------------------------------------------------------------------------
+  ///---------------------------------------------------------------------------
+  ///---------------------------------------------------------------------------
+
   /// الحصول على المحاذاة (Indentation)
   static String _getIndentation(String content, int position) {
     int start = position;

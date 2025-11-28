@@ -1,175 +1,302 @@
 import 'dart:io';
 import 'package:args/args.dart';
+import 'package:cleany/base_methods/extension/extensions.dart';
 import 'package:cleany/base_methods/extension/file_modifier.dart';
 import 'package:cleany/base_methods/folders/create_base_folder_structure.dart';
-import 'package:cleany/base_methods/folders/create_feature_folder_structure.dart';
 import 'package:cleany/base_methods/print_help_method.dart';
-import 'package:path/path.dart' as path;
+import 'package:cleany/content/main_content.dart';
+import 'package:cleany/methods/add_packages_init.dart';
+import 'package:cleany/methods/create_feature_screen_init.dart';
+import 'package:cleany/methods/create_folders_core_init.dart';
+
+class Log {
+  static const String _reset = '\x1B[0m';
+  static const String _red = '\x1B[31m';
+  static const String _green = '\x1B[32m';
+  static const String _yellow = '\x1B[33m';
+
+  static void success(String msg) {
+    print("$_green $msg$_reset");
+  }
+
+  static void error(String msg) {
+    print("$_red✖ $msg$_reset");
+  }
+
+  static void warning(String msg) {
+    print("$_yellow⚠ $msg$_reset");
+  }
+
+  static void info(String msg) {
+    print("ℹ $msg");
+  }
+}
 
 void main(List<String> arguments) async {
-  final parser = ArgParser()
-    ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help')
-    ..addFlag(
-      'core_folders',
-      abbr: 'c',
-      negatable: false,
-      help: 'Generate core folders',
-    )
-    ..addFlag(
-      'add_dependence',
-      abbr: 'd',
-      negatable: false,
-      help: 'add core dependence',
-    );
-
-  //---------
-  //---------
-
   try {
+    final parser = ArgParser()
+      ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help')
+      ..addFlag(
+        'core_folders',
+        abbr: 'c',
+        negatable: false,
+        help: 'Generate core folders',
+      )
+      ..addFlag(
+        'feature_screen',
+        abbr: 's',
+        negatable: false,
+        help: 'feature as screen',
+      )
+      ..addFlag(
+        'feature_widgets',
+        abbr: 'w',
+        negatable: false,
+        help: 'feature as widgets',
+      )
+      ..addFlag(
+        'path',
+        abbr: 'p',
+        negatable: false,
+        help: 'add custom path for only feature widget',
+      )
+      ..addFlag(
+        'add_dependence',
+        abbr: 'a',
+        negatable: false,
+        help: 'add core dependence',
+      );
+
+    //---------
+    //---------
+
     final results = parser.parse(arguments);
-    final basePath = 'lib/features';
-    if (results['help'] || arguments.isEmpty) {
+
+    if (results.arguments.length == 1 && results.flag('help')) {
       printHelp(parser);
       return;
     }
 
     //---------
     //---------
+    //-------------------------create as widget----------------------------------------
 
-    if (results.arguments.length == 1 &&
-        !results.arguments.first.contains('-')) {
-      final appRouter = await FileModifier.checkFileExistenceAsync(
-        filePath: 'lib/core/navigation/app_router.dart',
-      );
-      final routers = await FileModifier.checkFileExistenceAsync(
-        filePath: 'lib/core/navigation/routers.dart',
-      );
-      if (appRouter == false || routers == false) {
-        print(
-          "Can't create features with out class (app_router.dart && routers.dart) in lib/core/navigation",
+    if (results.flag('feature_widgets') && results.rest.isNotEmpty) {
+      String basePath = 'lib/features/sub_features';
+      String featureName = results.rest[0];
+      bool startCreateMethod = false;
+      switch (results.arguments.length) {
+        case 2:
+          print("with without path");
+          startCreateMethod = true;
+          break;
+        case > 2 && <= 4:
+          if (results.flag('path') && results.rest.length == 2) {
+            basePath = results.rest[1];
+            startCreateMethod = true;
+            break;
+          }
+      }
+      if (startCreateMethod) {
+        Log.success(
+          "** Creating feature $featureName as a widget ** \n    path: $basePath/${featureName.toCapitalizeSecondWord()}",
         );
+
         return;
       }
-      final featureName = arguments.first.toLowerCase();
-      print("Start create $featureName features ");
-
-      await createFeatureFolderStructure(featureName, basePath);
-      final buildRunner = await Process.run('dart', [
-        'run',
-        'build_runner',
-        'build',
-      ]);
-      print(buildRunner.stdout);
-
-      return;
     }
-    if (results.arguments.length > 1 &&
-        !results.arguments.first.contains('-')) {
-      printHelp(parser);
-      return;
-    }
-
-    //---------
-    //---------
-
-    if (results['core_folders']) {
-      final currentPath = path.join(Directory.current.path, 'lib/core');
-
-      final x = await FileModifier.checkFolderExistenceAsync(
-        folderPath: currentPath,
+    //-------------------------create as screen----------------------------------------
+    if (results.rest.length == 1 &&
+        results.arguments.length == 2 &&
+        results.flag('feature_screen')) {
+      String basePath = 'lib/features';
+      String featureName = results.rest[0];
+      Log.success(
+        "** Creating feature $featureName as a screen** \n    path: $basePath/${featureName.toCapitalizeSecondWord()}",
       );
-      print(x);
-      if (x) {
-        print("can't create core folder if folder core is exist");
-      } else {
-        print('📦 Adding packages in batch...');
-        await Future.wait([
-          _addPackagesBatch(corePackages, isDev: false),
-          _addPackagesBatch(devPackages, isDev: true),
-        ]);
 
-        final outdated = await Process.run('flutter', ['pub', 'outdated']);
-        print(outdated.stdout);
-        final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
-        print(upgrade.stdout);
-        print('📦 Create packages in batch...');
-        await createBaseFolder();
-        await FileModifier.addImports('lib/main.dart', [
-          "import 'core/di/configure_dependencies.dart';",
-          "import 'package:flutter/material.dart';",
-          "import 'core/navigation/app_router.dart';",
-          "import 'package:flutter_bloc/flutter_bloc.dart';",
-          "import 'core/theme/cubit/theme_cubit.dart';",
-          "import 'core/theme/app_theme.dart';",
-          "import 'package:get_it/get_it.dart';",
-          "import 'package:sizer/sizer.dart';",
-          "import 'core/setup.dart';",
-        ]);
-        await FileModifier.addLineInsideFunction('lib/main.dart', 'main', '''
-  WidgetsFlutterBinding.ensureInitialized();\n
-  await setup();\n
-  await configureDependencies();\n
-''', atStart: true);
-        await FileModifier.replaceLine(
-          'lib/main.dart',
-          RegExp(r'void\s+main\s*\(\s*\)\s*{'),
-          'void main() async {',
+      await createFeatureScreenInit(featureName: "Ddd", basePath: basePath);
+
+      return;
+    }
+
+    //-------------------------create core folder----------------------------------------
+    if (results.arguments.length == 1 && results.flag('core_folders')) {
+      print("\n\n\n\n** start create core folder **\n\n\n\n");
+
+      try {
+        await FileModifier.replaceFileContent(
+          filePath: 'lib/main.dart',
+          newContent: mainContent(),
         );
-        await FileModifier.replaceMaterialApp('lib/main.dart', '''
-MultiBlocProvider(
-      providers: [BlocProvider<ThemeCubit>(create: (context) => GetIt.I.get())],
-      child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (context, themeState) {
-          return Sizer(
-            builder: (context, orientation, screenType) {
-              return MaterialApp.router(
-                routerConfig: AppRouter.router,
-                themeMode: themeState.themeMode,
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-              );
-            },
-          );
-        },
-      ),
-    );
-''');
-        await FileModifier.setupEnvFile();
-        final buildRunner = await Process.run('dart', [
-          'run',
-          'build_runner',
-          'build',
-        ]);
-        print(buildRunner.stdout);
+        await createBaseFolder();
+      } on FormatException catch (error) {
+        Log.error(error.message);
+      } catch (error) {
+        Log.error(error.toString());
       }
+      // await createFoldersCoreInit();
+      return;
     }
 
-    //---------
-    //---------
+    //-------------------------create core----------------------------------------
+    if (results.arguments.length == 1 && results.flag('add_dependence')) {
+      print("\n\n\n\n** start add core dependence **\n\n\n\n");
+      await addPackagesInit();
 
-    if (results['add_dependence']) {
-      print('📦 Adding packages in batch...');
-      await Future.wait([
-        _addPackagesBatch(corePackages, isDev: false),
-        _addPackagesBatch(devPackages, isDev: true),
-      ]);
-
-      final outdated = await Process.run('flutter', ['pub', 'outdated']);
-      print(outdated.stdout);
-      final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
-      print(upgrade.stdout);
-      final buildRunner = await Process.run('dart', [
-        'run',
-        'build_runner',
-        'build',
-      ]);
-      print(buildRunner.stdout);
+      return;
     }
-  } catch (e) {
-    print('❌ error: $e');
+
+    //-------------------------help----------------------------------------
     // printHelp(parser);
-    exit(1);
+
+    Log.error(
+      "Wrong.. Follow the format I provided. Don't change anything else\n\n  use: cleany -h     \n\nto know how use it",
+    );
+
+    return;
+  } catch (error) {
+    Log.error("Wrong input.  \n\nuse: cleany -h     \n\nto know how use it");
   }
+
+  //-------------------------as screen----------------------------------------
+
+  //-------------------------as screen----------------------------------------
+
+  //     return;
+  //     if (results.arguments.length == 1 &&
+  //         !results.arguments.first.contains('-')) {
+  //       final appRouter = await FileModifier.checkFileExistenceAsync(
+  //         filePath: 'lib/core/navigation/app_router.dart',
+  //       );
+  //       final routers = await FileModifier.checkFileExistenceAsync(
+  //         filePath: 'lib/core/navigation/routers.dart',
+  //       );
+  //       if (appRouter == false || routers == false) {
+  //         print(
+  //           "Can't create features with out class (app_router.dart && routers.dart) in lib/core/navigation",
+  //         );
+  //         return;
+  //       }
+  //       final featureName = arguments.first.toLowerCase();
+  //       print("Start create $featureName features ");
+
+  //       await createFeatureFolderStructure(featureName, basePath);
+  //       final buildRunner = await Process.run('dart', [
+  //         'run',
+  //         'build_runner',
+  //         'build',
+  //       ]);
+  //       print(buildRunner.stdout);
+
+  //       return;
+  //     }
+  //     if (results.arguments.length > 1 &&
+  //         !results.arguments.first.contains('-')) {
+  //       printHelp(parser);
+  //       return;
+  //     }
+
+  //     //---------
+  //     //---------
+
+  //     if (results['core_folders']) {
+  //       final currentPath = path.join(Directory.current.path, 'lib/core');
+
+  //       final x = await FileModifier.checkFolderExistenceAsync(
+  //         folderPath: currentPath,
+  //       );
+  //       print(x);
+  //       if (x) {
+  //         print("can't create core folder if folder core is exist");
+  //       } else {
+  //         print('📦 Adding packages in batch...');
+  //         await Future.wait([
+  //           _addPackagesBatch(corePackages, isDev: false),
+  //           _addPackagesBatch(devPackages, isDev: true),
+  //         ]);
+
+  //         final outdated = await Process.run('flutter', ['pub', 'outdated']);
+  //         print(outdated.stdout);
+  //         final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
+  //         print(upgrade.stdout);
+  //         print('📦 Create packages in batch...');
+  //         await createBaseFolder();
+  //         await FileModifier.addImports('lib/main.dart', [
+  //           "import 'core/di/configure_dependencies.dart';",
+  //           "import 'package:flutter/material.dart';",
+  //           "import 'core/navigation/app_router.dart';",
+  //           "import 'package:flutter_bloc/flutter_bloc.dart';",
+  //           "import 'core/theme/cubit/theme_cubit.dart';",
+  //           "import 'core/theme/app_theme.dart';",
+  //           "import 'package:get_it/get_it.dart';",
+  //           "import 'package:sizer/sizer.dart';",
+  //           "import 'core/setup.dart';",
+  //         ]);
+  //         await FileModifier.addLineInsideFunction('lib/main.dart', 'main', '''
+  //   WidgetsFlutterBinding.ensureInitialized();\n
+  //   await setup();\n
+  //   await configureDependencies();\n
+  // ''', atStart: true);
+  //         await FileModifier.replaceLine(
+  //           'lib/main.dart',
+  //           RegExp(r'void\s+main\s*\(\s*\)\s*{'),
+  //           'void main() async {',
+  //         );
+  //         await FileModifier.replaceMaterialApp('lib/main.dart', '''
+  // MultiBlocProvider(
+  //       providers: [BlocProvider<ThemeCubit>(create: (context) => GetIt.I.get())],
+  //       child: BlocBuilder<ThemeCubit, ThemeState>(
+  //         builder: (context, themeState) {
+  //           return Sizer(
+  //             builder: (context, orientation, screenType) {
+  //               return MaterialApp.router(
+  //                 routerConfig: AppRouter.router,
+  //                 themeMode: themeState.themeMode,
+  //                 theme: AppTheme.lightTheme,
+  //                 darkTheme: AppTheme.darkTheme,
+  //               );
+  //             },
+  //           );
+  //         },
+  //       ),
+  //     );
+  // ''');
+  //         await FileModifier.setupEnvFile();
+  //         final buildRunner = await Process.run('dart', [
+  //           'run',
+  //           'build_runner',
+  //           'build',
+  //         ]);
+  //         print(buildRunner.stdout);
+  //       }
+  //     }
+
+  //     //---------
+  //     //---------
+
+  //     if (results['add_dependence']) {
+  //       print('📦 Adding packages in batch...');
+  //       await Future.wait([
+  //         _addPackagesBatch(corePackages, isDev: false),
+  //         _addPackagesBatch(devPackages, isDev: true),
+  //       ]);
+
+  //       final outdated = await Process.run('flutter', ['pub', 'outdated']);
+  //       print(outdated.stdout);
+  //       final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
+  //       print(upgrade.stdout);
+  //       final buildRunner = await Process.run('dart', [
+  //         'run',
+  //         'build_runner',
+  //         'build',
+  //       ]);
+  //       print(buildRunner.stdout);
+  //     }
+  //   } catch (e) {
+  //     print('❌ error: $e');
+  //     // printHelp(parser);
+  //     exit(1);
 }
 
 //---------
@@ -245,3 +372,76 @@ const List<String> devPackages = [
   'retrofit_generator',
   'injectable_generator',
 ];
+
+
+
+
+
+
+
+
+/*
+
+
+  cached_network_image: ^3.4.1
+  flutter_svg: ^2.2.3
+  image_picker: ^1.2.1
+  gap: ^3.0.1
+  # connectivity_plus: ^7.0.0
+  flutter_dotenv: ^6.0.0
+  flutter_bloc: ^9.1.1
+  bloc: ^9.1.0
+  dart_mappable: ^4.6.1
+  dio: ^5.9.0
+  retrofit: ^4.9.1
+  easy_localization: ^3.0.8
+  flutter_secure_storage: ^9.2.4
+  get_storage: ^2.1.1
+  get_it: ^9.1.0
+  go_router: ^17.0.0
+  injectable: ^2.6.0
+  equatable: ^2.0.7
+  intl: ^0.20.2
+  lottie: ^3.3.2
+  package_info_plus: ^9.0.0
+  path_provider: ^2.1.5
+  permission_handler: ^12.0.1
+  share_plus: ^12.0.1
+  shimmer: ^3.0.0
+  sizer: ^3.1.3
+  supabase_flutter: ^2.10.3
+  url_launcher: ^6.3.2
+  uuid: ^4.5.2
+
+
+
+  //---
+
+  dev:
+  flutter_lints: ^6.0.0
+  build_runner: ^2.10.4
+  dart_mappable_builder: ^4.6.1
+  retrofit_generator: ^10.2.0
+  injectable_generator: ^2.9.1
+
+- .env
+    - assets/translations/
+    - assets/images/
+    - assets/icons/
+
+
+
+
+
+translations:
+ar-AR.json
+en-US.json
+{
+   "data":"Dataen"
+}
+
+
+env:
+url_supabase=<XXXXX>
+key_supabase=<XXXXX>
+*/

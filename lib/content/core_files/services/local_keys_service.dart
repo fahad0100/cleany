@@ -2,7 +2,6 @@ String localKeysServiceFile() {
   return '''
 import 'package:injectable/injectable.dart';
 
-// local_keys_service.dart
 @Singleton(order: 1)
 class LocalKeysService {
   LocalKeysService();

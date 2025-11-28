@@ -1,101 +1,40 @@
 import 'package:args/args.dart';
 
 void printHelp(ArgParser parser) {
+  // تعريف الألوان لترتيب العرض
+  const String reset = '\x1B[0m';
+  const String bold = '\x1B[1m';
+  const String cyan = '\x1B[36m';
+  const String green = '\x1B[32m';
+  const String yellow = '\x1B[33m';
+  const String gray = '\x1B[90m';
+
   print('''
-🚀  Cleany is not just a feature generation tool; it is a complete automation solution specifically designed to jumpstart a new Flutter project with an organized Clean Architecture structure and the Cubit state management pattern.
+${bold}Usage:$reset
+  ${green}cleany$reset $cyan<command>$reset [arguments]
 
+${bold}Available Commands:$reset
+  ${green}-s$reset $cyan<name>$reset                   Generates a feature as a full ${bold}Screen$reset (with routing & DI).
+  ${green}-w$reset $cyan<name>$reset                   Generates a feature as a standalone ${bold}Widget (with DI)$reset.
+  ${green}-w$reset $cyan<name>$reset ${green}-p$reset $cyan<path>$reset         Generates a Widget with a custom path.
+  ${green}-a$reset                          Installs essential Core dependencies (Dio, GetIt, Bloc...).
+  ${green}-c$reset                          Scaffolds the essential Core folder structure.
 
-Cleany makes the project setup process easier and faster, allowing you to focus on the Business Logic instead of spending time on repetitive configurations.
-
-
-🚀 How Cleany Works:
-To get the most out of Cleany, you should start your project from scratch. The tool provides everything you need to launch your entire project:
-
-Core Structure Building (Core Automation):
-
-When using the Core generation command, Cleany creates all the essential files and folders required by any professional Flutter project (such as constants, error handling, navigation, and network configurations).
-
-Dependency Management:
-
-Cleany automatically adds all necessary libraries that serve the Clean Architecture structure (like Dio, GetIt, Bloc/Cubit) to your pubspec.yaml file.
-
-Feature Generation:
-
-When generating any new feature (Example: cleany auth), the tool creates the complete feature structure following the Clean Architecture principles:
-
-Presentation Layer: (Cubit, States, Pages, Widgets).
-
-Domain Layer: (Entities, Repositories, Usecases).
-
-Data Layer: (DataSources, Models, Repositories).
-
-Moreover, Cleany also adds the necessary Routing for the new feature and performs the required Dependency Injection, making it ready for immediate use.
-
-
-
-
-Usage:
-  cleany <feature_name> 
-
-Usage:
-  cleany [options]
-
-Options:
+${bold}Options:$reset
 ${parser.usage}
 
-Example:
-  cleany auth                    # To generate a new feature named (auth), creating all Clean Architecture layers, adding routing, and performing dependency injection.
-  cleany -c                      # To generate the essential Core folders and packages in your pub space (for initial structure building).
-  cleany -d                      # To insert the necessary Core dependency packages (like Cubit, Dio, GetIt) into the pubspec.yaml file.
+${bold}Examples:$reset
+  $gray#  Create a full login feature (Screen, Logic, DI) in path lib/features/screens/:$reset
+  $green  cleany -s auth$reset
 
+  $gray#  Create a reusable order widget (Logic, DI, No Routing, No scaffold only widget) default: in path lib/features/customs/:$reset
+  $green  cleany -w order_widget$reset
 
+  $gray#  Create a widget in a specific custom path:$reset
+  $green  cleany -w user_card -p "lib/features/customs/"$reset
 
-In Summary: Cleany is your gateway to starting new Flutter projects with a robust Clean Architecture foundation and professional standards, ensuring maintainability and scalability from day one.
-
-
-
-📦 Feature Will be generated:
-  ✅ Data Layer (datasources, models, repositories)
-  ✅ Domain Layer (entities, repositories, usecases)
-  ✅ Presentation Layer (cubit, states, pages, widgets)
-
-  with base class
-
-📦 core Will be generated:
-     ✅ constants/ 
-            app_colors.dart 
-            app_images.dart 
-            app_enums.dart
-     ✅ errors/
-            failure.dart
-     ✅ navigation/
-            app_router.dart
-            routers.dart
-     ✅ theme/
-            app_theme.dart
-            app_text_theme.dart
-          ✅ cubit/
-              theme_state.dart
-              theme_cubit.dart
-     ✅ network/
-            dio_client.dart
-            network_exceptions.dart
-            api_endpoints.dart
-     ✅ extensions/
-            context_extensions.dart
-            string_extensions.dart
-            color_extensions.dart
-     ✅ widgets/
-            loading_widget.dart
-     ✅ utils/   
-            validators.dart
-            formatters.dart 
-     ✅  services/   
-            local_keys_service.dart
-            logger_service.dart 
-     ✅  di/   
-            configure_dependencies.dart
-            third_party_config.dart 
-     ✅  common/  
+  $gray# Setup project foundation:$reset
+  $green  cleany -c$reset      $gray(Create core folder in path lib/)$reset
+  $green  cleany -a$reset      $gray(Add dependencies in pubspec.yaml)$reset
 ''');
 }

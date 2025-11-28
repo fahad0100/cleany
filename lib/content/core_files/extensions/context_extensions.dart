@@ -1,34 +1,41 @@
 String contextExtensionsFile() {
   return '''
-// context_extensions.dart
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
+import '../widgets/loading_widget.dart';
 
 extension ContextExtensions on BuildContext {
-  // Navigation
-  void pop() => Navigator.of(this).pop();
-  
-  Future<T?> push<T>(Widget page) {
-    return Navigator.of(this).push<T>(
-      MaterialPageRoute(builder: (_) => page),
-    );
-  }
-
-  // Theme
-  ThemeData get theme => Theme.of(this);
-  TextTheme get textTheme => Theme.of(this).textTheme;
-  ColorScheme get colorScheme => Theme.of(this).colorScheme;
-  
-  // Size
-  Size get screenSize => MediaQuery.of(this).size;
-  double get width => MediaQuery.of(this).size.width;
-  double get height => MediaQuery.of(this).size.height;
-  
   // Snackbar
   void showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? Colors.red : Colors.green,
+      ),
+    );
+  }
+
+  void showLoading() {
+    LoadingWidget().show(this);
+  }
+
+  void hideLoading() {
+    LoadingWidget().hide();
+  }
+
+  void showBottomSheet({required Widget widget, double? height, Color? color}) {
+    showModalBottomSheet(
+      context: this,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      clipBehavior: .hardEdge,
+      builder: (context) => Container(
+        padding: EdgeInsetsGeometry.symmetric(vertical: 8, horizontal: 16),
+        height: height ?? 75.h,
+        width: 100.w,
+        color: color,
+        child: widget,
       ),
     );
   }

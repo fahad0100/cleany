@@ -10,12 +10,14 @@ class AppRouter {
     routes: [
       GoRoute(
         path: Routes.splash,
-        builder: (context, state) => const Placeholder(), // SplashScreen
+        builder: (context, state) {
+          return Scaffold(body: Center(child: Text("splash screen")));
+        }, // SplashScreen
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(child: Text('Page not found: \${state.uri}')),
-    ),
+
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Page not found: \${state.uri}'))),
   );
 }
 ''';

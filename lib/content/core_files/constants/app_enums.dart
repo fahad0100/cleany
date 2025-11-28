@@ -1,22 +1,11 @@
 String appEnumsFile() {
   return '''
-enum LoadingState {
-  initial,
-  loading,
-  success,
-  error,
-}
 
-enum NetworkStatus {
-  connected,
-  disconnected,
-  unknown,
-}
+enum LoadingState { initial, loading, success, error }
 
-enum AuthStatus {
-  authenticated,
-  unauthenticated,
-  unknown,
-}
+enum NetworkStatus { connected, disconnected, unknown }
+
+enum AuthStatus { authenticated, unauthenticated, unknown }
+
 ''';
 }
