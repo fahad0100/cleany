@@ -1,32 +1,31 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
 String createRepositoryDataFile({required String featureName}) {
+  final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+
   return '''
 
 import 'package:injectable/injectable.dart';
+import 'package:multiple_result/multiple_result.dart';
 import '../../domain/repositories/${featureName}_repository_domain.dart';
 import '../datasources/${featureName}_remote_data_source.dart';
 import '../datasources/${featureName}_local_data_source.dart';
 import '../models/${featureName}_model.dart';
 
-@LazySingleton(as: ${featureName.toCapitalized().toCapitalizeSecondWord()}RepositoryDomain)
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}RepositoryData implements ${featureName.toCapitalized().toCapitalizeSecondWord()}RepositoryDomain{
-  final Base${featureName.toCapitalized().toCapitalizeSecondWord()}RemoteDataSource remoteDataSource;
-  final Base${featureName.toCapitalized().toCapitalizeSecondWord()}LocalDataSource localDataSource;
+@LazySingleton(as: ${nameCab}RepositoryDomain)
+class ${nameCab}RepositoryData implements ${nameCab}RepositoryDomain{
+  final Base${nameCab}RemoteDataSource remoteDataSource;
+  final Base${nameCab}LocalDataSource localDataSource;
 
-  ${featureName.toCapitalized().toCapitalizeSecondWord()}RepositoryData({
-    required this.remoteDataSource,
-    required this.localDataSource,
-  });
+  ${nameCab}RepositoryData(this.remoteDataSource, this.localDataSource);
 
   @override
-  Future<${featureName.toCapitalized().toCapitalizeSecondWord()}Model> get${featureName.toCapitalized().toCapitalizeSecondWord()}() async {
+    Future<Result<${nameCab}Model, Object>> get$nameCab() async {
         try{
-        return await localDataSource.getCached${featureName.toCapitalized().toCapitalizeSecondWord()}();
+        return await localDataSource.getCached$nameCab();
         }catch(error){
-        return await remoteDataSource.get${featureName.toCapitalized().toCapitalizeSecondWord()}();
-        }
-        
+        return await remoteDataSource.get$nameCab();
+        } 
   }
 }
 ''';

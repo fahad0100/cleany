@@ -104,7 +104,6 @@ void main(List<String> arguments) async {
         Log.success(
           "** Creating feature $featureName as a widget ** \n    path: $basePath/${featureName.toCapitalizeSecondWord()}",
         );
-
         return;
       }
     }

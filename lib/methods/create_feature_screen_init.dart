@@ -1,37 +1,51 @@
+import 'dart:io';
+
 import 'package:cleany/base_methods/extension/file_modifier.dart';
+import 'package:cleany/base_methods/folders/create_feature_folder_structure.dart';
 
 Future<void> createFeatureScreenInit({
   required String featureName,
   String? basePath,
 }) async {
-  final appRouter = await FileModifier.checkFileExistenceAsync(
-    filePath: 'lib/core/navigation/app_router.dart',
-  );
-  final routers = await FileModifier.checkFileExistenceAsync(
-    filePath: 'lib/core/navigation/routers.dart',
-  );
   final core = await FileModifier.checkFolderExistenceAsync(
     folderPath: 'lib/core',
   );
-
-  if (!appRouter || !routers) {
-    print(
-      "Sorry.. \nCan't create features without class (app_router.dart && routers.dart) in lib/core/navigation",
-    );
-    return;
-  }
   if (!core) {
-    print("Can't create features with out create core folder");
-    return;
+    print("Sorry.. \nCan't create features without core folder path in lib/");
   }
+  //--------------------------------------------------------------------------------
+  final diFile = await FileModifier.checkFileExistenceAsync(
+    filePath: 'lib/core/di/configure_dependencies.dart',
+  );
+  if (!diFile) {
+    print(
+      "Sorry.. \nCan't create features without configure_dependencies file path in lib/core/di/configure_dependencies.dart",
+    );
+  }
+  //--------------------------------------------------------------------------------
+  final appRouter = await FileModifier.checkFileExistenceAsync(
+    filePath: 'lib/core/navigation/app_router.dart',
+  );
+  if (!appRouter) {
+    print(
+      "Sorry.. \nCan't create features without app_router file path in lib/core/navigation/app_router.dart",
+    );
+  }
+  //--------------------------------------------------------------------------------
 
-  // print("Start create $featureName features ");
+  final routers = await FileModifier.checkFileExistenceAsync(
+    filePath: 'lib/core/navigation/routers.dart',
+  );
+  if (!routers) {
+    print(
+      "Sorry.. \nCan't create features without routers file path in lib/core/navigation/routers.dart",
+    );
+  }
+  //--------------------------------------------------------------------------------
 
-  // await createFeatureFolderStructure(featureName, basePath ?? 'lib/features');
-  // final buildRunner = await Process.run('dart', [
-  //   'run',
-  //   'build_runner',
-  //   'build',
-  // ]);
-  // print(buildRunner.stdout);
+  print("Start create $featureName features ");
+
+  await createFeatureFolderStructure(featureName, basePath ?? 'lib/features');
+  await Process.run('dart', ['run', 'build_runner', 'build']);
+  print("create done");
 }

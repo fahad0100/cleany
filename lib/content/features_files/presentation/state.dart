@@ -1,27 +1,32 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
 String stateFile({required String featureName}) {
+  final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+
   return '''
 import 'package:equatable/equatable.dart';
 
-abstract class ${featureName.toCapitalized().toCapitalizeSecondWord()}State extends Equatable {
-  const ${featureName.toCapitalized().toCapitalizeSecondWord()}State();
+abstract class ${nameCab}State extends Equatable {
+  const ${nameCab}State();
 
   @override
   List<Object?> get props => [];
 }
 
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}InitialState extends ${featureName.toCapitalized().toCapitalizeSecondWord()}State {}
+class ${nameCab}InitialState extends ${nameCab}State {}
 
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}LoadingState extends ${featureName.toCapitalized().toCapitalizeSecondWord()}State {}
+class ${nameCab}LoadingState extends ${nameCab}State {}
 
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}LoadedState extends ${featureName.toCapitalized().toCapitalizeSecondWord()}State {}
+class ${nameCab}SuccessState extends ${nameCab}State {}
 
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}ErrorState extends ${featureName.toCapitalized().toCapitalizeSecondWord()}State {
+class ${nameCab}LoadedState extends ${nameCab}State {}
+
+class ${nameCab}ErrorState extends ${nameCab}State {
   final String message;
-  const ${featureName.toCapitalized().toCapitalizeSecondWord()}ErrorState({required this.message});
+  const ${nameCab}ErrorState({required this.message});
   @override
   List<Object?> get props => [message];
 }
+
 ''';
 }

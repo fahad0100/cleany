@@ -6,7 +6,7 @@ import 'package:cleany/content/features_files/domain/entity_domain_file.dart';
 import 'package:cleany/content/features_files/domain/repository_domain_file.dart';
 import 'package:cleany/content/features_files/domain/use_case_domain_file.dart';
 import 'package:cleany/content/features_files/presentation/cubit.dart';
-import 'package:cleany/content/features_files/presentation/page.dart';
+import 'package:cleany/content/features_files/presentation/screen_feature.dart';
 import 'package:cleany/content/features_files/presentation/state.dart';
 import 'package:cleany/content/features_files/presentation/widget.dart';
 

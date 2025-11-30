@@ -1,20 +1,23 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
 String useCaseFile({required String featureName}) {
+  final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+
   return '''
+import 'package:multiple_result/multiple_result.dart';
+import 'package:injectable/injectable.dart';
 import '../entities/${featureName}_entity.dart';
 import '../repositories/${featureName}_repository_domain.dart';
 
-import 'package:injectable/injectable.dart';
 
 @lazySingleton
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}UseCase {
-  final ${featureName.toCapitalized().toCapitalizeSecondWord()}RepositoryDomain _repositoryData;
+class ${nameCab}UseCase {
+  final ${nameCab}RepositoryDomain _repositoryData;
 
-  ${featureName.toCapitalized().toCapitalizeSecondWord()}UseCase(this._repositoryData);
+  ${nameCab}UseCase(this._repositoryData);
 
-  Future<${featureName.toCapitalized().toCapitalizeSecondWord()}Entity> get${featureName.toCapitalized().toCapitalizeSecondWord()}() async {
-    return _repositoryData.get${featureName.toCapitalized().toCapitalizeSecondWord()}();
+   Future<Result<${nameCab}Entity, Object>> get$nameCab() async {
+    return _repositoryData.get$nameCab();
   }
 }
 ''';

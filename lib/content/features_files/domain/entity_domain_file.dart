@@ -1,13 +1,15 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
 String entityDomainFile({required String featureName}) {
+  final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+
   return '''
 import 'package:equatable/equatable.dart';
 
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}Entity extends Equatable {
+class ${nameCab}Entity extends Equatable {
   final String id;
 
-  const ${featureName.toCapitalized().toCapitalizeSecondWord()}Entity({
+  const ${nameCab}Entity({
     required this.id,
   });
 

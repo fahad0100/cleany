@@ -1,25 +1,39 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
 String baseLocalDataSourceFile({required String featureName}) {
+  final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   return '''
 import 'package:injectable/injectable.dart';
+import 'package:multiple_result/multiple_result.dart';
+import '../../../../../core/errors/failure.dart';
 import '../models/${featureName}_model.dart';
 
 
-abstract class Base${featureName.toCapitalized().toCapitalizeSecondWord()}LocalDataSource {
-  Future<${featureName.toCapitalized().toCapitalizeSecondWord()}Model> getCached${featureName.toCapitalized().toCapitalizeSecondWord()}();
+
+abstract class Base${nameCab}LocalDataSource {
+
+  Future<Future<Result<${nameCab}Model, Failure>>> getCached$nameCab();
+
 }
 
 
-@LazySingleton(as: Base${featureName.toCapitalized().toCapitalizeSecondWord()}LocalDataSource)
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}LocalDataSource implements Base${featureName.toCapitalized().toCapitalizeSecondWord()}LocalDataSource {
-  // final SharedPreferences _sharedPreferences;
+@LazySingleton(as: Base${nameCab}LocalDataSource)
+class ${nameCab}LocalDataSource implements Base${nameCab}LocalDataSource {
+  // final GetStorage _storage;
+  // final FlutterSecureStorage _secureStorage;
+  // final LocalKeysService _localKeysService;
+
   
-  // ${featureName.toCapitalized().toCapitalizeSecondWord()}LocalDataSource({required this._sharedPreferences});
+
+   // ${nameCab}LocalDataSource(
+  //   this._storage,
+  //   this._secureStorage,
+  //   this._localKeysService
+  // );
+
 
   @override
-  Future<${featureName.toCapitalized().toCapitalizeSecondWord()}Model> getCached${featureName.toCapitalized().toCapitalizeSecondWord()}() async {
-
+  Future<Future<Result<${nameCab}Model, Failure>>> getCachedLogin() async {
     throw UnimplementedError();
   }
 }

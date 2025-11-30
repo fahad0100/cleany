@@ -1,25 +1,39 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
 String baseRemoteDataSourceFile({required String featureName}) {
+  final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+
   return '''
 import 'package:injectable/injectable.dart';
+import 'package:multiple_result/multiple_result.dart';
 import '../models/${featureName}_model.dart';
 
-abstract class Base${featureName.toCapitalized().toCapitalizeSecondWord()}RemoteDataSource {
-    Future<${featureName.toCapitalized().toCapitalizeSecondWord()}Model> get${featureName.toCapitalized().toCapitalizeSecondWord()}();
+abstract class Base${nameCab}RemoteDataSource {
+  Future<Future<Result<${nameCab}Model, Object>>> get$nameCab();
 }
 
 
-@LazySingleton(as: Base${featureName.toCapitalized().toCapitalizeSecondWord()}RemoteDataSource)
-class ${featureName.toCapitalized().toCapitalizeSecondWord()}RemoteDataSource implements Base${featureName.toCapitalized().toCapitalizeSecondWord()}RemoteDataSource {
+@LazySingleton(as: Base${nameCab}RemoteDataSource)
+class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
   // final DioClient _dio;
   // final SupabaseClient _supabase;
+  // final GetStorage _storage;
+  // final FlutterSecureStorage _secureStorage;
+  // final LocalKeysService _localKeysService;
   
-  // ${featureName.toCapitalized().toCapitalizeSecondWord()}RemoteDataSource(required this._dio,required this._supabase);
 
-  @override
-  Future<${featureName.toCapitalized().toCapitalizeSecondWord()}Model> get${featureName.toCapitalized().toCapitalizeSecondWord()}() async {
+   // ${nameCab}LocalDataSource(
+  //   this._dio,
+  //   this._supabase,
+  //   this._storage,
+  //   this._secureStorage,
+  //   this._localKeysService
+  // );
 
+
+
+    @override
+  Future<Future<Result<${nameCab}Model, Object>>> get$nameCab() async {
     throw UnimplementedError();
   }
 }
