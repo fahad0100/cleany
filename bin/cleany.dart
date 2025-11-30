@@ -70,8 +70,8 @@ void main(List<String> arguments) async {
         help: 'add core dependence',
       );
 
-    //---------
-    //---------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
 
     final results = parser.parse(arguments);
 
@@ -79,11 +79,11 @@ void main(List<String> arguments) async {
       printHelp(parser);
       return;
     }
-
-    //---------
-    //---------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //-------------------------create as widget----------------------------------------
-
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     if (results.flag('feature_widgets') && results.rest.isNotEmpty) {
       String basePath = 'lib/features/sub_features';
       String featureName = results.rest[0];
@@ -107,22 +107,39 @@ void main(List<String> arguments) async {
         return;
       }
     }
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     //-------------------------create as screen----------------------------------------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     if (results.rest.length == 1 &&
         results.arguments.length == 2 &&
         results.flag('feature_screen')) {
       String basePath = 'lib/features';
       String featureName = results.rest[0];
+      if (featureName.length > 1) {
+        throw FormatException(
+          "The name must be a single word or multiple words separated by underscores (_)",
+        );
+      }
+      print(results.rest);
       Log.success(
         "** Creating feature $featureName as a screen** \n    path: $basePath/${featureName.toCapitalizeSecondWord()}",
       );
 
-      await createFeatureScreenInit(featureName: "Ddd", basePath: basePath);
+      await createFeatureScreenInit(
+        featureName: featureName,
+        basePath: basePath,
+      );
 
       return;
     }
 
-    //-------------------------create core folder----------------------------------------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
+    //-------------------------create core folder--------------------------------------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     if (results.arguments.length == 1 && results.flag('core_folders')) {
       Log.warning('\n⚠️  WARNING: Destructive Operation');
       Log.error('---------------------------------------------------');
@@ -188,8 +205,11 @@ void main(List<String> arguments) async {
           return;
       }
     }
-
-    //-------------------------create core----------------------------------------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
+    //-------------------------create dependence---------------------------------------
+    //---------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------
     if (results.arguments.length == 1 && results.flag('add_dependence')) {
       print("\n\n\n\n** start add core dependence **\n\n\n\n");
       await addPackagesInit();
