@@ -117,7 +117,8 @@ void main(List<String> arguments) async {
         results.flag('feature_screen')) {
       String basePath = 'lib/features';
       String featureName = results.rest[0];
-      if (featureName.length > 1) {
+      print(results.rest.length);
+      if (results.rest.length > 1) {
         throw FormatException(
           "The name must be a single word or multiple words separated by underscores (_)",
         );
