@@ -7,9 +7,12 @@ String baseRemoteDataSourceFile({required String featureName}) {
 import 'package:injectable/injectable.dart';
 import 'package:multiple_result/multiple_result.dart';
 import '../models/${featureName}_model.dart';
+import '../../../../core/errors/failure.dart';
+import '../../../../core/errors/network_exceptions.dart';
+
 
 abstract class Base${nameCab}RemoteDataSource {
-  Future<Future<Result<${nameCab}Model, Object>>> get$nameCab();
+  Future<Result<${nameCab}Model, Failure>> get$nameCab();
 }
 
 
@@ -33,8 +36,12 @@ class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
 
 
     @override
-  Future<Future<Result<${nameCab}Model, Object>>> get$nameCab() async {
-    throw UnimplementedError();
+  Future<Result<${nameCab}Model, Failure>> get$nameCab() async {
+    try {
+      return Success(TestaModel(id: "d"));
+    } catch (error) {
+      return Error(FailureExceptions.getDioException(error));
+    }
   }
 }
 ''';

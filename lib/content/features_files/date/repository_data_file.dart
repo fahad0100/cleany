@@ -11,6 +11,8 @@ import '../../domain/repositories/${featureName}_repository_domain.dart';
 import '../datasources/${featureName}_remote_data_source.dart';
 import '../datasources/${featureName}_local_data_source.dart';
 import '../models/${featureName}_model.dart';
+import '../../../../core/errors/failure.dart';
+
 
 @LazySingleton(as: ${nameCab}RepositoryDomain)
 class ${nameCab}RepositoryData implements ${nameCab}RepositoryDomain{
@@ -20,7 +22,7 @@ class ${nameCab}RepositoryData implements ${nameCab}RepositoryDomain{
   ${nameCab}RepositoryData(this.remoteDataSource, this.localDataSource);
 
   @override
-    Future<Result<${nameCab}Model, Object>> get$nameCab() async {
+    Future<Result<${nameCab}Model, Failure>> get$nameCab() async {
         try{
         return await localDataSource.getCached$nameCab();
         }catch(error){

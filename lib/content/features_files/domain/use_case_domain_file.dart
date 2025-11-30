@@ -8,6 +8,7 @@ import 'package:multiple_result/multiple_result.dart';
 import 'package:injectable/injectable.dart';
 import '../entities/${featureName}_entity.dart';
 import '../repositories/${featureName}_repository_domain.dart';
+import '../../../../core/errors/failure.dart';
 
 
 @lazySingleton
@@ -16,7 +17,7 @@ class ${nameCab}UseCase {
 
   ${nameCab}UseCase(this._repositoryData);
 
-   Future<Result<${nameCab}Entity, Object>> get$nameCab() async {
+   Future<Result<${nameCab}Entity, Failure>> get$nameCab() async {
     return _repositoryData.get$nameCab();
   }
 }

@@ -7,12 +7,13 @@ import 'package:injectable/injectable.dart';
 import 'package:multiple_result/multiple_result.dart';
 import '../../../../../core/errors/failure.dart';
 import '../models/${featureName}_model.dart';
+import '../../../../core/errors/network_exceptions.dart';
 
 
 
 abstract class Base${nameCab}LocalDataSource {
 
-  Future<Future<Result<${nameCab}Model, Failure>>> getCached$nameCab();
+   Future<Result<${nameCab}Model, Failure>> getCached$nameCab();
 
 }
 
@@ -33,8 +34,12 @@ class ${nameCab}LocalDataSource implements Base${nameCab}LocalDataSource {
 
 
   @override
-  Future<Future<Result<${nameCab}Model, Failure>>> getCachedLogin() async {
-    throw UnimplementedError();
+  Future<Result<${nameCab}Model, Failure>> getCached$nameCab() async {
+  try {
+      return Success(${nameCab}Model(id: "d"));
+    } catch (error) {
+      return Error(FailureExceptions.getDioException(error));
+    }
   }
 }
 ''';

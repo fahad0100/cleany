@@ -9,12 +9,12 @@ import '../../domain/use_cases/${featureName}_use_case.dart';
 import '${featureName}_state.dart';
 
 class ${nameCab}Cubit extends Cubit<${nameCab}State> {
-  final ${nameCab}UseCase _${nameCab}UseCase;
+  final ${nameCab}UseCase _${nameCab.toLowerFirst()}UseCase;
 
-  ${nameCab}Cubit(this._${nameCab}UseCase) : super(${nameCab}InitialState());
+  ${nameCab}Cubit(this._${nameCab.toLowerFirst()}UseCase) : super(${nameCab}InitialState());
 
   Future<void> get${nameCab}Method() async {
-    final result = await _${nameCab}UseCase.get$nameCab();
+    final result = await _${nameCab.toLowerFirst()}UseCase.get$nameCab();
     result.when(
       (success) {
         //here is when success result

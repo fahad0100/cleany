@@ -12,11 +12,15 @@ extension StringExtension on String {
     final first = parts[0];
     final second = parts[1];
 
-    // تحويل أول حرف من الكلمة الثانية إلى كبتل
     final formattedSecond = second.isNotEmpty
         ? second[0].toUpperCase() + second.substring(1)
         : '';
 
     return first + formattedSecond;
+  }
+
+  String toLowerFirst() {
+    if (isEmpty) return this;
+    return this[0].toLowerCase() + substring(1);
   }
 }
