@@ -1,7 +1,7 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 import 'package:cleany/base_methods/extension/file_modifier.dart';
 
-String baseLocalDataSourceFile({required String featureName}) {
+String baseLocalDataScreenFeatureFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   final projectName = FileModifier.getProjectName();
 

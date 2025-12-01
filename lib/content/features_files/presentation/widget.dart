@@ -1,6 +1,6 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
-String widgetFile({required String featureName}) {
+String widgetScreenFeatureFile({required String featureName}) {
   return '''
  import 'package:flutter/material.dart';
 

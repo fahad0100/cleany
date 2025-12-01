@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:cleany/base_methods/generate/generate_file_core_content.dart';
+import 'package:cleany/base_methods/return/return_file_core_content.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> createBaseFolder() async {

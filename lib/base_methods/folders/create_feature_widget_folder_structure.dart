@@ -1,8 +1,5 @@
 import 'dart:io';
-
-import 'package:cleany/base_methods/extension/file_modifier.dart';
-import 'package:cleany/base_methods/generate/generate_file_feature_content.dart';
-import 'package:cleany/base_methods/extension/extensions.dart';
+import 'package:cleany/base_methods/return/return_file_widget_feature_content.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> createFeatureWidgetFolderStructure(
@@ -42,9 +39,10 @@ Future<void> createFeatureWidgetFolderStructure(
       for (final fileName in entry.value) {
         final filePath = path.join(folderPath, fileName);
 
-        final content = generateFileFeatureContent(
+        final content = returnFileWidgetFeatureContent(
           fileName: fileName,
           featureName: featureName,
+          basePath: basePath,
         );
         await File(filePath).writeAsString(content);
         // dart run build_runner build

@@ -1,6 +1,6 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
-String entityDomainScreenFeatureFile({required String featureName}) {
+String entityDomainWidgetFeatureFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
 
   return '''

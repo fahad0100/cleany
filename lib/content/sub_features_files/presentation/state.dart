@@ -1,6 +1,6 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
-String stateScreenFeatureFile({required String featureName}) {
+String stateWidgetFeatureFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
 
   return '''

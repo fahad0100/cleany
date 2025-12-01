@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cleany/base_methods/extension/file_modifier.dart';
-import 'package:cleany/base_methods/generate/generate_file_feature_content.dart';
+import 'package:cleany/base_methods/return/return_file_screen_feature_content.dart';
 import 'package:cleany/base_methods/extension/extensions.dart';
 import 'package:path/path.dart' as path;
 
@@ -43,7 +43,7 @@ Future<void> createFeatureScreenFolderStructure(
       for (final fileName in entry.value) {
         final filePath = path.join(folderPath, fileName);
 
-        final content = generateFileFeatureContent(
+        final content = returnFileScreenFeatureContent(
           fileName: fileName,
           featureName: featureName,
         );

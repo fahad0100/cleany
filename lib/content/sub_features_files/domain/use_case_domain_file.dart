@@ -1,7 +1,7 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 import 'package:cleany/base_methods/extension/file_modifier.dart';
 
-String useCaseScreenFeatureFile({required String featureName}) {
+String useCaseWidgetFeatureFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   final projectName = FileModifier.getProjectName();
 
@@ -9,8 +9,8 @@ String useCaseScreenFeatureFile({required String featureName}) {
 import 'package:multiple_result/multiple_result.dart';
 import 'package:injectable/injectable.dart';
 import 'package:$projectName/core/errors/failure.dart';
-import 'package:$projectName/features/$featureName/domain/entities/${featureName}_entity.dart';
-import 'package:$projectName/features/$featureName/domain/repositories/${featureName}_repository_domain.dart';
+import 'package:$projectName/features/sub/$featureName/domain/entities/${featureName}_entity.dart';
+import 'package:$projectName/features/sub/$featureName/domain/repositories/${featureName}_repository_domain.dart';
 
 
 @lazySingleton
