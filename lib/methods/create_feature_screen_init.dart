@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cleany/base_methods/extension/file_modifier.dart';
-import 'package:cleany/base_methods/folders/create_feature_folder_structure.dart';
+import 'package:cleany/base_methods/folders/create_feature_screen_folder_structure.dart';
 
 Future<void> createFeatureScreenInit({
   required String featureName,

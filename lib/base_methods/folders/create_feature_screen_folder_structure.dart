@@ -33,7 +33,7 @@ Future<void> createFeatureFolderStructure(
         '${featureName}_cubit.dart',
         '${featureName}_state.dart',
       ],
-      'presentation/pages': ['${featureName}_page.dart'],
+      'presentation/pages': ['${featureName}_feature_screen.dart'],
       'presentation/widgets': ['${featureName}_widget.dart'],
     };
 

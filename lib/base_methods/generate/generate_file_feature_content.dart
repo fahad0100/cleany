@@ -60,7 +60,7 @@ String generateFileFeatureContent({
   }
 
   // Presentation Layer - Page
-  if (fileName.contains('_page.dart')) {
+  if (fileName.contains('_feature_screen.dart')) {
     return screenPageFile(featureName: featureName);
   }
 
