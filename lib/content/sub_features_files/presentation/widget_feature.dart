@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:$projectName/features/sub/$featureName/presentation/cubit/${featureName}_cubit.dart';
-import 'package:$projectName/features/sub/sub/$featureName/presentation/cubit/${featureName}_cubit.dart';
 
 
 class ${nameCab}FeatureWidget extends StatelessWidget {
@@ -21,7 +20,7 @@ class ${nameCab}FeatureWidget extends StatelessWidget {
       create: (context) => ${nameCab}Cubit(GetIt.I.get()),
       child: Builder(
         builder: (context) {
-          final _ = context.read<LoginCubit>();
+          final _ = context.read<${nameCab}Cubit>();
           return Column(children: [
               
               ],
