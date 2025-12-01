@@ -1,113 +1,147 @@
 
+---
 
 # 🚀 Cleany — Flutter Clean Architecture Generator
 
-**Cleany** is not just a feature generator — it is a **complete automation solution** designed to bootstrap a new Flutter project with a fully organized **Clean Architecture** structure using the **Cubit** state management pattern.
+**Cleany** is more than a feature generator—it’s a **complete automation toolkit** designed to bootstrap full Flutter projects following **Clean Architecture** and **Cubit** state management.
 
-It simplifies the entire project setup process, allowing you to focus on business logic instead of repetitive configurations.
+With Cleany, you eliminate repetitive setup steps and focus entirely on writing real business logic.
 
 ---
 
 ## 🚀 How Cleany Works
 
-To get the most out of Cleany, you should start your project from scratch. The tool prepares everything you need to launch a complete, well-structured Flutter application.
+For the best experience, start with a fresh Flutter project.
+Cleany prepares a full, production-ready architecture instantly—no manual setup required.
 
 ---
 
-### 🧱 1. Core Structure Building (Core Automation)
+## 🧱 1. Core Structure Automation
 
-When running the Core generation command, Cleany automatically creates all essential files and folders required for any professional Flutter project, including:
+Running the Core command generates all foundational components of a scalable Flutter application:
 
 * constants
 * error handling
 * navigation
-* network configurations
-* theme
-* di
+* network configuration
+* theming
+* dependency injection (DI)
+
+Each file comes pre-filled with ready-to-use boilerplate code.
 
 ---
 
-### 🔧 2. Dependency Management
+## 🔧 2. Automatic Dependency Management
 
-Cleany adds all necessary packages required for a Clean Architecture–based project directly into your `pubspec.yaml`, such as:
+Cleany injects all essential Clean Architecture packages directly into your `pubspec.yaml`, including:
 
-* Dio
-* get_it
-* logger
-* bloc
-* retrofit
 * flutter_dotenv
-* injectable
-* supabase_flutter
-* cached_network_image
-* flutter_bloc
-* equatable
-* dartz
-* dio
-* go_router
-* get_storage
-* intl
+* multiple_result
+* flutter_bloc / bloc
 * dart_mappable
-* hydrated_bloc
-* uuid
-* image_picker
-* flutter_svg
-* connectivity_plus
-* permission_handler
-* url_launcher
+* dio / retrofit
+* easy_localization
 * flutter_secure_storage
-* path_provider
-* package_info_plus
-* share_plus
-* lottie
-* gap
-* shimmer
 * sizer
+* supabase_flutter
+* get_storage
+* get_it
+* go_router
+* injectable
+* equatable
+* package_info_plus / device_info_plus
 * build_runner
 * dart_mappable_builder
 * retrofit_generator
 * injectable_generator
+  … and more.
+
+No manual editing required—everything is wired automatically.
 
 ---
 
-### 🧩 3. Feature Generation
+## 🧩 3. Feature Generation (as Screen)
 
-When generating a new feature (Example: `cleany auth`), Cleany produces the full feature structure following Clean Architecture principles:
+When running:
 
-#### 🟦 Presentation Layer
+```bash
+cleany -s profile
+```
+
+Cleany generates a complete Clean Architecture feature module:
+
+### 🟦 Presentation
 
 * Cubit
 * States
 * Pages
 * Widgets
 
-#### 🟩 Domain Layer
+### 🟩 Domain
 
 * Entities
 * Repositories
 * Usecases
 
-#### 🟧 Data Layer
+### 🟧 Data
+
+* DataSources
+* Models
+* Repository Implementations
+
+Cleany also updates:
+
+* Routing configuration
+* Dependency Injection setup
+
+Your feature becomes functional immediately.
+
+---
+
+## 🧩 4. Feature Generation (as Widget)
+
+For standalone widgets:
+
+```bash
+cleany -w card_profile
+```
+
+Cleany generates:
+
+### 🟦 Presentation
+
+* Cubit
+* States
+* Pages (if needed)
+
+### 🟩 Domain
+
+* Entities
+* Repositories
+* Usecases
+
+### 🟧 Data
 
 * DataSources
 * Models
 * Repositories
 
-It also automatically adds:
-
-* Routing entries for the new feature
-* Dependency Injection configuration
-
-So your new module becomes instantly usable.
+Perfect for reusable UI modules.
 
 ---
 
 ## 📘 Usage
 
-### Generate a Feature
+### Create a full Screen Feature
 
 ```bash
-cleany <feature_name>
+cleany -s <feature_name>
+```
+
+### Create a Widget Feature
+
+```bash
+cleany -w <feature_name>
 ```
 
 ### General Command
@@ -116,50 +150,52 @@ cleany <feature_name>
 cleany [options]
 ```
 
+---
 
 ### Examples
 
 ```bash
 cleany auth
-# Generates a new feature (auth) with all Clean Architecture layers + routing + DI.
+# Generates a full CLEAN feature with routing & DI.
 
 cleany -c
-# Generates the essential Core folders and files for the initial project structure.
+# Builds the entire core folder structure.
 
-cleany -d
-# Inserts the required Clean Architecture dependencies (Cubit, Dio, GetIt) into pubspec.yaml.
+cleany -a
+# Injects all essential Clean Architecture dependencies.
 ```
 
 ---
 
 ## 🧩 Summary
 
-**Cleany is your gateway to starting new Flutter projects with a strong and scalable Clean Architecture foundation from day one.**
+**Cleany jump-starts your Flutter projects with a complete, scalable Clean Architecture setup—instantly.**
+From Core generation to Feature creation, DI wiring, and routing automation, Cleany gives you everything you need to start building real functionality from day one.
 
 ---
 
 ## 📦 Feature Structure Generated
 
-* ✅ **Data Layer**
+### ✅ Data Layer
 
-  * datasources
-  * models
-  * repositories
+* datasources
+* models
+* repositories
 
-* ✅ **Domain Layer**
+### ✅ Domain Layer
 
-  * entities
-  * repositories
-  * usecases
+* entities
+* repositories
+* usecases
 
-* ✅ **Presentation Layer**
+### ✅ Presentation Layer
 
-  * cubit
-  * states
-  * pages
-  * widgets
+* cubit
+* states
+* pages
+* widgets
 
-Includes **base classes** for instant development.
+Includes pre-built base classes for immediate development.
 
 ---
 
@@ -213,4 +249,5 @@ di/
 common/
 ```
 
+---
 
