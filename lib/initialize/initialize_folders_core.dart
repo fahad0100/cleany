@@ -41,11 +41,12 @@ Future<void> initializeFoldersCore() async {
         ),
         FileModifier.createFolder('assets/icons/'),
         FileModifier.createFolder('assets/images/'),
-        FileModifier.addAssetToPubspec('.env'),
-        FileModifier.addAssetToPubspec('assets/translations/'),
-        FileModifier.addAssetToPubspec('assets/images/'),
-        FileModifier.addAssetToPubspec('assets/icons/'),
       ]);
+
+      await FileModifier.addAssetToPubspec('.env');
+      await FileModifier.addAssetToPubspec('assets/translations/');
+      await FileModifier.addAssetToPubspec('assets/images/');
+      await FileModifier.addAssetToPubspec('assets/icons/');
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {
