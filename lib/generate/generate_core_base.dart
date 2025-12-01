@@ -35,20 +35,10 @@ Future<void> generateCoreBase() async {
       await Directory(folderPath).create(recursive: true);
       for (final fileName in entry.value) {
         final filePath = path.join(folderPath, fileName);
-        // print('entry.key: ${entry.key}');
-        // print('fileName: $fileName');
-        // print('filePath: $filePath');
         final content = getCoreFileContent(fileName: fileName);
         await File(filePath).writeAsString(content);
       }
     }
-
-    // structure.forEach((folder, files) {
-    //   print('   📂 $folder/');
-    //   for (final file in files) {
-    //     print('      📄 $file');
-    //   }
-    // });
   } catch (e) {
     print('❌ Failed to create Feature: $e');
     exit(1);

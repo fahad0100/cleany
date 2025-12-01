@@ -1,40 +1,13 @@
 import 'dart:io';
 import 'package:args/args.dart';
+import 'package:cleany/utils/Loger.dart';
 import 'package:cleany/utils/extension/extensions.dart';
 import 'package:cleany/utils/file_modifier.dart';
-import 'package:cleany/generate/generate_core_base.dart';
 import 'package:cleany/print_help_method.dart';
-import 'package:cleany/get_content/content/ar-AR_json.dart';
-import 'package:cleany/get_content/content/en-US_json.dart';
-import 'package:cleany/get_content/content/main_content.dart';
 import 'package:cleany/initialize/initialize_add_packages.dart';
 import 'package:cleany/initialize/initialize_feature_screen.dart';
 import 'package:cleany/initialize/initialize_feature_widget.dart';
 import 'package:cleany/initialize/initialize_folders_core.dart';
-
-class Log {
-  static const String _reset = '\x1B[0m';
-  static const String _red = '\x1B[31m';
-  static const String _green = '\x1B[32m';
-  static const String _yellow = '\x1B[33m';
-  static const String cyan = '\x1B[36m';
-
-  static void success(String msg) {
-    print("$_green $msg$_reset");
-  }
-
-  static void error(String msg) {
-    print("$_red✖ $msg$_reset");
-  }
-
-  static void warning(String msg) {
-    print("$_yellow⚠ $msg$_reset");
-  }
-
-  static void info(String msg) {
-    print("$cyanℹ $msg$_reset");
-  }
-}
 
 void main(List<String> arguments) async {
   try {
@@ -81,7 +54,7 @@ void main(List<String> arguments) async {
       return;
     }
     if (!(await FileModifier.isFlutterProjectRoot())) {
-      Log.error("❌ You are NOT in the root of a Flutter project.");
+      Logger.error("❌ You are NOT in the root of a Flutter project.");
       return;
     }
     //---------------------------------------------------------------------------------
@@ -130,7 +103,7 @@ void main(List<String> arguments) async {
         );
       }
       print(results.rest);
-      Log.success(
+      Logger.success(
         "** Creating feature $featureName as a screen** \n    path: $basePath/${featureName.toCapitalizeSecondWord()}",
       );
 
@@ -148,25 +121,25 @@ void main(List<String> arguments) async {
     //---------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------
     if (results.arguments.length == 1 && results.flag('core_folders')) {
-      Log.warning('\n⚠️  WARNING: Destructive Operation');
-      Log.error('---------------------------------------------------');
-      Log.warning(
+      Logger.warning('\n⚠️  WARNING: Destructive Operation');
+      Logger.error('---------------------------------------------------');
+      Logger.warning(
         'This action will permanently delete and rewrite the \n* core       | directory if it exists, \n* assets     | directory if it exists and \n* main.dart  | file content',
       );
-      Log.warning(
+      Logger.warning(
         'This command is intended for fresh project initialization only.',
       );
-      Log.warning(
+      Logger.warning(
         'Running this on an existing project will result in data loss.',
       );
 
-      Log.error('---------------------------------------------------');
-      Log.success('Are you sure you want to proceed? (y/N): ');
+      Logger.error('---------------------------------------------------');
+      Logger.success('Are you sure you want to proceed? (y/N): ');
       final confirm = stdin.readLineSync();
 
       switch (confirm?.toLowerCase()) {
         case 'n':
-          Log.info(
+          Logger.info(
             'Thank you for your diligence with the code. I hope you use me in your new project',
           );
 
@@ -176,7 +149,7 @@ void main(List<String> arguments) async {
           return;
 
         default:
-          Log.error(
+          Logger.error(
             "Warning: Invalid input will wipe out your progress. Please pay close attention and ensure your input is accurate.",
           );
           return;
@@ -197,12 +170,12 @@ void main(List<String> arguments) async {
     //-------------------------help----------------------------------------
     // printHelp(parser);
 
-    Log.error(
+    Logger.error(
       "Wrong.. Follow the format I provided. Don't change anything else\n\n  use: cleany -h     \n\nto know how use it",
     );
 
     return;
   } catch (error) {
-    Log.error("Wrong input.  \n\nuse: cleany -h     \n\nto know how use it");
+    Logger.error("Wrong input.  \n\nuse: cleany -h     \n\nto know how use it");
   }
 }

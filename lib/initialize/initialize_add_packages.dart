@@ -1,7 +1,7 @@
 import 'dart:io';
 
 Future<void> initializeAddPackages({bool updatePackages = true}) async {
-  print('📦 Adding packages in batch...');
+  print('📦 Adding packages...');
   await Future.wait([
     _addPackagesBatch(corePackages, isDev: false),
     _addPackagesBatch(devPackages, isDev: true),
@@ -15,6 +15,7 @@ Future<void> initializeAddPackages({bool updatePackages = true}) async {
       'build_runner',
       'build',
     ]);
+    print("--------------------------");
     print(outdated.stdout);
     print(upgrade.stdout);
     print(buildRunner.stdout);
@@ -33,7 +34,9 @@ Future<void> _addPackagesBatch(
         ? ['pub', 'add', '--dev', ...packages]
         : ['pub', 'add', ...packages];
 
-    print('📦 Adding ${packages.length} packages in batch...');
+    print(
+      '📦 Adding ${packages.length} packages in ${isDev ? "dev_dependencies" : "dependencies"}...',
+    );
 
     final result = await Process.run(command, args);
 

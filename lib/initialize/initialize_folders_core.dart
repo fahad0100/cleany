@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cleany/get_content/content/ar-AR_json.dart';
 import 'package:cleany/get_content/content/en-US_json.dart';
+import 'package:cleany/utils/Loger.dart';
 import 'package:cleany/utils/file_modifier.dart';
 import 'package:cleany/generate/generate_core_base.dart';
 import 'package:cleany/get_content/content/main_content.dart';
@@ -47,15 +48,14 @@ Future<void> initializeFoldersCore() async {
       await FileModifier.addAssetToPubspec('assets/translations/');
       await FileModifier.addAssetToPubspec('assets/images/');
       await FileModifier.addAssetToPubspec('assets/icons/');
+      await Process.run('flutter', ['pub', 'outdated']);
+      await Process.run('flutter', ['pub', 'upgrade']);
+      await Process.run('dart', ['run', 'build_runner', 'build']);
+      Logger.success("Completed create core with update project");
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {
       rethrow;
     }
-
-    await Process.run('flutter', ['pub', 'outdated']);
-    await Process.run('flutter', ['pub', 'upgrade']);
-    await Process.run('dart', ['run', 'build_runner', 'build']);
-    print("Completed");
   }
 }
