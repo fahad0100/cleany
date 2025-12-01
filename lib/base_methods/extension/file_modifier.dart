@@ -330,7 +330,7 @@ class FileModifier {
   GoRoute(
     path: Routes.$routeName,
     builder: (context, state) => BlocProvider(
-          create: (context) => $cubit(${routeName}UseCase: GetIt.I.get()),
+          create: (context) => $cubit(GetIt.I.get()),
           child: const $screenWidget(),
         ),
   ),''';

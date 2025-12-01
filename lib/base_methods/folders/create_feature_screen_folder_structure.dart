@@ -67,7 +67,7 @@ Future<void> createFeatureFolderStructure(
       routeName: featureName.toLowerCase().toCapitalizeSecondWord(),
       routePath: '/${featureName.toLowerCase().toCapitalizeSecondWord()}',
       screenWidget:
-          '${featureName.toCapitalized().toCapitalizeSecondWord()}Screen',
+          '${featureName.toCapitalized().toCapitalizeSecondWord()}FeatureScreen',
       cubit: '${featureName.toCapitalized().toCapitalizeSecondWord()}Cubit',
     );
 
