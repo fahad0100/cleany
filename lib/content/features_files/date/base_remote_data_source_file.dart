@@ -1,14 +1,16 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
+import 'package:cleany/base_methods/extension/file_modifier.dart';
 
 String baseRemoteDataSourceFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+  final projectName = FileModifier.getProjectName();
 
   return '''
 import 'package:injectable/injectable.dart';
 import 'package:multiple_result/multiple_result.dart';
-import '../models/${featureName}_model.dart';
-import '../../../../core/errors/failure.dart';
-import '../../../../core/errors/network_exceptions.dart';
+import 'package:$projectName/models/${featureName}_model.dart';
+import 'package:$projectName/core/errors/failure.dart';
+import 'package:$projectName/core/errors/network_exceptions.dart';
 
 
 abstract class Base${nameCab}RemoteDataSource {

@@ -51,14 +51,15 @@ Future<void> createFeatureFolderStructure(
         // dart run build_runner build
       }
     }
+    final projectName = FileModifier.getProjectName();
     await FileModifier.addImports('lib/core/navigation/app_router.dart', [
       "import 'package:go_router/go_router.dart';",
       "import 'package:flutter/material.dart';",
       "import 'routers.dart';",
       "import 'package:get_it/get_it.dart';",
       "import 'package:flutter_bloc/flutter_bloc.dart';",
-      "import '../../features/$featureName/presentation/pages/${featureName}_page.dart';",
-      "import '../../features/$featureName/presentation/cubit/${featureName}_cubit.dart';",
+      "import 'package:$projectName/features/$featureName/presentation/pages/${featureName}_feature_screen.dart';",
+      "import 'package:$projectName/features/$featureName/presentation/cubit/${featureName}_cubit.dart';",
     ]);
 
     await FileModifier.addRoute(

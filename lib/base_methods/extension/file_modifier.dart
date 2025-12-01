@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:yaml/yaml.dart';
 
 class FileModifier {
   ///---------------------------------------------------------------------------
@@ -604,6 +605,20 @@ class FileModifier {
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
+  static String getProjectName() {
+    final file = File('pubspec.yaml');
+
+    if (!file.existsSync()) {
+      throw Exception(
+        'pubspec.yaml not found. Run this command inside a Flutter project.',
+      );
+    }
+
+    final content = file.readAsStringSync();
+    final yamlMap = loadYaml(content);
+
+    return yamlMap['name'];
+  }
 
   ///---------------------------------------------------------------------------
   ///---------------------------------------------------------------------------
