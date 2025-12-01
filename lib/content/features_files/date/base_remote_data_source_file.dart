@@ -40,7 +40,7 @@ class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
     @override
   Future<Result<${nameCab}Model, Failure>> get$nameCab() async {
     try {
-      return Success(TestaModel(id: "d"));
+      return Success(${nameCab}Model(id: "d"));
     } catch (error) {
       return Error(FailureExceptions.getDioException(error));
     }

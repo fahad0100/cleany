@@ -7,7 +7,7 @@ String modelData({required String featureName}) {
 
   return '''
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:$projectName/features/testa/domain/entities/${featureName}_entity.dart';
+import 'package:$projectName/features/$featureName/domain/entities/${featureName}_entity.dart';
 part '${featureName}_model.mapper.dart';
 
 @MappableClass(caseStyle: CaseStyle.snakeCase)
