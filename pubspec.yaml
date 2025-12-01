@@ -27,27 +27,3 @@ executables:
   cleany: cleany
 
 
-
-
-  # dart pub global deactivate cleany
-
-
-# dart pub global activate --source path .
-
-# dart pub global activate --source git https://github.com/fahad0100/cleany
-# cleany auth
-
-
-
-# # 2. ثبّت المكتبات
-# dart pub get
-
-# # 3. الغي التفعيل القديم
-# dart pub global deactivate cleany 2>/dev/null || true
-# dart pub global deactivate flutter_folder_cli 2>/dev/null || true
-
-# # 4. فعّل من جديد
-# dart pub global activate --source path .
-
-# # 5. جرّب
-# cleany --help
