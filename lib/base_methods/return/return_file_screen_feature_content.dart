@@ -1,3 +1,4 @@
+import 'package:cleany/content/features_files/date/base_local_data_source_file.dart';
 import 'package:cleany/content/features_files/date/base_remote_data_source_file.dart';
 import 'package:cleany/content/features_files/date/model_file.dart';
 import 'package:cleany/content/features_files/date/repository_data_file.dart';
@@ -8,7 +9,6 @@ import 'package:cleany/content/features_files/presentation/cubit.dart';
 import 'package:cleany/content/features_files/presentation/screen_feature.dart';
 import 'package:cleany/content/features_files/presentation/state.dart';
 import 'package:cleany/content/features_files/presentation/widget.dart';
-import 'package:cleany/content/sub_features_files/date/base_local_data_source_file.dart';
 
 String returnFileScreenFeatureContent({
   required String fileName,
@@ -21,7 +21,7 @@ String returnFileScreenFeatureContent({
 
   // Data Layer - Local Data Source
   if (fileName.contains('_local_data_source.dart')) {
-    return baseLocalDataSourceWidgetFeatureFile(featureName: featureName);
+    return baseLocalDataScreenFeatureFile(featureName: featureName);
   }
 
   // Data Layer - Model
