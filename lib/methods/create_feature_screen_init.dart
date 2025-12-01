@@ -45,7 +45,10 @@ Future<void> createFeatureScreenInit({
 
   print("Start create $featureName features ");
 
-  await createFeatureFolderStructure(featureName, basePath ?? 'lib/features');
+  await createFeatureScreenFolderStructure(
+    featureName,
+    basePath ?? 'lib/features',
+  );
   await Process.run('dart', ['run', 'build_runner', 'build']);
   print("create done");
 }

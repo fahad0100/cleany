@@ -9,6 +9,7 @@ import 'package:cleany/content/en-US_json.dart';
 import 'package:cleany/content/main_content.dart';
 import 'package:cleany/methods/add_packages_init.dart';
 import 'package:cleany/methods/create_feature_screen_init.dart';
+import 'package:cleany/methods/create_feature_widget_init.dart';
 import 'package:cleany/methods/create_folders_core_init.dart';
 
 class Log {
@@ -85,7 +86,7 @@ void main(List<String> arguments) async {
     //---------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------
     if (results.flag('feature_widgets') && results.rest.isNotEmpty) {
-      String basePath = 'lib/features/sub_features';
+      String basePath = 'lib/features/sub';
       String featureName = results.rest[0];
       bool startCreateMethod = false;
       switch (results.arguments.length) {
@@ -101,8 +102,9 @@ void main(List<String> arguments) async {
           }
       }
       if (startCreateMethod) {
-        Log.success(
-          "** Creating feature $featureName as a widget ** \n    path: $basePath/${featureName.toCapitalizeSecondWord()}",
+        await createFeatureWidgetInit(
+          featureName: featureName,
+          basePath: basePath,
         );
         return;
       }

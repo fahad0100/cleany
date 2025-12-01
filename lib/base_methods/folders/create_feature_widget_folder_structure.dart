@@ -5,7 +5,7 @@ import 'package:cleany/base_methods/generate/generate_file_feature_content.dart'
 import 'package:cleany/base_methods/extension/extensions.dart';
 import 'package:path/path.dart' as path;
 
-Future<void> createFeatureScreenFolderStructure(
+Future<void> createFeatureWidgetFolderStructure(
   String featureName,
   String basePath,
 ) async {
@@ -33,8 +33,7 @@ Future<void> createFeatureScreenFolderStructure(
         '${featureName}_cubit.dart',
         '${featureName}_state.dart',
       ],
-      'presentation/pages': ['${featureName}_feature_screen.dart'],
-      'presentation/widgets': ['${featureName}_widget.dart'],
+      'presentation/pages': ['${featureName}_feature_widget.dart'],
     };
 
     for (final entry in structure.entries) {
@@ -51,26 +50,6 @@ Future<void> createFeatureScreenFolderStructure(
         // dart run build_runner build
       }
     }
-    final projectName = FileModifier.getProjectName();
-    await FileModifier.addImports('lib/core/navigation/app_router.dart', [
-      "import 'package:go_router/go_router.dart';",
-      "import 'package:flutter/material.dart';",
-      "import 'routers.dart';",
-      "import 'package:get_it/get_it.dart';",
-      "import 'package:flutter_bloc/flutter_bloc.dart';",
-      "import 'package:$projectName/features/$featureName/presentation/pages/${featureName}_feature_screen.dart';",
-      "import 'package:$projectName/features/$featureName/presentation/cubit/${featureName}_cubit.dart';",
-    ]);
-
-    await FileModifier.addRoute(
-      routesFilePath: 'lib/core/navigation/routers.dart',
-      appRouterFilePath: 'lib/core/navigation/app_router.dart',
-      routeName: featureName.toLowerCase().toCapitalizeSecondWord(),
-      routePath: '/${featureName.toLowerCase().toCapitalizeSecondWord()}',
-      screenWidget:
-          '${featureName.toCapitalized().toCapitalizeSecondWord()}FeatureScreen',
-      cubit: '${featureName.toCapitalized().toCapitalizeSecondWord()}Cubit',
-    );
 
     print('✅ Feature "$featureName" has been created successfully! 🎉');
     print('📁 Path: $featurePath\n');

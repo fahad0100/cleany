@@ -9,6 +9,7 @@ import 'package:cleany/content/features_files/presentation/cubit.dart';
 import 'package:cleany/content/features_files/presentation/screen_feature.dart';
 import 'package:cleany/content/features_files/presentation/state.dart';
 import 'package:cleany/content/features_files/presentation/widget.dart';
+import 'package:cleany/content/features_files/presentation/widget_feature.dart';
 
 String generateFileFeatureContent({
   required String fileName,
@@ -61,12 +62,12 @@ String generateFileFeatureContent({
 
   // Presentation Layer - Page
   if (fileName.contains('_feature_screen.dart')) {
-    return screenPageFile(featureName: featureName);
+    return screenPageFeatureFile(featureName: featureName);
   }
 
   // Presentation Layer - Widget
-  if (fileName.contains('_widget.dart')) {
-    return widgetFile(featureName: featureName);
+  if (fileName.contains('_feature_widget.dart')) {
+    return widgetPageFeatureFile(featureName: featureName);
   }
 
   return '// TODO: Implement $fileName\n';

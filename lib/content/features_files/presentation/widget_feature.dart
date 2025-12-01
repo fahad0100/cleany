@@ -1,6 +1,6 @@
 import 'package:cleany/base_methods/extension/extensions.dart';
 
-String screenPageFile({required String featureName}) {
+String widgetPageFeatureFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
 
   return '''
