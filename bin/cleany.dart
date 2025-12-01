@@ -172,37 +172,7 @@ void main(List<String> arguments) async {
 
           return;
         case 'y':
-          try {
-            await FileModifier.replaceFileContent(
-              filePath: 'lib/main.dart',
-              newContent: mainContent(),
-            );
-            await FileModifier.replaceFileContent(
-              filePath: 'assets/translations/ar-AR.json',
-              newContent: arJsonContent(),
-              createIfNotExists: true,
-            );
-            await FileModifier.replaceFileContent(
-              filePath: 'assets/translations/en-US.json',
-              newContent: enJsonContent(),
-              createIfNotExists: true,
-            );
-            await generateCoreBase();
-            await FileModifier.setupEnvFile();
-            await FileModifier.createFolder('assets/icons/');
-            await FileModifier.createFolder('assets/images/');
-            await FileModifier.addAssetToPubspec('.env');
-            await FileModifier.addAssetToPubspec('assets/translations/');
-            await FileModifier.addAssetToPubspec('assets/images/');
-            await FileModifier.addAssetToPubspec('assets/icons/');
-            await initializeAddPackages();
-          } on FormatException catch (error) {
-            Log.error(error.message);
-          } catch (error) {
-            Log.error(error.toString());
-          }
           await initializeFoldersCore();
-
           return;
 
         default:
