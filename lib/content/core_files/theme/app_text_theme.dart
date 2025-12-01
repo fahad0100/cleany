@@ -1,7 +1,11 @@
+import 'package:cleany/base_methods/extension/file_modifier.dart';
+
 String appTextThemeFile() {
+  final projectName = FileModifier.getProjectName();
+
   return '''
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
+import 'package:$projectName/core/constants/app_colors.dart';
 
 abstract class AppTextTheme {
   static TextTheme lightTextTheme = const TextTheme(

@@ -1,12 +1,16 @@
+import 'package:cleany/base_methods/extension/file_modifier.dart';
+
 String createGlobalCubitFile() {
+  final projectName = FileModifier.getProjectName();
+
   return '''
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:injectable/injectable.dart';
-import '../../services/local_keys_service.dart';
-import 'public_state.dart';
+import 'package:$projectName/core/global/cubit/public_cubit_state.dart';
+import 'package:$projectName/core/services/local_keys_service.dart';
 
 @lazySingleton
 class GlobalCubit extends Cubit<ChangeState> {

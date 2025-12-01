@@ -1,8 +1,12 @@
+import 'package:cleany/base_methods/extension/file_modifier.dart';
+
 String contextExtensionsFile() {
+  final projectName = FileModifier.getProjectName();
+
   return '''
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import '../widgets/loading_widget.dart';
+import 'package:$projectName/core/widgets/loading_widget.dart';
 
 extension ContextExtensions on BuildContext {
   // Snackbar
