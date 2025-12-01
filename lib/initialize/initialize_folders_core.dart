@@ -23,7 +23,7 @@ Future<void> initializeFoldersCore() async {
 
       await Future.wait([
         generateCoreBase(),
-        initializeAddPackages(),
+        initializeAddPackages(updatePackages: false),
         FileModifier.replaceFileContent(
           filePath: 'lib/main.dart',
           newContent: mainContent(),
@@ -52,12 +52,10 @@ Future<void> initializeFoldersCore() async {
     } catch (error) {
       rethrow;
     }
-    await initializeFoldersCore();
-    final buildRunner = await Process.run('dart', [
-      'run',
-      'build_runner',
-      'build',
-    ]);
-    print(buildRunner.stdout);
+
+    await Process.run('flutter', ['pub', 'outdated']);
+    await Process.run('flutter', ['pub', 'upgrade']);
+    await Process.run('dart', ['run', 'build_runner', 'build']);
+    print("Completed");
   }
 }

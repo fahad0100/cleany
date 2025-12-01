@@ -1,22 +1,24 @@
 import 'dart:io';
 
-Future<void> initializeAddPackages() async {
+Future<void> initializeAddPackages({bool updatePackages = true}) async {
   print('📦 Adding packages in batch...');
   await Future.wait([
     _addPackagesBatch(corePackages, isDev: false),
     _addPackagesBatch(devPackages, isDev: true),
   ]);
 
-  final outdated = await Process.run('flutter', ['pub', 'outdated']);
-  final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
-  final buildRunner = await Process.run('dart', [
-    'run',
-    'build_runner',
-    'build',
-  ]);
-  print(outdated.stdout);
-  print(upgrade.stdout);
-  print(buildRunner.stdout);
+  if (updatePackages) {
+    final outdated = await Process.run('flutter', ['pub', 'outdated']);
+    final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
+    final buildRunner = await Process.run('dart', [
+      'run',
+      'build_runner',
+      'build',
+    ]);
+    print(outdated.stdout);
+    print(upgrade.stdout);
+    print(buildRunner.stdout);
+  }
 }
 
 //-------------------------method add packages ---------------------------------------
