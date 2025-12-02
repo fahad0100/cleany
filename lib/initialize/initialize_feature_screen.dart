@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cleany/utils/file_modifier.dart';
 import 'package:cleany/generate/generate_feature_screen_structure.dart';
+import 'package:cleany/utils/logger.dart';
 
 Future<void> initializeFeatureScreen({
   required String featureName,
@@ -47,6 +48,8 @@ Future<void> initializeFeatureScreen({
 
   await generateFeatureScreenStructure(featureName, basePath ?? 'lib/features');
 
+  Logger.info("Waiting run Build Runner ....");
   await FileModifier.runBuildRunner(showResult: false);
+  Logger.success("Build Runner success....\n");
   print("create done");
 }
