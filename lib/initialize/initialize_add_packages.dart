@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:cleany/utils/file_modifier.dart';
+import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 
 Future<void> initializeAddPackages({bool updatePackages = true}) async {
   print('📦 Adding packages...');
   await Future.wait([
-    _addPackagesBatch(corePackages, isDev: false),
-    _addPackagesBatch(devPackages, isDev: true),
+    addDependenciesEfficiently(corePackages, isDev: false),
+    addDependenciesEfficiently(devPackages, isDev: true),
   ]);
 
   if (updatePackages) {
@@ -43,6 +45,24 @@ Future<void> _addPackagesBatch(
   } catch (e) {
     print('⚠️ Error: $e');
   }
+}
+
+Future<void> addDependenciesEfficiently(
+  List<String> deps, {
+  required bool isDev,
+}) async {
+  final file = File('pubspec.yaml');
+  final content = file.readAsStringSync();
+  final editor = YamlEditor(content);
+  final section = isDev ? 'dev_dependencies' : 'dependencies';
+
+  final current = (loadYaml(content) as Map)[section] ?? {};
+
+  for (final dep in deps) {
+    editor.update([section, dep], '^0.0.0');
+  }
+
+  file.writeAsStringSync(editor.toString());
 }
 
 //------------------------- packages dependencies ------------------------------
