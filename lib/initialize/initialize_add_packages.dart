@@ -13,14 +13,13 @@ Future<void> initializeAddPackages({bool updatePackages = true}) async {
 
   if (updatePackages) {
     await FileModifier.runPubGet(showResult: false);
-    await FileModifier.runPubUpgrade(showResult: false);
-    await FileModifier.runPubOutdated(showResult: false);
-    await FileModifier.runBuildRunner(showResult: false);
+    // await FileModifier.runPubUpgrade(showResult: false);
+    // await FileModifier.runPubOutdated(showResult: false);
   }
 }
 
 Future<void> addDependenciesEfficiently(
-  List<String> deps, {
+  List<Map<String, dynamic>> deps, {
   required bool isDev,
 }) async {
   final file = File('pubspec.yaml');
@@ -52,8 +51,10 @@ Future<void> addDependenciesEfficiently(
 
   // 3) إضافة المكتبات داخل القسم
   for (final dep in deps) {
-    if (!existingSection.containsKey(dep)) {
-      editor.update([section, dep], 'any');
+    final name = dep['name'] as String;
+    final version = dep['version'] as String;
+    if (!existingSection.containsKey(name)) {
+      editor.update([section, name], version);
     }
   }
 
@@ -108,32 +109,36 @@ Future<void> _addPackagesBatch(
 
 //------------------------- packages dependencies ------------------------------
 
-const List<String> corePackages = [
-  "flutter_dotenv",
-  "multiple_result",
-  "flutter_bloc",
-  "bloc",
-  "dart_mappable",
-  "dio",
-  "retrofit",
-  "easy_localization",
-  "flutter_secure_storage",
-  "sizer",
-  "supabase_flutter",
-  "get_storage",
-  "get_it",
-  "go_router",
-  "injectable",
-  "equatable",
-  "package_info_plus",
-  "device_info_plus",
+const List<Map<String, dynamic>> corePackages = [
+  {"name": "flutter_dotenv", "version": '6.0.0'},
+  {"name": "multiple_result", "version": '5.2.0 '},
+  {"name": "flutter_bloc", "version": '9.1.1'},
+  {"name": "bloc", "version": '9.1.0'},
+  {"name": "dart_mappable", "version": '4.6.1'},
+  {"name": "dio", "version": '5.9.0'},
+  {"name": "retrofit", "version": '4.9.1'},
+  {"name": "easy_localization", "version": '3.0.8'},
+  {"name": "flutter_secure_storage", "version": '9.2.4'},
+  {"name": "sizer", "version": '3.1.3'},
+  {"name": "supabase_flutter", "version": '2.10.3'},
+  {"name": "get_storage", "version": '2.1.1'},
+  {"name": "get_it", "version": '9.1.1'},
+  {"name": "go_router", "version": '17.0.0'},
+  {"name": "injectable", "version": '2.7.0'},
+  {"name": "equatable", "version": '2.0.7'},
+  {"name": "package_info_plus", "version": '9.0.0'},
+  {"name": "device_info_plus", "version": '12.3.0'},
 ];
 //------------------------- packages dev_dependencies --------------------------
 
-const List<String> devPackages = [
-  "flutter_lints",
-  "build_runner",
-  "dart_mappable_builder",
-  "retrofit_generator",
-  "injectable_generator",
+const List<Map<String, dynamic>> devPackages = [
+  {"name": "flutter_lints", "version": '6.0.0'},
+
+  {"name": "build_runner", "version": '2.10.4'},
+
+  {"name": "dart_mappable_builder", "version": '4.6.1'},
+
+  {"name": "retrofit_generator", "version": '10.2.0'},
+
+  {"name": "injectable_generator", "version": '2.11.0'},
 ];
