@@ -30,20 +30,27 @@ Future<void> addDependenciesEfficiently(
   }
 
   final content = file.readAsStringSync();
-
   final yaml = loadYaml(content) as Map;
   final editor = YamlEditor(content);
 
   final section = isDev ? 'dev_dependencies' : 'dependencies';
 
+  // 1) إذا القسم غير موجود → أنشئه كـ Map {}
   if (!yaml.containsKey(section)) {
     editor.update([section], {});
+  } else {
+    // 2) إذا القسم موجود لكنه ليس Map → أجبره أن يكون Map {}
+    final value = yaml[section];
+    if (value == null || value is! Map) {
+      editor.update([section], {});
+    }
   }
 
+  // تحديث الـ YAML بعد الإصلاح
   final updatedYaml = loadYaml(editor.toString()) as Map;
+  final existingSection = updatedYaml[section] as Map;
 
-  final existingSection = updatedYaml[section] as Map? ?? {};
-
+  // 3) إضافة المكتبات داخل القسم
   for (final dep in deps) {
     if (!existingSection.containsKey(dep)) {
       editor.update([section, dep], 'any');
@@ -51,8 +58,10 @@ Future<void> addDependenciesEfficiently(
   }
 
   file.writeAsStringSync(editor.toString());
+
   print("✅ Added ${deps.length} packages to $section");
 }
+
 //-------------------------method add packages ---------------------------------------
 
 Future<void> _addPackagesBatch(
