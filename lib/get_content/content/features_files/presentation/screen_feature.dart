@@ -1,12 +1,14 @@
 import 'package:cleany/utils/extension/extensions.dart';
+import 'package:cleany/utils/file_modifier.dart';
 
 String screenPageFeatureFile({required String featureName}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+  final projectName = FileModifier.getProjectName();
 
   return '''
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kids_app/features/$featureName/presentation/cubit/${featureName}_cubit.dart';
+import 'package:$projectName/features/$featureName/presentation/cubit/${featureName}_cubit.dart';
 
 class ${nameCab}FeatureScreen extends StatelessWidget {
   const ${nameCab}FeatureScreen({super.key});

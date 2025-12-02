@@ -54,7 +54,20 @@ Future<void> initializeFoldersCore() async {
       Logger.info("Waiting run Build Runner ....");
       await FileModifier.runBuildRunner(showResult: false);
       Logger.success("Build Runner success....\n");
-      Logger.success("Completed create core with update project");
+      Logger.warning(
+        "--------------------------------------------------------------",
+      );
+      Logger.success("\nCore folder created successfully");
+      Logger.success("Main file updated successfully");
+      Logger.success("Assets folder create successfully");
+      Logger.success("Translations folder added to assets successfully");
+      Logger.success(
+        "\nArabic and English JSON files added in translations folder successfully\n",
+      );
+      Logger.success("Pubspec.yaml updated and packages added successfully");
+      Logger.warning(
+        "--------------------------------------------------------------",
+      );
     } on FormatException catch (_) {
       rethrow;
     } catch (error) {

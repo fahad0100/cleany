@@ -15,6 +15,11 @@ Future<void> initializeFeatureWidget({
   Logger.info("Waiting run Build Runner ....");
   await FileModifier.runBuildRunner(showResult: false);
   Logger.success("Build Runner success....\n");
-
-  print("create done");
+  Logger.warning(
+    "--------------------------------------------------------------",
+  );
+  Logger.success("\nWidget Feature created successfully\n");
+  Logger.warning(
+    "--------------------------------------------------------------",
+  );
 }
