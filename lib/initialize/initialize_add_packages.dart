@@ -57,7 +57,23 @@ Future<void> addDependenciesEfficiently(
     }
   }
 
-  file.writeAsStringSync(editor.toString());
+  // 4) كتابة الملف بصيغة multiline للوضوح
+  String updatedContent = editor.toString();
+
+  // تحويل inline map {key: value, ...} إلى multiline
+  updatedContent = updatedContent.replaceAllMapped(
+    RegExp('$section:\\s*\\{([^}]*)\\}'),
+    (match) {
+      final entries = match[1]!
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .join('\n  ');
+      return '$section:\n  $entries';
+    },
+  );
+
+  file.writeAsStringSync(updatedContent);
 
   print("✅ Added ${deps.length} packages to $section");
 }
