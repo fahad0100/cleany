@@ -57,14 +57,14 @@ Future<void> initializeFoldersCore() async {
       Logger.warning(
         "--------------------------------------------------------------",
       );
-      Logger.success("\nCore folder created successfully");
+      Logger.success("\n Core folder created successfully");
       Logger.success("Main file updated successfully");
       Logger.success("Assets folder create successfully");
       Logger.success("Translations folder added to assets successfully");
       Logger.success(
-        "\nArabic and English JSON files added in translations folder successfully\n",
+        "Arabic and English JSON files added in translations folder successfully",
       );
-      Logger.success("Pubspec.yaml updated and packages added successfully");
+      Logger.success("Pubspec.yaml updated and packages added successfully\n");
       Logger.warning(
         "--------------------------------------------------------------",
       );
