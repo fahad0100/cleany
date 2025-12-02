@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cleany/utils/file_modifier.dart';
+import 'package:cleany/utils/logger.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
@@ -12,6 +13,7 @@ Future<void> initializeAddPackages({bool updatePackages = true}) async {
   ]);
 
   if (updatePackages) {
+    Logger.info("Waiting ....");
     await FileModifier.runPubGet(showResult: false);
     // await FileModifier.runPubUpgrade(showResult: false);
     // await FileModifier.runPubOutdated(showResult: false);
@@ -34,22 +36,18 @@ Future<void> addDependenciesEfficiently(
 
   final section = isDev ? 'dev_dependencies' : 'dependencies';
 
-  // 1) إذا القسم غير موجود → أنشئه كـ Map {}
   if (!yaml.containsKey(section)) {
     editor.update([section], {});
   } else {
-    // 2) إذا القسم موجود لكنه ليس Map → أجبره أن يكون Map {}
     final value = yaml[section];
     if (value == null || value is! Map) {
       editor.update([section], {});
     }
   }
 
-  // تحديث الـ YAML بعد الإصلاح
   final updatedYaml = loadYaml(editor.toString()) as Map;
   final existingSection = updatedYaml[section] as Map;
 
-  // 3) إضافة المكتبات داخل القسم
   for (final dep in deps) {
     final name = dep['name'] as String;
     final version = dep['version'] as String;
@@ -58,10 +56,8 @@ Future<void> addDependenciesEfficiently(
     }
   }
 
-  // 4) كتابة الملف بصيغة multiline للوضوح
   String updatedContent = editor.toString();
 
-  // تحويل inline map {key: value, ...} إلى multiline
   updatedContent = updatedContent.replaceAllMapped(
     RegExp('$section:\\s*\\{([^}]*)\\}'),
     (match) {
@@ -77,34 +73,6 @@ Future<void> addDependenciesEfficiently(
   file.writeAsStringSync(updatedContent);
 
   print("✅ Added ${deps.length} packages to $section");
-}
-
-//-------------------------method add packages ---------------------------------------
-
-Future<void> _addPackagesBatch(
-  List<String> packages, {
-  required bool isDev,
-}) async {
-  try {
-    final flutter = FileModifier.resolveExecutable("flutter");
-
-    final args = ['pub', 'add', if (isDev) '--dev', ...packages];
-
-    print(
-      '📦 Adding ${packages.length} packages in ${isDev ? "dev_dependencies" : "dependencies"}...',
-    );
-
-    final result = await Process.run(flutter, args);
-
-    if (result.exitCode == 0) {
-      print('✅ Successfully added/updated all packages!');
-      print(result.stdout);
-    } else {
-      print('❌ Failed to add packages: ${result.stderr}');
-    }
-  } catch (e) {
-    print('⚠️ Error: $e');
-  }
 }
 
 //------------------------- packages dependencies ------------------------------

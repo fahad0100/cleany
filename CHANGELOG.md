@@ -1,3 +1,7 @@
+## 1.0.1
+
+- 🛠 Fixed bug with package installation on Windows.
+
 ## 1.0.0
 
 - Initial release of **Cleany**.

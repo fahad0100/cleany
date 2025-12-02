@@ -48,10 +48,11 @@ Future<void> initializeFoldersCore() async {
       await FileModifier.addAssetToPubspec('assets/translations/');
       await FileModifier.addAssetToPubspec('assets/images/');
       await FileModifier.addAssetToPubspec('assets/icons/');
+      Logger.info("Waiting pub get update....");
       await FileModifier.runPubGet(showResult: false);
-      await FileModifier.runPubUpgrade(showResult: false);
-      await FileModifier.runPubOutdated(showResult: false);
+      Logger.info("Waiting run Build Runner ....");
       await FileModifier.runBuildRunner(showResult: false);
+
       Logger.success("Completed create core with update project");
     } on FormatException catch (_) {
       rethrow;
