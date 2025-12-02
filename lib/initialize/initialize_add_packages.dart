@@ -59,7 +59,7 @@ Future<void> addDependenciesEfficiently(
   final current = (loadYaml(content) as Map)[section] ?? {};
 
   for (final dep in deps) {
-    editor.update([section, dep], '^0.0.0');
+    editor.update([section, dep], 'any');
   }
 
   file.writeAsStringSync(editor.toString());
