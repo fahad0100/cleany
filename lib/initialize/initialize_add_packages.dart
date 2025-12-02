@@ -110,6 +110,7 @@ Future<void> _addPackagesBatch(
 //------------------------- packages dependencies ------------------------------
 
 const List<Map<String, dynamic>> corePackages = [
+  {"name": "cupertino_icons", "version": '^1.0.8'},
   {"name": "flutter_dotenv", "version": '^6.0.0'},
   {"name": "multiple_result", "version": '^5.2.0'},
   {"name": "flutter_bloc", "version": '^9.1.1'},
@@ -140,5 +141,5 @@ const List<Map<String, dynamic>> devPackages = [
 
   {"name": "retrofit_generator", "version": '^10.2.0'},
 
-  {"name": "injectable_generator", "version": '^2.11.0'},
+  {"name": "injectable_generator", "version": '^2.9.1'},
 ];
