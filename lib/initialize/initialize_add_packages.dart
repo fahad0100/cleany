@@ -19,6 +19,40 @@ Future<void> initializeAddPackages({bool updatePackages = true}) async {
   }
 }
 
+Future<void> addDependenciesEfficiently(
+  List<String> deps, {
+  required bool isDev,
+}) async {
+  final file = File('pubspec.yaml');
+
+  if (!file.existsSync()) {
+    throw Exception("❌ pubspec.yaml not found");
+  }
+
+  final content = file.readAsStringSync();
+
+  final yaml = loadYaml(content) as Map;
+  final editor = YamlEditor(content);
+
+  final section = isDev ? 'dev_dependencies' : 'dependencies';
+
+  if (!yaml.containsKey(section)) {
+    editor.update([section], {});
+  }
+
+  final updatedYaml = loadYaml(editor.toString()) as Map;
+
+  final existingSection = updatedYaml[section] as Map? ?? {};
+
+  for (final dep in deps) {
+    if (!existingSection.containsKey(dep)) {
+      editor.update([section, dep], 'any');
+    }
+  }
+
+  file.writeAsStringSync(editor.toString());
+  print("✅ Added ${deps.length} packages to $section");
+}
 //-------------------------method add packages ---------------------------------------
 
 Future<void> _addPackagesBatch(
@@ -45,24 +79,6 @@ Future<void> _addPackagesBatch(
   } catch (e) {
     print('⚠️ Error: $e');
   }
-}
-
-Future<void> addDependenciesEfficiently(
-  List<String> deps, {
-  required bool isDev,
-}) async {
-  final file = File('pubspec.yaml');
-  final content = file.readAsStringSync();
-  final editor = YamlEditor(content);
-  final section = isDev ? 'dev_dependencies' : 'dependencies';
-
-  final current = (loadYaml(content) as Map)[section] ?? {};
-
-  for (final dep in deps) {
-    editor.update([section, dep], 'any');
-  }
-
-  file.writeAsStringSync(editor.toString());
 }
 
 //------------------------- packages dependencies ------------------------------
