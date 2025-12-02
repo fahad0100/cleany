@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cleany/utils/file_modifier.dart';
+
 Future<void> initializeAddPackages({bool updatePackages = true}) async {
   print('📦 Adding packages...');
   await Future.wait([
@@ -8,17 +10,10 @@ Future<void> initializeAddPackages({bool updatePackages = true}) async {
   ]);
 
   if (updatePackages) {
-    final outdated = await Process.run('flutter', ['pub', 'outdated']);
-    final upgrade = await Process.run('flutter', ['pub', 'upgrade']);
-    final buildRunner = await Process.run('dart', [
-      'run',
-      'build_runner',
-      'build',
-    ]);
-    print("--------------------------");
-    print(outdated.stdout);
-    print(upgrade.stdout);
-    print(buildRunner.stdout);
+    await FileModifier.runPubGet(showResult: false);
+    await FileModifier.runPubUpgrade(showResult: false);
+    await FileModifier.runPubOutdated(showResult: false);
+    await FileModifier.runBuildRunner(showResult: false);
   }
 }
 
@@ -29,16 +24,15 @@ Future<void> _addPackagesBatch(
   required bool isDev,
 }) async {
   try {
-    final command = 'flutter';
-    final args = isDev
-        ? ['pub', 'add', '--dev', ...packages]
-        : ['pub', 'add', ...packages];
+    final flutter = FileModifier.resolveExecutable("flutter");
+
+    final args = ['pub', 'add', if (isDev) '--dev', ...packages];
 
     print(
       '📦 Adding ${packages.length} packages in ${isDev ? "dev_dependencies" : "dependencies"}...',
     );
 
-    final result = await Process.run(command, args);
+    final result = await Process.run(flutter, args);
 
     if (result.exitCode == 0) {
       print('✅ Successfully added/updated all packages!');

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:cleany/generate/generate_feature_widget_structure.dart';
+import 'package:cleany/utils/file_modifier.dart';
 
 Future<void> initializeFeatureWidget({
   required String featureName,
@@ -12,6 +11,6 @@ Future<void> initializeFeatureWidget({
     featureName,
     basePath ?? 'lib/features/sub',
   );
-  await Process.run('dart', ['run', 'build_runner', 'build']);
+  await FileModifier.runBuildRunner(showResult: false);
   print("create done");
 }

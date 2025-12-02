@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:cleany/utils/Loger.dart';
+import 'package:cleany/utils/logger.dart';
 import 'package:cleany/utils/extension/extensions.dart';
 import 'package:cleany/utils/file_modifier.dart';
 import 'package:cleany/print_help_method.dart';

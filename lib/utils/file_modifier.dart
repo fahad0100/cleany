@@ -397,7 +397,6 @@ class FileModifier {
   static Future<bool> isFlutterProjectRoot() async {
     final currentDir = Directory.current;
 
-    // الملفات/المجلدات المطلوبة في الروت
     final requiredPaths = ['pubspec.yaml', 'lib', 'android', 'ios'];
 
     for (final pathName in requiredPaths) {
@@ -409,5 +408,85 @@ class FileModifier {
     }
 
     return true;
+  }
+
+  static String resolveExecutable(String name) {
+    if (!Platform.isWindows) return name;
+
+    final exts = ['.exe', '.bat', '.cmd'];
+    for (final ext in exts) {
+      final full = '$name$ext';
+      final result = Process.runSync('where', [full]);
+      if (result.exitCode == 0) {
+        return result.stdout.toString().split('\n').first.trim();
+      }
+    }
+
+    return name;
+  }
+
+  static Future<void> runPubGet({bool showResult = true}) async {
+    final flutter = resolveExecutable("flutter");
+
+    final result = await Process.run(flutter, ['pub', 'get']);
+
+    if (result.exitCode == 0) {
+      if (showResult) {
+        print("✅ pub get completed");
+        print(result.stdout);
+      }
+    } else {
+      print("❌ pub get failed: ${result.stderr}");
+    }
+  }
+
+  static Future<void> runPubUpgrade({bool showResult = true}) async {
+    final flutter = resolveExecutable("flutter");
+
+    final result = await Process.run(flutter, ['pub', 'upgrade']);
+
+    if (result.exitCode == 0) {
+      if (showResult) {
+        print("✅ pub upgrade completed");
+        print(result.stdout);
+      }
+    } else {
+      print("❌ pub upgrade failed: ${result.stderr}");
+    }
+  }
+
+  static Future<void> runPubOutdated({bool showResult = true}) async {
+    final flutter = resolveExecutable("flutter");
+
+    final result = await Process.run(flutter, ['pub', 'outdated']);
+
+    if (result.exitCode == 0) {
+      if (showResult) {
+        print("📦 Outdated packages:");
+        print(result.stdout);
+      }
+    } else {
+      print("❌ pub outdated failed: ${result.stderr}");
+    }
+  }
+
+  static Future<void> runBuildRunner({bool showResult = true}) async {
+    final dart = resolveExecutable("dart");
+
+    final result = await Process.run(dart, [
+      'run',
+      'build_runner',
+      'build',
+      '--delete-conflicting-outputs',
+    ]);
+
+    if (result.exitCode == 0) {
+      if (showResult) {
+        print("🏗️ build_runner completed");
+        print(result.stdout);
+      }
+    } else {
+      print("❌ build_runner failed: ${result.stderr}");
+    }
   }
 }

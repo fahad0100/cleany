@@ -18,6 +18,6 @@ class Logger {
   }
 
   static void info(String msg) {
-    print("$cyanℹ $msg$_reset");
+    print("$cyan$msg$_reset");
   }
 }
