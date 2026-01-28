@@ -42,7 +42,7 @@ class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
     try {
       return Success(${nameCab}Model(id: "d"));
     } catch (error) {
-      return Error(FailureExceptions.getDioException(error));
+      return Error(FailureExceptions.getException(error));
     }
   }
 }

@@ -15,10 +15,7 @@ Future<void> generateFeatureWidgetStructure(
 
     final structure = {
       //Date
-      'data/datasources': [
-        '${featureName}_remote_data_source.dart',
-        '${featureName}_local_data_source.dart',
-      ],
+      'data/datasources': ['${featureName}_remote_data_source.dart'],
       'data/models': ['${featureName}_model.dart'],
       'data/repositories': ['${featureName}_repository_data.dart'],
       //Domain
