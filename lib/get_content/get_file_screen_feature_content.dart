@@ -1,4 +1,3 @@
-import 'package:cleany/get_content/content/features_files/date/base_local_data_source_file.dart';
 import 'package:cleany/get_content/content/features_files/date/base_remote_data_source_file.dart';
 import 'package:cleany/get_content/content/features_files/date/model_file.dart';
 import 'package:cleany/get_content/content/features_files/date/repository_data_file.dart';
@@ -17,11 +16,6 @@ String getFileScreenFeatureContent({
   // Data Layer - Remote Data Source
   if (fileName.contains('_remote_data_source.dart')) {
     return baseRemoteDataScreenFeatureFile(featureName: featureName);
-  }
-
-  // Data Layer - Local Data Source
-  if (fileName.contains('_local_data_source.dart')) {
-    return baseLocalDataScreenFeatureFile(featureName: featureName);
   }
 
   // Data Layer - Model

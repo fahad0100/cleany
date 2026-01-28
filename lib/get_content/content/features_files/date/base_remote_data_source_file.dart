@@ -27,7 +27,7 @@ class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
   // final LocalKeysService _localKeysService;
   
 
-   // ${nameCab}LocalDataSource(
+   // ${nameCab}RemoteDataSource(
   //   this._dio,
   //   this._supabase,
   //   this._storage,

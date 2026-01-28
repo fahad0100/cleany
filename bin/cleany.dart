@@ -95,7 +95,8 @@ void main(List<String> arguments) async {
         results.arguments.length == 2 &&
         results.flag('feature_screen')) {
       String basePath = 'lib/features';
-      String featureName = results.rest[0];
+      String featureName = results.rest[0].toLowerCase();
+
       print(results.rest.length);
       if (results.rest.length > 1) {
         throw FormatException(
