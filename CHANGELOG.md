@@ -1,3 +1,13 @@
+## [1.0.7] - 2024-01-09
+
+### Fixed
+- Bug name file feature
+
+## [1.0.6] - 2024-01-09
+
+### Fixed
+- Bug create files
+
 ## [1.0.4] - 2024-01-09
 
 ### Fixed

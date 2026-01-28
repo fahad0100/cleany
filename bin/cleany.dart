@@ -64,7 +64,7 @@ void main(List<String> arguments) async {
     //---------------------------------------------------------------------------------
     if (results.flag('feature_widgets') && results.rest.isNotEmpty) {
       String basePath = 'lib/features/sub';
-      String featureName = results.rest[0];
+      String featureName = results.rest[0].toLowerCase();
       bool startCreateMethod = false;
       switch (results.arguments.length) {
         case 2:
