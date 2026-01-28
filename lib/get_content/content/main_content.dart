@@ -14,15 +14,16 @@ import 'core/navigation/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await EasyLocalization.ensureInitialized();
   await setup();
   await configureDependencies();
 
   runApp(
     EasyLocalization(
-      supportedLocales: [Locale('en', 'US'), Locale('ar', 'AR')],
+      supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
-      fallbackLocale: Locale('en', 'US'),
+      fallbackLocale: Locale('en'),
       child: MainApp(),
     ),
   );
@@ -34,10 +35,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          GlobalCubit(GetIt.I.get(), GetIt.I.get())..load(context: context),
+      create: (context) => GlobalCubit(GetIt.I.get(), GetIt.I.get()),
       child: Builder(
         builder: (context) {
+          context.read<GlobalCubit>().load(context: context);
           return Builder(
             builder: (context) {
               return Sizer(
@@ -49,7 +50,7 @@ class MainApp extends StatelessWidget {
                         localizationsDelegates: context.localizationDelegates,
                         supportedLocales: context.supportedLocales,
                         locale: context.locale,
-                        themeMode: state.themeMode,
+                        // themeMode: state.themeMode,
                         theme: AppTheme.lightTheme,
                         darkTheme: AppTheme.darkTheme,
                         debugShowCheckedModeBanner: true,

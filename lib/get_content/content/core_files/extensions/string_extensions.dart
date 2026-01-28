@@ -6,16 +6,38 @@ extension StringExtensions on String {
   // ------------------------------------------------------------
 
   bool get isValidEmail {
-    return RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,4}\$').hasMatch(this);
+    return RegExp(r'^[\w.-]+@([\w-]+\.)+[\w-]{2,}\$').hasMatch(this);
   }
 
   /// Phone number validation
   bool get isValidPhone {
-    return RegExp(r'^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*\$').hasMatch(this);
+    return RegExp(r'^[+]*[(]?[0-9]{1,4}[)]?[-s./0-9]*\$').hasMatch(this);
+  }
+
+  String removeExtraSpaces() {
+    return replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
+
+  bool get isValidFullName {
+    return RegExp(
+      r'^[A-Za-z\u0600-\u06FF]+(\s+[A-Za-z\u0600-\u06FF]+)+\$',
+    ).hasMatch(trim());
+  }
+
+  String get capitalizeEachWord {
+    if (trim().isEmpty) return this;
+
+    return trim()
+        .split(RegExp(r'\s+'))
+        .map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
   }
 
   /// Validate if string contains only numbers
-  bool get isNumeric => RegExp(r'^\d+\$').hasMatch(this);
+  bool get isNumeric => RegExp(r'^d+\$').hasMatch(this);
 
   /// Validate if string contains only letters
   bool get isAlphabetic => RegExp(r'^[A-Za-z]+\$').hasMatch(this);
@@ -23,7 +45,7 @@ extension StringExtensions on String {
   /// Validate if string is strong password
   /// at least 8 chars, 1 letter, 1 number
   bool get isStrongPassword {
-    return RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}\$').hasMatch(this);
+    return RegExp(r'^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}\$').hasMatch(this);
   }
 
   // ------------------------------------------------------------
@@ -48,10 +70,10 @@ extension StringExtensions on String {
   }
 
   /// Remove all whitespace
-  String get removeWhitespace => replaceAll(RegExp(r'\s+'), '');
+  String get removeWhitespace => replaceAll(RegExp(r's+'), '');
 
   /// Trim and reduce multiple spaces → single space
-  String get normalizeSpaces => trim().replaceAll(RegExp(r'\s+'), ' ');
+  String get normalizeSpaces => trim().replaceAll(RegExp(r's+'), ' ');
 
   /// Limit string to max length
   String truncate(int maxLength) {
@@ -69,7 +91,7 @@ extension StringExtensions on String {
 
   /// Convert to camelCase
   String get toCamelCase {
-    final words = split(RegExp(r'[_\s-]+'));
+    final words = split(RegExp(r'[_s-]+'));
     return words.first.toLowerCase() +
         words.skip(1).map((w) => w.capitalize()).join('');
   }
@@ -101,14 +123,14 @@ extension StringExtensions on String {
   bool get isNotNullOrEmpty => trim().isNotEmpty;
 
   /// Check if string contains any digit
-  bool get containsNumber => RegExp(r'\d').hasMatch(this);
+  bool get containsNumber => RegExp(r'd').hasMatch(this);
 
   /// Check if string contains emojis
   bool get containsEmoji => RegExp(
-    r'[\u{1F600}-\u{1F64F}]|' // Emoticons
-    r'[\u{1F300}-\u{1F5FF}]|' // Symbols & Pictographs
-    r'[\u{1F680}-\u{1F6FF}]|' // Transport & Map
-    r'[\u{1F1E0}-\u{1F1FF}]', // Flags
+    r'[😀-🙏]|' // Emoticons
+    r'[🌀-🗿]|' // Symbols & Pictographs
+    r'[🚀-🛿]|' // Transport & Map
+    r'[🇠-🇿]', // Flags
   ).hasMatch(this);
 
   /// Convert from "YYYY-MM-DD" → "DD/MM/YYYY"
@@ -143,6 +165,7 @@ extension StringExtensions on String {
     }
   }
 }
+
 
 ''';
 }
