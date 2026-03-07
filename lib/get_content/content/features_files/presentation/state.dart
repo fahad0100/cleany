@@ -1,6 +1,9 @@
 import 'package:cleany/utils/extension/extensions.dart';
 
-String stateScreenFeatureFile({required String featureName}) {
+String stateScreenFeatureFile({
+  required String featureName,
+  String? ownFeaturesName,
+}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
 
   return '''

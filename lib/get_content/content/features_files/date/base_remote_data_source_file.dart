@@ -1,14 +1,22 @@
 import 'package:cleany/utils/extension/extensions.dart';
 import 'package:cleany/utils/file_modifier.dart';
 
-String baseRemoteDataScreenFeatureFile({required String featureName}) {
+String baseRemoteDataScreenFeatureFile({
+  required String featureName,
+  String? ownFeaturesName,
+  required bool isSub,
+}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   final projectName = FileModifier.getProjectName();
 
   return '''
 import 'package:injectable/injectable.dart';
 import 'package:multiple_result/multiple_result.dart';
-import 'package:$projectName/features/$featureName/data/models/${featureName}_model.dart';
+import 'package:$projectName/features/${ownFeaturesName != null
+      ? '$ownFeaturesName/sub/'
+      : isSub
+      ? 'sub/'
+      : ''}$featureName/data/models/${featureName}_model.dart';
 import 'package:$projectName/core/errors/failure.dart';
 import 'package:$projectName/core/errors/network_exceptions.dart';
 

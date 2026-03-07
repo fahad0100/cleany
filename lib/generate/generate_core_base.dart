@@ -19,8 +19,9 @@ Future<void> generateCoreBase() async {
         'context_extensions.dart',
         'string_extensions.dart',
         'color_extensions.dart',
+        'font_extensions.dart',
       ],
-      'global/cubit': ['public_cubit.dart', 'public_state.dart'],
+
       'navigation': ['app_router.dart', 'routers.dart'],
       'network': ['dio_client.dart', 'api_endpoints.dart'],
       'services': ['local_keys_service.dart', 'app_device_utils.dart'],

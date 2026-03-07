@@ -1,6 +1,7 @@
 import 'package:cleany/get_content/content/features_files/date/base_remote_data_source_file.dart';
 import 'package:cleany/get_content/content/features_files/date/model_file.dart';
 import 'package:cleany/get_content/content/features_files/date/repository_data_file.dart';
+import 'package:cleany/get_content/content/features_files/di/di.dart';
 import 'package:cleany/get_content/content/features_files/domain/entity_domain_file.dart';
 import 'package:cleany/get_content/content/features_files/domain/repository_domain_file.dart';
 import 'package:cleany/get_content/content/features_files/domain/use_case_domain_file.dart';
@@ -14,18 +15,29 @@ String getFileScreenFeatureContent({
   required String featureName,
 }) {
   // Data Layer - Remote Data Source
-  if (fileName.contains('_remote_data_source.dart')) {
-    return baseRemoteDataScreenFeatureFile(featureName: featureName);
-  }
 
+  if (fileName.contains('_remote_data_source.dart')) {
+    return baseRemoteDataScreenFeatureFile(
+      featureName: featureName,
+      isSub: false,
+    );
+  }
+  // DI Layer feature
+
+  if (fileName.contains('di.dart')) {
+    return diFeatureFile(featureName: featureName, isSub: false);
+  }
   // Data Layer - Model
   if (fileName.contains('_model.dart')) {
-    return modelDataScreenFeature(featureName: featureName);
+    return modelDataScreenFeature(featureName: featureName, isSub: false);
   }
 
   // Data Layer - Repository Implementation
   if (fileName.contains('_repository_data.dart')) {
-    return createRepositoryDataScreenFeatureFile(featureName: featureName);
+    return createRepositoryDataScreenFeatureFile(
+      featureName: featureName,
+      isSub: false,
+    );
   }
 
   // Domain Layer - Entity
@@ -35,17 +47,20 @@ String getFileScreenFeatureContent({
 
   // Domain Layer - Repository Interface
   if (fileName.contains('_repository_domain.dart')) {
-    return repositoryDomainScreenFeatureFile(featureName: featureName);
+    return repositoryDomainScreenFeatureFile(
+      featureName: featureName,
+      isSub: false,
+    );
   }
 
   // Domain Layer - Use Case
   if (fileName.contains('_use_case.dart')) {
-    return useCaseScreenFeatureFile(featureName: featureName);
+    return useCaseScreenFeatureFile(featureName: featureName, isSub: false);
   }
 
   // Presentation Layer - Cubit
   if (fileName.contains('_cubit.dart')) {
-    return cubitScreenFeatureFile(featureName: featureName);
+    return cubitScreenFeatureFile(featureName: featureName, isSub: false);
   }
 
   // Presentation Layer - State

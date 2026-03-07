@@ -1,7 +1,10 @@
 import 'package:cleany/utils/extension/extensions.dart';
 import 'package:cleany/utils/file_modifier.dart';
 
-String screenPageFeatureFile({required String featureName}) {
+String screenPageFeatureFile({
+  required String featureName,
+  String? ownFeaturesName,
+}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   final projectName = FileModifier.getProjectName();
 

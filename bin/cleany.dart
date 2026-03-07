@@ -32,10 +32,10 @@ void main(List<String> arguments) async {
         help: 'feature as widgets',
       )
       ..addFlag(
-        'path',
-        abbr: 'p',
+        'feature',
+        abbr: 'f',
         negatable: false,
-        help: 'add custom path for only feature widget',
+        help: 'add sub features for main feature widget',
       )
       ..addFlag(
         'add_dependence',
@@ -63,7 +63,7 @@ void main(List<String> arguments) async {
     //---------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------
     if (results.flag('feature_widgets') && results.rest.isNotEmpty) {
-      String basePath = 'lib/features/sub';
+      String? ownFeaturesName;
       String featureName = results.rest[0].toLowerCase();
       bool startCreateMethod = false;
       switch (results.arguments.length) {
@@ -72,8 +72,8 @@ void main(List<String> arguments) async {
           startCreateMethod = true;
           break;
         case > 2 && <= 4:
-          if (results.flag('path') && results.rest.length == 2) {
-            basePath = results.rest[1];
+          if (results.flag('feature') && results.rest.length == 2) {
+            ownFeaturesName = results.rest[1];
             startCreateMethod = true;
             break;
           }
@@ -81,7 +81,7 @@ void main(List<String> arguments) async {
       if (startCreateMethod) {
         await initializeFeatureWidget(
           featureName: featureName,
-          basePath: basePath,
+          ownFeaturesName: ownFeaturesName,
         );
         return;
       }

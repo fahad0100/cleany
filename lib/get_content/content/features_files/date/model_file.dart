@@ -1,13 +1,21 @@
 import 'package:cleany/utils/extension/extensions.dart';
 import 'package:cleany/utils/file_modifier.dart';
 
-String modelDataScreenFeature({required String featureName}) {
+String modelDataScreenFeature({
+  required String featureName,
+  String? ownFeaturesName,
+  required bool isSub,
+}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   final projectName = FileModifier.getProjectName();
 
   return '''
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:$projectName/features/$featureName/domain/entities/${featureName}_entity.dart';
+import 'package:$projectName/features/${ownFeaturesName != null
+      ? '$ownFeaturesName/sub/'
+      : isSub
+      ? 'sub/'
+      : ''}$featureName/domain/entities/${featureName}_entity.dart';
 
 part '${featureName}_model.mapper.dart';
 

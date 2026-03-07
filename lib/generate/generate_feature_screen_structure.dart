@@ -18,9 +18,8 @@ Future<void> generateFeatureScreenStructure(
 
     final structure = {
       //Date
-      'data/datasources': [
-        '${featureName}_remote_data_source.dart',
-      ],
+      'data/datasources': ['${featureName}_remote_data_source.dart'],
+      'di': ['${featureName}_di.dart'],
       'data/models': ['${featureName}_model.dart'],
       'data/repositories': ['${featureName}_repository_data.dart'],
       //Domain
@@ -69,6 +68,11 @@ Future<void> generateFeatureScreenStructure(
       screenWidget:
           '${featureName.toCapitalized().toCapitalizeSecondWord()}FeatureScreen',
       cubit: '${featureName.toCapitalized().toCapitalizeSecondWord()}Cubit',
+    );
+
+    await FileModifier.updateMainDiFile(
+      featureName: featureName,
+      packageName: projectName,
     );
 
     print('✅ Feature "$featureName" has been created successfully! 🎉');

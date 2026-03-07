@@ -20,11 +20,11 @@ extension ContextExtensions on BuildContext {
   }
 
   void showLoading() {
-    LoadingWidget().show(this);
+    LoadingWidgetOverlay().show(this);
   }
 
   void hideLoading() {
-    LoadingWidget().hide();
+    LoadingWidgetOverlay().hide();
   }
 
   void showBottomSheet({required Widget widget, double? height, Color? color}) {

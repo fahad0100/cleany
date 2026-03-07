@@ -1,113 +1,89 @@
 import 'dart:io';
 
-import 'package:cleany/utils/file_modifier.dart';
-import 'package:cleany/utils/logger.dart';
-import 'package:yaml/yaml.dart';
-import 'package:yaml_edit/yaml_edit.dart';
+// لم نعد بحاجة إلى yaml_edit أو yaml لأن Dart سيتكفل بالعملية
 
 Future<void> initializeAddPackages({bool updatePackages = true}) async {
-  print('📦 Adding packages...');
-  await Future.wait([
-    addDependenciesEfficiently(corePackages, isDev: false),
-    addDependenciesEfficiently(devPackages, isDev: true),
-  ]);
+  print('📦 Adding packages (resolving latest compatible versions)...');
 
+  // ملاحظة هامة: يجب تشغيلها بالتسلسل وليس باستخدام Future.wait
+  // لأن تشغيل أمري pub add في نفس الوقت سيؤدي إلى خطأ (File Lock)
+  await addDependenciesEfficiently(corePackages, isDev: false);
+  await addDependenciesEfficiently(devPackages, isDev: true);
+
+  // أمر 'pub add' يقوم بعمل 'pub get' تلقائياً، لذلك قد لا تحتاج لتشغيله مرة أخرى
+  // ولكن تركناه إذا كنت ترغب في التأكيد.
   if (updatePackages) {
-    Logger.info("Waiting ....");
-    await FileModifier.runPubGet(showResult: false);
-    // await FileModifier.runPubUpgrade(showResult: false);
-    // await FileModifier.runPubOutdated(showResult: false);
+    print("⏳ Finalizing...");
+    final result = await Process.run('dart', ['pub', 'get'], runInShell: true);
+    if (result.exitCode != 0) {
+      print("⚠️ Warning during pub get:\n${result.stderr}");
+    }
   }
 }
 
 Future<void> addDependenciesEfficiently(
-  List<Map<String, dynamic>> deps, {
+  List<String> packages, {
   required bool isDev,
 }) async {
-  final file = File('pubspec.yaml');
+  if (packages.isEmpty) return;
 
-  if (!file.existsSync()) {
-    throw Exception("❌ pubspec.yaml not found");
+  final sectionName = isDev ? 'dev_dependencies' : 'dependencies';
+
+  final args = ['pub', 'add'];
+  if (isDev) {
+    args.add('--dev');
   }
+  args.addAll(packages);
 
-  final content = file.readAsStringSync();
-  final yaml = loadYaml(content) as Map;
-  final editor = YamlEditor(content);
-
-  final section = isDev ? 'dev_dependencies' : 'dependencies';
-
-  if (!yaml.containsKey(section)) {
-    editor.update([section], {});
-  } else {
-    final value = yaml[section];
-    if (value == null || value is! Map) {
-      editor.update([section], {});
-    }
-  }
-
-  final updatedYaml = loadYaml(editor.toString()) as Map;
-  final existingSection = updatedYaml[section] as Map;
-
-  for (final dep in deps) {
-    final name = dep['name'] as String;
-    final version = dep['version'] as String;
-    if (!existingSection.containsKey(name)) {
-      editor.update([section, name], version);
-    }
-  }
-
-  String updatedContent = editor.toString();
-
-  updatedContent = updatedContent.replaceAllMapped(
-    RegExp('$section:\\s*\\{([^}]*)\\}'),
-    (match) {
-      final entries = match[1]!
-          .split(',')
-          .map((e) => e.trim())
-          .where((e) => e.isNotEmpty)
-          .join('\n  ');
-      return '$section:\n  $entries';
-    },
+  print(
+    "⚙️  Resolving and adding ${packages.length} packages to $sectionName...",
   );
 
-  file.writeAsStringSync(updatedContent);
+  // إضافة runInShell: true هي السر لدعم الويندوز بشكل مثالي
+  final result = await Process.run(
+    'dart',
+    args,
+    runInShell: true, // 👈 التعديل هنا
+  );
 
-  print("✅ Added ${deps.length} packages to $section");
+  if (result.exitCode == 0) {
+    print("✅ Successfully added packages to $sectionName");
+  } else {
+    throw Exception(
+      "❌ Failed to add packages to $sectionName:\n${result.stderr}",
+    );
+  }
 }
 
 //------------------------- packages dependencies ------------------------------
-
-const List<Map<String, dynamic>> corePackages = [
-  {"name": "cupertino_icons", "version": '^1.0.8'},
-  {"name": "flutter_dotenv", "version": '^6.0.0'},
-  {"name": "multiple_result", "version": '^5.2.0'},
-  {"name": "flutter_bloc", "version": '^9.1.1'},
-  {"name": "bloc", "version": '^9.1.0'},
-  {"name": "dart_mappable", "version": '^4.6.1'},
-  {"name": "dio", "version": '^5.9.0'},
-  {"name": "retrofit", "version": '^4.9.1'},
-  {"name": "easy_localization", "version": '^3.0.8'},
-  {"name": "flutter_secure_storage", "version": '^9.2.4'},
-  {"name": "sizer", "version": '^3.1.3'},
-  {"name": "supabase_flutter", "version": '^2.10.3'},
-  {"name": "get_storage", "version": '^2.1.1'},
-  {"name": "get_it", "version": '^9.1.1'},
-  {"name": "go_router", "version": '^17.0.0'},
-  {"name": "injectable", "version": '^2.7.0'},
-  {"name": "equatable", "version": '^2.0.7'},
-  {"name": "package_info_plus", "version": '^9.0.0'},
-  {"name": "device_info_plus", "version": '^12.3.0'},
+// قمنا بتحويلها إلى List of Strings لأننا لا نحتاج لتحديد الإصدار
+const List<String> corePackages = [
+  "cupertino_icons",
+  "flutter_dotenv",
+  "multiple_result",
+  "flutter_bloc",
+  "bloc",
+  "dart_mappable",
+  "dio",
+  "easy_localization",
+  "flutter_secure_storage",
+  "sizer",
+  "supabase_flutter",
+  "get_storage",
+  "get_it",
+  "go_router",
+  "injectable",
+  "equatable",
+  "package_info_plus",
+  "device_info_plus",
+  "loading_animation_widget",
+  'uuid',
 ];
+
 //------------------------- packages dev_dependencies --------------------------
-
-const List<Map<String, dynamic>> devPackages = [
-  {"name": "flutter_lints", "version": '^6.0.0'},
-
-  {"name": "build_runner", "version": '^2.10.4'},
-
-  {"name": "dart_mappable_builder", "version": '^4.6.1'},
-
-  {"name": "retrofit_generator", "version": '^10.2.0'},
-
-  {"name": "injectable_generator", "version": '^2.9.1'},
+const List<String> devPackages = [
+  "flutter_lints",
+  "build_runner",
+  "dart_mappable_builder",
+  "injectable_generator",
 ];

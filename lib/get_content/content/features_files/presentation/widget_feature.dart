@@ -1,7 +1,11 @@
 import 'package:cleany/utils/extension/extensions.dart';
 import 'package:cleany/utils/file_modifier.dart';
 
-String widgetPageFeatureFile({required String featureName}) {
+String widgetPageFeatureFile({
+  required String featureName,
+  String? ownFeaturesName,
+  required bool isSub,
+}) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
   final projectName = FileModifier.getProjectName();
 
@@ -9,7 +13,11 @@ String widgetPageFeatureFile({required String featureName}) {
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:$projectName/features/sub/$featureName/presentation/cubit/${featureName}_cubit.dart';
+import 'package:$projectName/features/${ownFeaturesName != null
+      ? '$ownFeaturesName/sub'
+      : isSub
+      ? 'sub'
+      : ''}/$featureName/presentation/cubit/${featureName}_cubit.dart';
 
 
 class ${nameCab}FeatureWidget extends StatelessWidget {

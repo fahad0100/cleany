@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cleany/utils/extension/extensions.dart';
 import 'package:yaml/yaml.dart';
 
 class FileModifier {
@@ -488,5 +489,92 @@ class FileModifier {
     } else {
       print("❌ build_runner failed: ${result.stderr}");
     }
+  }
+
+  //-----------
+  //----------------------------------------------------------------
+
+  // لا تنسى استدعاء الإكستنشنز حقتك هنا
+  // import 'package:cleany/utils/extension/extensions.dart';
+  static Future<void> updateMainDiFile({
+    required String featureName,
+    required String packageName,
+    String? ownFeaturesName,
+    bool? isSub = false,
+  }) async {
+    final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
+    final targetFile = File('lib/core/di/configure_dependencies.dart');
+
+    // 1. التحقق من وجود الملف
+    if (!targetFile.existsSync()) {
+      print('❌ خطأ: لم يتم العثور على ملف configure_dependencies.dart');
+      return;
+    }
+
+    String content = targetFile.readAsStringSync();
+
+    final importStatement =
+        "import 'package:$packageName/features${isSub == true && ownFeaturesName == null ? '/sub' : ''}${ownFeaturesName != null ? '/$ownFeaturesName/sub' : ''}/$featureName/di/${featureName}_di.dart';";
+
+    final initStatement =
+        "  configure$nameCab${isSub == true ? 'Sub' : ''}${ownFeaturesName != null ? 'For${ownFeaturesName.toCapitalized().toCapitalizeSecondWord()}' : ''}(getIt);";
+
+    // 2. حماية من التكرار (لتجنب إضافة الكود مرتين لنفس الفيتشر)
+    if (content.contains(initStatement)) {
+      print('✅ الـ DI الخاص بـ $nameCab تمت إضافته مسبقاً.');
+      return;
+    }
+
+    // 3. حقن الـ Import بعد آخر import موجود في الملف
+    if (!content.contains(importStatement)) {
+      final lastImportIndex = content.lastIndexOf('import ');
+      if (lastImportIndex != -1) {
+        // إيجاد نهاية سطر آخر import
+        final endOfLastImportLine = content.indexOf('\n', lastImportIndex);
+        content = content.replaceRange(
+          endOfLastImportLine,
+          endOfLastImportLine,
+          '\n$importStatement', // إضافة الـ import الجديد في سطر جديد
+        );
+      } else {
+        // إذا كان الملف لا يحتوي على أي import (حالة نادرة)
+        content = '$importStatement\n$content';
+      }
+    }
+
+    // 4. حقن دالة التهيئة داخل configureDependencies
+    final functionSignature = 'Future<void> configureDependencies() async {';
+
+    // 1. التحقق أولاً لتجنب إضافة الكود مرتين بالخطأ
+    if (content.contains(initStatement)) {
+      print('⚠️ تم التعرف على الميزة مسبقاً، لا حاجة لإضافتها مرة أخرى.');
+      return; // إيقاف التنفيذ هنا لأن الكود موجود بالفعل
+    }
+
+    // 2. البحث عن مكان بداية الدالة
+    final startIndex = content.indexOf(functionSignature);
+
+    if (startIndex != -1) {
+      // 3. البحث عن أول قوس مغلق } يأتي بعد بداية الدالة
+      final endIndex = content.indexOf('}', startIndex);
+
+      if (endIndex != -1) {
+        // 4. تقسيم النص: نأخذ كل شيء قبل الـ } ونضعه في المتغير before
+        // ونأخذ الـ } وما بعدها ونضعه في المتغير after
+        final before = content.substring(0, endIndex);
+        final after = content.substring(endIndex);
+
+        // 5. ندمج النص ونضع الكود الجديد بينهما
+        content = '$before  $initStatement\n$after';
+      } else {
+        print('❌ خطأ: لم يتم العثور على نهاية الدالة } !');
+      }
+    } else {
+      print('❌ خطأ: لم يتم العثور على دالة configureDependencies() في الملف!');
+    }
+
+    // 5. حفظ الملف بعد التعديل
+    targetFile.writeAsStringSync(content);
+    print('🚀 تم حقن configure$nameCab بنجاح في configure_dependencies.dart');
   }
 }
