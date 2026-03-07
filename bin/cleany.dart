@@ -36,13 +36,13 @@ void main(List<String> arguments) async {
         abbr: 'f',
         negatable: false,
         help: 'add sub features for main feature widget',
-      )
-      ..addFlag(
-        'add_dependence',
-        abbr: 'a',
-        negatable: false,
-        help: 'add core dependence',
       );
+    // ..addFlag(
+    //   'add_dependence',
+    //   abbr: 'a',
+    //   negatable: false,
+    //   help: 'add core dependence',
+    // );
 
     //---------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------
@@ -161,12 +161,12 @@ void main(List<String> arguments) async {
     //-------------------------create dependence---------------------------------------
     //---------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------
-    if (results.arguments.length == 1 && results.flag('add_dependence')) {
-      print("\n\n\n\n** start add core dependence **\n\n\n\n");
-      await initializeAddPackages();
+    // if (results.arguments.length == 1 && results.flag('add_dependence')) {
+    //   print("\n\n\n\n** start add core dependence **\n\n\n\n");
+    //   await initializeAddPackages();
 
-      return;
-    }
+    //   return;
+    // }
 
     //-------------------------help----------------------------------------
     // printHelp(parser);

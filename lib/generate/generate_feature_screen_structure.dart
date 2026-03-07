@@ -74,6 +74,7 @@ Future<void> generateFeatureScreenStructure(
       featureName: featureName,
       packageName: projectName,
     );
+    await FileModifier.runBuildRunner(showResult: false);
 
     print('✅ Feature "$featureName" has been created successfully! 🎉');
     print('📁 Path: $featurePath\n');

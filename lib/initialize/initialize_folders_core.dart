@@ -52,7 +52,7 @@ Future<void> initializeFoldersCore() async {
       await FileModifier.runPubGet(showResult: false);
       Logger.success("Pub get update success....");
       Logger.info("Waiting run Build Runner ....");
-      await FileModifier.runBuildRunner(showResult: false);
+      await FileModifier.runPubUpgrade(showResult: false);
       Logger.success("Build Runner success....\n");
       Logger.warning(
         "--------------------------------------------------------------",

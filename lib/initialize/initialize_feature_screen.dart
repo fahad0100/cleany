@@ -47,7 +47,7 @@ Future<void> initializeFeatureScreen({
   await generateFeatureScreenStructure(featureName, basePath ?? 'lib/features');
 
   Logger.info("Waiting run Build Runner ....");
-  await FileModifier.runBuildRunner(showResult: false);
+  await FileModifier.runPubUpgrade(showResult: false);
   Logger.success("Build Runner success....\n");
   Logger.warning(
     "--------------------------------------------------------------",

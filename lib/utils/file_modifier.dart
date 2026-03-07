@@ -3,10 +3,11 @@ import 'package:cleany/utils/extension/extensions.dart';
 import 'package:yaml/yaml.dart';
 
 class FileModifier {
-  ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
+  static const String _pubspecPath = 'pubspec.yaml';
 
+  ///---------------------------------------------------------------------------
+  /// 1. Add Imports
+  ///---------------------------------------------------------------------------
   static Future<void> addImports(String filePath, List<String> imports) async {
     try {
       final file = File(filePath);
@@ -16,16 +17,15 @@ class FileModifier {
         return;
       }
 
-      var content = await file.readAsString();
+      String content = await file.readAsString();
 
+      // Format imports to ensure a semicolon exists at the end
       final normalizedImports = imports.map((imp) {
-        imp = imp.trim();
-        if (!imp.endsWith(';')) {
-          imp = '$imp;';
-        }
-        return imp;
+        final trimmed = imp.trim();
+        return trimmed.endsWith(';') ? trimmed : '$trimmed;';
       }).toList();
 
+      // Filter out already existing imports
       final importsToAdd = normalizedImports
           .where((imp) => !content.contains(imp))
           .toList();
@@ -37,37 +37,32 @@ class FileModifier {
 
       final regex = RegExp(r"""import\s+['"](.+?)['"];""");
       final matches = regex.allMatches(content);
-      final lastImportMatch = matches.isNotEmpty ? matches.last : null;
+      final importsText = importsToAdd.join('\n');
 
       String newContent;
 
-      if (lastImportMatch != null) {
-        final insertPosition = lastImportMatch.end;
-
-        final importsText = importsToAdd.join('\n');
-
+      if (matches.isNotEmpty) {
+        final insertPosition = matches.last.end;
         newContent =
             '${content.substring(0, insertPosition)}\n$importsText\n${content.substring(insertPosition)}';
       } else {
-        final importsText = importsToAdd.join('\n');
         newContent = '$importsText\n\n$content';
       }
 
       await file.writeAsString(newContent);
 
       print('✅ Imports added successfully:');
-      for (var imp in importsToAdd) {
+      for (final imp in importsToAdd) {
         print('   ➕ $imp');
       }
     } catch (e) {
-      print('❌ Error: $e');
+      print('❌ Error adding imports: $e');
     }
   }
 
   ///---------------------------------------------------------------------------
+  /// 2. Replace File Content
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-
   static Future<void> replaceFileContent({
     required String filePath,
     required String newContent,
@@ -75,14 +70,14 @@ class FileModifier {
   }) async {
     try {
       final file = File(filePath);
+      final exists = await file.exists();
 
-      if (createIfNotExists == false) {
-        if (!await file.exists()) {
-          // await file.create(recursive: true);
-          throw FormatException('❌ File not found: $filePath');
+      if (!exists) {
+        if (createIfNotExists) {
+          await file.create(recursive: true);
+        } else {
+          throw Exception('❌ File not found: $filePath');
         }
-      } else {
-        await file.create(recursive: true);
       }
 
       await file.writeAsString(newContent);
@@ -92,9 +87,8 @@ class FileModifier {
   }
 
   ///---------------------------------------------------------------------------
+  /// 3. Add Route
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-
   static Future<void> addRoute({
     required String routesFilePath,
     required String appRouterFilePath,
@@ -104,16 +98,17 @@ class FileModifier {
     required String cubit,
   }) async {
     try {
+      // 1. Update Routes file
       final routesFile = File(routesFilePath);
       if (!await routesFile.exists()) {
         print('❌ File not found: $routesFilePath');
         return;
       }
 
-      var routesContent = await routesFile.readAsString();
-
-      final routesClassPattern = RegExp(r'class\s+Routes\s*{');
-      final routesClassMatch = routesClassPattern.firstMatch(routesContent);
+      String routesContent = await routesFile.readAsString();
+      final routesClassMatch = RegExp(
+        r'class\s+Routes\s*{',
+      ).firstMatch(routesContent);
 
       if (routesClassMatch != null) {
         final insertIndex = routesContent.indexOf('}', routesClassMatch.end);
@@ -124,27 +119,24 @@ class FileModifier {
               routesContent.substring(0, insertIndex) +
               newConst +
               routesContent.substring(insertIndex);
-
           await routesFile.writeAsString(routesContent);
           print('✅ The key $routeName has been added inside Routes');
         }
       }
 
+      // 2. Update AppRouter file
       final appRouterFile = File(appRouterFilePath);
       if (!await appRouterFile.exists()) {
         print('❌ File not found: $appRouterFilePath');
         return;
       }
 
-      var routerContent = await appRouterFile.readAsString();
-
-      final routesPattern = RegExp(r'routes\s*:\s*\[');
-      final routesMatch = routesPattern.firstMatch(routerContent);
+      String routerContent = await appRouterFile.readAsString();
+      final routesMatch = RegExp(r'routes\s*:\s*\[').firstMatch(routerContent);
 
       if (routesMatch != null) {
-        int startIndex = routesMatch.end;
+        int index = routesMatch.end;
         int bracketCount = 1;
-        int index = startIndex;
 
         while (index < routerContent.length && bracketCount > 0) {
           if (routerContent[index] == '[') bracketCount++;
@@ -152,8 +144,7 @@ class FileModifier {
           index++;
         }
 
-        int insertPosition = index - 1;
-
+        final insertPosition = index - 1;
         final newGoRoute =
             '''
   GoRoute(
@@ -171,89 +162,69 @@ class FileModifier {
         print('✅ A new GoRoute has been added inside AppRouter.routes');
       }
     } catch (e) {
-      print('❌ Error: $e');
+      print('❌ Error adding route: $e');
     }
   }
 
   ///---------------------------------------------------------------------------
+  /// 4. Replace MaterialApp
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-  static Future<void> replaceMaterialApp(
-    String filePath,
-    String newReturnWidget,
-  ) async {
-    try {
-      final file = File(filePath);
+  // static Future<void> replaceMaterialApp(
+  //   String filePath,
+  //   String newReturnWidget,
+  // ) async {
+  //   try {
+  //     final file = File(filePath);
 
-      if (!await file.exists()) {
-        print('❌ File not found: $filePath');
-        return;
-      }
+  //     if (!await file.exists()) {
+  //       print('❌ File not found: $filePath');
+  //       return;
+  //     }
 
-      String content = await file.readAsString();
+  //     final content = await file.readAsString();
+  //     final materialReturnRegex = RegExp(
+  //       r'return\s+MaterialApp\s*\(([\s\S]*?)\);',
+  //       multiLine: true,
+  //     );
 
-      final materialReturnRegex = RegExp(
-        r'return\s+MaterialApp\s*\(([\s\S]*?)\);',
-        multiLine: true,
-      );
+  //     if (!materialReturnRegex.hasMatch(content)) {
+  //       print('⚠️ No MaterialApp return widget found to replace');
+  //       return;
+  //     }
 
-      if (!materialReturnRegex.hasMatch(content)) {
-        print('⚠️ No MaterialApp return widget found to replace');
-        return;
-      }
+  //     final updatedContent = content.replaceAll(
+  //       materialReturnRegex,
+  //       "return $newReturnWidget",
+  //     );
 
-      final updatedContent = content.replaceAll(
-        materialReturnRegex,
-        "return $newReturnWidget",
-      );
-
-      await file.writeAsString(updatedContent);
-
-      print('✅ MaterialApp replaced correctly');
-    } catch (e) {
-      print('❌ Error: $e');
-    }
-  }
+  //     await file.writeAsString(updatedContent);
+  //     print('✅ MaterialApp replaced correctly');
+  //   } catch (e) {
+  //     print('❌ Error replacing MaterialApp: $e');
+  //   }
+  // }
 
   ///---------------------------------------------------------------------------
+  /// 5. Check File / Folder Existence
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-
   static Future<bool> checkFileExistenceAsync({
     required String filePath,
   }) async {
-    final file = File(filePath);
-    if (await file.exists()) {
-      return true;
-    } else {
-      return false;
-    }
+    return await File(filePath).exists();
   }
 
-  ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
   static Future<bool> checkFolderExistenceAsync({
     required String folderPath,
   }) async {
-    final Directory myDirectory = Directory(folderPath);
-
-    final bool exists = await myDirectory.exists();
-
-    if (exists) {
-      return true;
-    } else {
-      return false;
-    }
+    return await Directory(folderPath).exists();
   }
 
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
+  /// 6. Create Folder
   ///---------------------------------------------------------------------------
   static Future<void> createFolder(String folderPath) async {
     try {
       final dir = Directory(folderPath);
-
       if (await dir.exists()) {
         print('📂 Folder already exists: $folderPath');
       } else {
@@ -266,28 +237,24 @@ class FileModifier {
   }
 
   ///---------------------------------------------------------------------------
+  /// 7. Add Asset To Pubspec
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-
   static Future<void> addAssetToPubspec(String assetPath) async {
-    final pubspec = File('pubspec.yaml');
+    final pubspec = File(_pubspecPath);
 
     if (!await pubspec.exists()) {
       print('❌ pubspec.yaml not found!');
       return;
     }
 
-    List<String> lines = await pubspec.readAsLines();
+    final lines = await pubspec.readAsLines();
 
-    bool isAlreadyAdded = lines.any(
-      (line) => line.trim().contains('- $assetPath'),
-    );
-    if (isAlreadyAdded) {
+    if (lines.any((line) => line.trim().contains('- $assetPath'))) {
       print('⚠️ Asset "$assetPath" is already in pubspec.yaml');
       return;
     }
 
-    int flutterIndex = lines.lastIndexWhere(
+    final flutterIndex = lines.lastIndexWhere(
       (line) => line.trim() == 'flutter:',
     );
 
@@ -296,9 +263,7 @@ class FileModifier {
 
       for (int i = flutterIndex + 1; i < lines.length; i++) {
         final line = lines[i];
-
         if (line.trim().isNotEmpty && !line.startsWith('  ')) break;
-
         if (line.trim() == 'assets:') {
           assetsIndex = i;
           break;
@@ -307,17 +272,12 @@ class FileModifier {
 
       if (assetsIndex != -1) {
         lines.insert(assetsIndex + 1, '    - $assetPath');
-        print(
-          '➕ Added "$assetPath" to existing assets list (in last flutter block).',
-        );
+        print('➕ Added "$assetPath" to existing assets list.');
       } else {
         lines.insertAll(flutterIndex + 1, ['  assets:', '    - $assetPath']);
-        print(
-          '🆕 Created assets section in last flutter block and added "$assetPath".',
-        );
+        print('🆕 Created assets section and added "$assetPath".');
       }
 
-      // حفظ التعديلات
       await pubspec.writeAsString(lines.join('\n'));
     } else {
       print('❌ "flutter:" section not found in pubspec.yaml');
@@ -325,7 +285,7 @@ class FileModifier {
   }
 
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
+  /// 8. Setup Env File
   ///---------------------------------------------------------------------------
   static Future<void> setupEnvFile() async {
     final envFile = File('.env');
@@ -337,40 +297,34 @@ class FileModifier {
   }
 
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
+  /// 9. Get Project Name
   ///---------------------------------------------------------------------------
   static String getProjectName() {
-    final file = File('pubspec.yaml');
-
+    final file = File(_pubspecPath);
     if (!file.existsSync()) {
       throw Exception(
-        'pubspec.yaml not found. Run this command inside a Flutter project.',
+        'pubspec.yaml not found. Run this inside a Flutter project.',
       );
     }
-
     final content = file.readAsStringSync();
-    final yamlMap = loadYaml(content);
-
-    return yamlMap['name'];
+    final yamlMap = loadYaml(content) as Map;
+    return yamlMap['name']?.toString() ?? 'unknown_project';
   }
 
   ///---------------------------------------------------------------------------
+  /// 10. Recreate Pubspec
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-
   static Future<void> recreatePubspec() async {
     try {
-      final pubspecFile = File('pubspec.yaml');
+      final pubspecFile = File(_pubspecPath);
 
-      // 1 — Delete pubspec.yaml
       if (pubspecFile.existsSync()) {
         pubspecFile.deleteSync();
         print('🗑️ Deleted old pubspec.yaml');
       } else {
-        throw FormatException('pubspec.yaml not found');
+        throw Exception('pubspec.yaml not found');
       }
 
-      // 2 — Run flutter create . -e
       final result = await Process.run('flutter', [
         'create',
         '.',
@@ -380,122 +334,86 @@ class FileModifier {
       if (result.exitCode == 0) {
         print('✅ New pubspec.yaml created successfully!');
       } else {
-        print('❌ Failed to recreate pubspec.yaml');
-        print(result.stderr);
+        print('❌ Failed to recreate pubspec.yaml\n${result.stderr}');
       }
-    } on FormatException catch (_) {
-      rethrow;
     } catch (e) {
-      throw FormatException('❌ Error while recreating pubspec: $e');
+      throw Exception('❌ Error while recreating pubspec: $e');
     }
   }
 
   ///---------------------------------------------------------------------------
+  /// 11. Is Flutter Project Root
   ///---------------------------------------------------------------------------
-  ///---------------------------------------------------------------------------
-  ///
-
   static Future<bool> isFlutterProjectRoot() async {
-    final currentDir = Directory.current;
-
-    final requiredPaths = ['pubspec.yaml', 'lib', 'android', 'ios'];
+    final requiredPaths = [_pubspecPath, 'lib', 'android', 'ios'];
 
     for (final pathName in requiredPaths) {
-      final entity = FileSystemEntity.typeSync('${currentDir.path}/$pathName');
-
-      if (entity == FileSystemEntityType.notFound) {
-        return false;
-      }
+      final exists =
+          await FileSystemEntity.type(pathName) !=
+          FileSystemEntityType.notFound;
+      if (!exists) return false;
     }
-
     return true;
   }
 
+  ///---------------------------------------------------------------------------
+  /// 12. Resolve Executable (Windows Support)
+  ///---------------------------------------------------------------------------
   static String resolveExecutable(String name) {
     if (!Platform.isWindows) return name;
-
     final exts = ['.exe', '.bat', '.cmd'];
     for (final ext in exts) {
       final full = '$name$ext';
-      final result = Process.runSync('where', [full]);
+      final result = Process.runSync('where', [full], runInShell: true);
       if (result.exitCode == 0) {
         return result.stdout.toString().split('\n').first.trim();
       }
     }
-
     return name;
   }
 
+  ///---------------------------------------------------------------------------
+  /// 13. CLI Commands (pub get, build_runner, etc.)
+  ///---------------------------------------------------------------------------
   static Future<void> runPubGet({bool showResult = true}) async {
-    final flutter = resolveExecutable("flutter");
-
-    final result = await Process.run(flutter, ['pub', 'get']);
-
-    if (result.exitCode == 0) {
-      if (showResult) {
-        print("✅ pub get completed");
-        print(result.stdout);
-      }
-    } else {
-      print("❌ pub get failed: ${result.stderr}");
-    }
+    await _runCommand(
+      'flutter',
+      ['pub', 'get'],
+      '✅ pub get completed',
+      showResult: showResult,
+    );
   }
 
   static Future<void> runPubUpgrade({bool showResult = true}) async {
-    final flutter = resolveExecutable("flutter");
-
-    final result = await Process.run(flutter, ['pub', 'upgrade']);
-
-    if (result.exitCode == 0) {
-      if (showResult) {
-        print("✅ pub upgrade completed");
-        print(result.stdout);
-      }
-    } else {
-      print("❌ pub upgrade failed: ${result.stderr}");
-    }
+    await _runCommand(
+      'flutter',
+      ['pub', 'upgrade'],
+      '✅ pub upgrade completed',
+      showResult: showResult,
+    );
   }
 
   static Future<void> runPubOutdated({bool showResult = true}) async {
-    final flutter = resolveExecutable("flutter");
-
-    final result = await Process.run(flutter, ['pub', 'outdated']);
-
-    if (result.exitCode == 0) {
-      if (showResult) {
-        print("📦 Outdated packages:");
-        print(result.stdout);
-      }
-    } else {
-      print("❌ pub outdated failed: ${result.stderr}");
-    }
+    await _runCommand(
+      'flutter',
+      ['pub', 'outdated'],
+      '📦 Outdated packages:',
+      showResult: showResult,
+    );
   }
 
   static Future<void> runBuildRunner({bool showResult = true}) async {
-    final dart = resolveExecutable("dart");
-
-    final result = await Process.run(dart, [
-      'run',
-      'build_runner',
-      'build',
-      '--delete-conflicting-outputs',
-    ]);
-
-    if (result.exitCode == 0) {
-      if (showResult) {
-        print("🏗️ build_runner completed");
-        print(result.stdout);
-      }
-    } else {
-      print("❌ build_runner failed: ${result.stderr}");
-    }
+    await _runCommand(
+      'dart',
+      ['run', 'build_runner', 'build', '--delete-conflicting-outputs'],
+      '🏗️ build_runner completed',
+      showResult: showResult,
+    );
   }
 
-  //-----------
-  //----------------------------------------------------------------
-
-  // لا تنسى استدعاء الإكستنشنز حقتك هنا
-  // import 'package:cleany/utils/extension/extensions.dart';
+  ///---------------------------------------------------------------------------
+  /// 14. Update Main DI File
+  ///---------------------------------------------------------------------------
   static Future<void> updateMainDiFile({
     required String featureName,
     required String packageName,
@@ -505,76 +423,87 @@ class FileModifier {
     final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
     final targetFile = File('lib/core/di/configure_dependencies.dart');
 
-    // 1. التحقق من وجود الملف
     if (!targetFile.existsSync()) {
-      print('❌ خطأ: لم يتم العثور على ملف configure_dependencies.dart');
+      print('❌ Error: configure_dependencies.dart file not found');
       return;
     }
 
     String content = targetFile.readAsStringSync();
 
+    final importPath = isSub == true && ownFeaturesName == null
+        ? '/sub'
+        : (ownFeaturesName != null ? '/$ownFeaturesName/sub' : '');
     final importStatement =
-        "import 'package:$packageName/features${isSub == true && ownFeaturesName == null ? '/sub' : ''}${ownFeaturesName != null ? '/$ownFeaturesName/sub' : ''}/$featureName/di/${featureName}_di.dart';";
+        "import 'package:$packageName/features$importPath/$featureName/di/${featureName}_di.dart';";
 
+    final initMethodName = isSub == true ? 'Sub' : '';
+    final initMethodOwner = ownFeaturesName != null
+        ? 'For${ownFeaturesName.toCapitalized().toCapitalizeSecondWord()}'
+        : '';
     final initStatement =
-        "  configure$nameCab${isSub == true ? 'Sub' : ''}${ownFeaturesName != null ? 'For${ownFeaturesName.toCapitalized().toCapitalizeSecondWord()}' : ''}(getIt);";
+        "  configure$nameCab$initMethodName$initMethodOwner(getIt);";
 
-    // 2. حماية من التكرار (لتجنب إضافة الكود مرتين لنفس الفيتشر)
+    // Prevent duplication
     if (content.contains(initStatement)) {
-      print('✅ الـ DI الخاص بـ $nameCab تمت إضافته مسبقاً.');
+      print('✅ DI for $nameCab is already added.');
       return;
     }
 
-    // 3. حقن الـ Import بعد آخر import موجود في الملف
+    // Inject Import
     if (!content.contains(importStatement)) {
       final lastImportIndex = content.lastIndexOf('import ');
       if (lastImportIndex != -1) {
-        // إيجاد نهاية سطر آخر import
         final endOfLastImportLine = content.indexOf('\n', lastImportIndex);
         content = content.replaceRange(
           endOfLastImportLine,
           endOfLastImportLine,
-          '\n$importStatement', // إضافة الـ import الجديد في سطر جديد
+          '\n$importStatement',
         );
       } else {
-        // إذا كان الملف لا يحتوي على أي import (حالة نادرة)
         content = '$importStatement\n$content';
       }
     }
 
-    // 4. حقن دالة التهيئة داخل configureDependencies
+    // Inject the initialization function before the last closing bracket of the method
     final functionSignature = 'Future<void> configureDependencies() async {';
-
-    // 1. التحقق أولاً لتجنب إضافة الكود مرتين بالخطأ
-    if (content.contains(initStatement)) {
-      print('⚠️ تم التعرف على الميزة مسبقاً، لا حاجة لإضافتها مرة أخرى.');
-      return; // إيقاف التنفيذ هنا لأن الكود موجود بالفعل
-    }
-
-    // 2. البحث عن مكان بداية الدالة
     final startIndex = content.indexOf(functionSignature);
 
     if (startIndex != -1) {
-      // 3. البحث عن أول قوس مغلق } يأتي بعد بداية الدالة
       final endIndex = content.indexOf('}', startIndex);
-
       if (endIndex != -1) {
-        // 4. تقسيم النص: نأخذ كل شيء قبل الـ } ونضعه في المتغير before
-        // ونأخذ الـ } وما بعدها ونضعه في المتغير after
         final before = content.substring(0, endIndex);
         final after = content.substring(endIndex);
-
-        // 5. ندمج النص ونضع الكود الجديد بينهما
         content = '$before  $initStatement\n$after';
       } else {
-        print('❌ خطأ: لم يتم العثور على نهاية الدالة } !');
+        print('❌ Error: Closing bracket } not found!');
+        return;
       }
     } else {
-      print('❌ خطأ: لم يتم العثور على دالة configureDependencies() في الملف!');
+      print('❌ Error: configureDependencies() method not found in the file!');
+      return;
     }
 
-    // 5. حفظ الملف بعد التعديل
     targetFile.writeAsStringSync(content);
-    print('🚀 تم حقن configure$nameCab بنجاح في configure_dependencies.dart');
+    print(
+      '🚀 configure$nameCab injected successfully into configure_dependencies.dart',
+    );
+  }
+
+  //===
+
+  static Future<void> _runCommand(
+    String executable,
+    List<String> args,
+    String successMsg, {
+    bool showResult = true,
+  }) async {
+    final resolvedCommand = resolveExecutable(executable);
+    final result = await Process.run(resolvedCommand, args, runInShell: true);
+
+    if (result.exitCode == 0) {
+      if (showResult) print("$successMsg\n${result.stdout}");
+    } else {
+      print("❌ ${args.join(' ')} failed:\n${result.stderr}");
+    }
   }
 }

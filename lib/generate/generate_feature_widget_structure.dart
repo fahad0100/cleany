@@ -9,7 +9,6 @@ Future<void> generateFeatureWidgetStructure({
   String? ownFeaturesName,
 }) async {
   try {
-    // دمج مسار المشروع الحالي مع المسار النسبي الذي تم تجهيزه
     final featurePath = path.join(Directory.current.path, targetRelativePath);
 
     final structure = {
@@ -55,6 +54,7 @@ Future<void> generateFeatureWidgetStructure({
       ownFeaturesName: ownFeaturesName,
       isSub: true,
     );
+    await FileModifier.runBuildRunner(showResult: false);
     print('✅ Feature "$featureName" has been created successfully! 🎉');
     print('📁 Path: $targetRelativePath\n');
   } catch (e) {

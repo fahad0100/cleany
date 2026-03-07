@@ -12,27 +12,25 @@ ${bold}Usage:$reset
   ${green}cleany$reset $cyan<command>$reset [arguments]
 
 ${bold}Available Commands:$reset
-  ${green}-s$reset $cyan<name>$reset                   Generates a feature as a full ${bold}Screen$reset (with routing & DI).
-  ${green}-w$reset $cyan<name>$reset                   Generates a feature as a standalone ${bold}Widget (with DI)$reset.
-  ${green}-w$reset $cyan<name>$reset ${green}-p$reset $cyan<path>$reset         Generates a Widget with a custom path.
-  ${green}-a$reset                          Installs essential Core dependencies (Dio, GetIt, Bloc...).
+  ${green}-s$reset $cyan<feature name>$reset                       Generates a feature as a full ${bold}Screen$reset (with routing & DI).
+  ${green}-w$reset $cyan<sub feature name>$reset                   Generates a sub feature as a standalone ${bold}Widget (with DI)$reset.
+  ${green}-w$reset $cyan<sub feature name>$reset ${green}-p$reset $cyan<main feature>$reset         Generates a sub feature related with a main features.
   ${green}-c$reset                          Scaffolds the essential Core folder structure.
 
 ${bold}Options:$reset
 ${parser.usage}
 
 ${bold}Examples:$reset
-  $gray#  Create a full login feature (Screen, Logic, DI) in path lib/features/screens/:$reset
+  $gray#  Create a full login feature (Screen, Logic, DI) in path lib/features/:$reset
   $green  cleany -s auth$reset
 
-  $gray#  Create a reusable order widget (Logic, DI, No Routing, No scaffold only widget) default: in path lib/features/customs/:$reset
+  $gray#  Create a reusable order widget (Logic, DI, No Routing, No scaffold only widget) default: in path lib/features/sub/:$reset
   $green  cleany -w order_widget$reset
 
-  $gray#  Create a widget in a specific custom path:$reset
-  $green  cleany -w user_card -p "lib/features/customs/"$reset
+  $gray#  Create a sub features for a specific features:$reset
+  $green  cleany -w user_card -f {name features}$reset
 
   $gray# Setup project foundation:$reset
   $green  cleany -c$reset      $gray(Create core folder in path lib/)$reset
-  $green  cleany -a$reset      $gray(Add dependencies in pubspec.yaml)$reset
 ''');
 }
