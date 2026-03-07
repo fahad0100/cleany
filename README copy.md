@@ -1,3 +1,5 @@
+
+```markdown
 # 🚀 Cleany — Flutter Clean Architecture Generator
 
 [![Pub Version](https://img.shields.io/pub/v/cleany.svg)](https://pub.dev/packages/cleany)
@@ -22,7 +24,6 @@ Setting up a scalable architecture from scratch takes hours. Wiring Dependency I
 
 ---
 
-
 ## 🛠️ Installation
 
 Activate the package globally via Dart:
@@ -31,38 +32,6 @@ Activate the package globally via Dart:
 dart pub global activate cleany
 
 ```
-
----
-
-### 🪟 Windows Users: Fixing the "Not on your path" Warning
-
-If you see a warning stating that the executable was installed in a directory:
-
-```bash
-Warning: Pub installs executables into C:\Users\user_name\AppData\Local\Pub\Cache\bin, which is not on your path.
-You can fix that by adding that directory to your system's "Path" environment variable.
-A web search for "configure windows path" will show you how.
-Activated cleany x.x.x.
-
-```
-
-don't worry! This just means Windows doesn't know where to find the `cleany` command yet.
-
-**Fix it in 5 easy steps:**
-
-1. 🔍 **Search:** Press the Windows key, type **"Environment Variables"**, and hit Enter.
-2. 🖱️ **Navigate:** Click the **Environment Variables...** button at the bottom right of the window.
-3. 📂 **Edit Path:** In the top section (*User variables*), find the variable named **Path**, click on it, and select **Edit...**.
-4. ➕ **Add the Path:** Click **New** and paste the exact path below:
-```text
-%USERPROFILE%\AppData\Local\Pub\Cache\bin
-
-```
-
-
-5. 🔄 **Save & Restart:** Click **OK** on all open windows to save. **Crucial:** Close your current terminal (VS Code, CMD, or PowerShell) and open a new one.
-6. ✅ **Verify:** Type `cleany -h` in your new terminal. If you see the help menu, you are ready to go!
-
 
 ---
 

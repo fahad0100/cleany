@@ -8,50 +8,95 @@ Future<void> initializeFeatureWidget({
   required String featureName,
   String? ownFeaturesName,
 }) async {
-  print("Start create $featureName features...");
+  Logger.info("🚀 Starting to create '$featureName' widget feature...");
 
-  // 1. تحديد المسار الصحيح
-  // إذا تم تمرير الفيتشر الأب، نضعها داخله، وإلا في مجلد sub العام
-  final String targetRelativePath =
-      (ownFeaturesName != null && ownFeaturesName.isNotEmpty)
-      ? 'lib/features/$ownFeaturesName/sub/$featureName'
+  // 1. Define variables and paths
+  final bool hasParent = ownFeaturesName != null && ownFeaturesName.isNotEmpty;
+  final String parentPath = 'lib/features/$ownFeaturesName';
+  final String targetRelativePath = hasParent
+      ? '$parentPath/sub/$featureName'
       : 'lib/features/sub/$featureName';
 
-  // 2. التحقق من وجود الفيتشر الأب (إذا قام المستخدم بتحديده)
-  if (ownFeaturesName != null && ownFeaturesName.isNotEmpty) {
-    final parentDir = Directory('lib/features/$ownFeaturesName');
-    if (!parentDir.existsSync()) {
+  // 2. Check parent feature existence (if -f flag is used)
+  if (hasParent) {
+    if (!Directory(parentPath).existsSync()) {
       Logger.error(
         "❌ The parent feature '$ownFeaturesName' does not exist.\n"
-        "When using '-p' for a custom feature, please ensure the parent exists in 'lib/features/' before adding a sub-feature to it.",
+        "When using '-f' for a custom parent feature, please ensure it exists in 'lib/features/' before adding a sub-feature.",
       );
       return;
     }
   }
 
-  // 3. التحقق من أن الفيتشر الفرعي نفسه غير موجود مسبقاً لتجنب الكتابة عليه
-  if (Directory(targetRelativePath).existsSync()) {
+  // 3. Comprehensive check: Search for the feature name in all potential locations to prevent conflicts
+  final existingPath = _findExistingFeaturePath(featureName);
+  if (existingPath != null) {
     Logger.error(
-      "❌ The feature '$featureName' already exists at:\n📁 $targetRelativePath\nPlease choose a different name.",
+      "❌ Conflict Detected: The feature '$featureName' already exists at:\n"
+      "📁 $existingPath\n"
+      "Please choose a different name to avoid import conflicts.",
     );
     return;
   }
 
-  // 4. استدعاء دالة الإنشاء وإرسال المسار الصحيح
-  await generateFeatureWidgetStructure(
-    featureName: featureName,
-    targetRelativePath: targetRelativePath,
-    ownFeaturesName: ownFeaturesName,
-  );
+  try {
+    // 4. Call the generation function and pass the correct path
+    await generateFeatureWidgetStructure(
+      featureName: featureName,
+      targetRelativePath: targetRelativePath,
+      ownFeaturesName: ownFeaturesName,
+    );
 
-  Logger.info("Waiting run Build Runner ....");
-  await FileModifier.runPubUpgrade(showResult: false);
-  Logger.success("Build Runner success....\n");
-  Logger.warning(
-    "--------------------------------------------------------------",
-  );
-  Logger.success("\nWidget Feature created successfully\n");
-  Logger.warning(
-    "--------------------------------------------------------------",
-  );
+    // 5. Run build_runner
+    Logger.info("⏳ Running build_runner...");
+    await FileModifier.runBuildRunner(showResult: false);
+    Logger.success("✅ build_runner completed successfully.\n");
+
+    // 6. Print detailed success message
+    Logger.warning(
+      "--------------------------------------------------------------",
+    );
+    Logger.success("✨ Widget Feature '$featureName' created successfully");
+    Logger.success("📁 Location: $targetRelativePath");
+    Logger.warning(
+      "--------------------------------------------------------------",
+    );
+  } catch (e) {
+    Logger.error("❌ Failed to create widget feature '$featureName': $e");
+  }
+}
+
+/// Helper function to search for the feature in all potential paths
+String? _findExistingFeaturePath(String featureName) {
+  final baseDir = Directory('lib/features');
+
+  // If the features directory doesn't exist at all, there's no conflict
+  if (!baseDir.existsSync()) return null;
+
+  // a. Check in the main directory (lib/features/featureName)
+  final mainPath = 'lib/features/$featureName';
+  if (Directory(mainPath).existsSync()) return mainPath;
+
+  // b. Check in the general sub-directory (lib/features/sub/featureName)
+  final generalSubPath = 'lib/features/sub/$featureName';
+  if (Directory(generalSubPath).existsSync()) return generalSubPath;
+
+  // c. Dynamic check inside the sub directories of any parent feature (lib/features/*/sub/featureName)
+  for (var entity in baseDir.listSync(recursive: false)) {
+    if (entity is Directory) {
+      // Extract folder name safely supporting both Windows and Mac
+      final folderName = entity.uri.pathSegments
+          .where((e) => e.isNotEmpty)
+          .last;
+
+      // Skip the general 'sub' folder since we checked it in step (b)
+      if (folderName != 'sub') {
+        final customSubPath = 'lib/features/$folderName/sub/$featureName';
+        if (Directory(customSubPath).existsSync()) return customSubPath;
+      }
+    }
+  }
+
+  // If not found anywhere, return null (name is available for use)
+  return null;
 }

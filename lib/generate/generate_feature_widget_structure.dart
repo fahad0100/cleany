@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:cleany/get_content/get_file_widget_feature_content.dart';
 import 'package:cleany/utils/file_modifier.dart';
+import 'package:cleany/utils/logger.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> generateFeatureWidgetStructure({
@@ -8,27 +10,32 @@ Future<void> generateFeatureWidgetStructure({
   required String targetRelativePath,
   String? ownFeaturesName,
 }) async {
+  Logger.info("📂 Generating directory structure for widget '$featureName'...");
+
   try {
     final featurePath = path.join(Directory.current.path, targetRelativePath);
 
-    final structure = {
-      //Data
+    // Explicitly defining the Map type for Type Safety
+    final Map<String, List<String>> structure = {
+      // Data Layer
       'data/datasources': ['${featureName}_remote_data_source.dart'],
-      'di': ['${featureName}_di.dart'],
       'data/models': ['${featureName}_model.dart'],
       'data/repositories': ['${featureName}_repository_data.dart'],
-      //Domain
+      // Domain Layer
       'domain/entities': ['${featureName}_entity.dart'],
       'domain/repositories': ['${featureName}_repository_domain.dart'],
       'domain/use_cases': ['${featureName}_use_case.dart'],
-      //Presentation
+      // Presentation Layer
       'presentation/cubit': [
         '${featureName}_cubit.dart',
         '${featureName}_state.dart',
       ],
       'presentation/pages': ['${featureName}_feature_widget.dart'],
+      // Dependency Injection
+      'di': ['${featureName}_di.dart'],
     };
 
+    // 1. Create Directories and Files
     for (final entry in structure.entries) {
       final folderPath = path.join(featurePath, entry.key);
 
@@ -46,6 +53,9 @@ Future<void> generateFeatureWidgetStructure({
         await File(filePath).writeAsString(content);
       }
     }
+
+    // 2. Setup Dependency Injection
+    Logger.info("⚙️ Updating dependency injection file...");
     final projectName = FileModifier.getProjectName();
 
     await FileModifier.updateMainDiFile(
@@ -54,11 +64,17 @@ Future<void> generateFeatureWidgetStructure({
       ownFeaturesName: ownFeaturesName,
       isSub: true,
     );
-    await FileModifier.runBuildRunner(showResult: false);
-    print('✅ Feature "$featureName" has been created successfully! 🎉');
-    print('📁 Path: $targetRelativePath\n');
+
+    // Note: Removed runBuildRunner here because it's already handled sequentially by the parent function (initializeFeatureWidget)
+
+    Logger.success(
+      '✅ Feature "$featureName" structure generated successfully!',
+    );
+    Logger.success('📁 Path: $targetRelativePath\n');
   } catch (e) {
-    print('❌ Failed to create Feature: $e');
-    exit(1);
+    // Log the error before rethrowing
+    Logger.error('❌ Failed to create widget feature "$featureName": $e');
+    // Rethrow instead of exit(1) to allow graceful handling by the parent function
+    rethrow;
   }
 }

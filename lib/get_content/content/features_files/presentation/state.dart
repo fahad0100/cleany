@@ -17,12 +17,7 @@ abstract class ${nameCab}State extends Equatable {
 }
 
 class ${nameCab}InitialState extends ${nameCab}State {}
-
-class ${nameCab}LoadingState extends ${nameCab}State {}
-
 class ${nameCab}SuccessState extends ${nameCab}State {}
-
-class ${nameCab}LoadedState extends ${nameCab}State {}
 
 class ${nameCab}ErrorState extends ${nameCab}State {
   final String message;

@@ -1,4 +1,21 @@
-## [1.0.14] - 2024-01-09
+## [1.0.16] - 07-03-2025
+
+### Added
+- **Smart Collision Detection:** The tool now recursively scans all feature directories (`lib/features/`, `lib/features/sub/`, and parent sub-folders) to prevent duplicate feature names and avoid import conflicts.
+- **Full Windows Support:** Enhanced CLI commands execution for Windows OS using shell resolution.
+
+### Fixed
+- **Improved Output Logging:** Refactored all console outputs using a dedicated `Logger` for a cleaner and more professional terminal experience.
+- **Optimized README.md:** Completely redesigned the documentation with clear guides for installation, Windows setup, and usage examples.
+- **Modular DI Structure:** Each generated feature now has its own isolated `di/` folder and dependency injection file for better maintainability and cleaner code.
+- **Performance Optimization:** Eliminated redundant `build_runner` calls during the generation process to speed up feature creation.
+
+## [1.0.15] 
+
+### Fixed
+- Bug di file
+
+## [1.0.14] 
 
 ### Fixed
 - Bug di file
@@ -12,17 +29,17 @@
 ### Improved
 - General code improvements and under-the-hood optimizations.
 
-## [1.0.7] - 2024-01-09
+## [1.0.7] 
 
 ### Fixed
 - Bug name file feature
 
-## [1.0.6] - 2024-01-09
+## [1.0.6] 
 
 ### Fixed
 - Bug create files
 
-## [1.0.4] - 2024-01-09
+## [1.0.4] 
 
 ### Fixed
 - Bug when creating new feature
