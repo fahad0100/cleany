@@ -13,7 +13,14 @@ String createRepositoryDataScreenFeatureFile({
 
 import 'package:injectable/injectable.dart';
 import 'package:multiple_result/multiple_result.dart';
+import 'package:$projectName/core/errors/network_exceptions.dart';
 import 'package:$projectName/core/errors/failure.dart';
+import 'package:$projectName/features/${ownFeaturesName != null
+      ? '$ownFeaturesName/sub/'
+      : isSub
+      ? 'sub/'
+      : ''}$featureName/domain/entities/${featureName}_entity.dart';
+
 import 'package:$projectName/features/${ownFeaturesName != null
       ? '$ownFeaturesName/sub/'
       : isSub
@@ -37,9 +44,14 @@ class ${nameCab}RepositoryData implements ${nameCab}RepositoryDomain{
 
   ${nameCab}RepositoryData(this.remoteDataSource);
 
-  @override
-    Future<Result<${nameCab}Model, Failure>> get$nameCab() async {
-           return await remoteDataSource.get$nameCab();
+@override
+  Future<Result<${nameCab}Entity, Failure>> get$nameCab() async {
+    try {
+      final response = await remoteDataSource.get$nameCab();
+      return Success(response.toEntity());
+    } catch (error) {
+      return Error(FailureExceptions.getException(error));
+    }
   }
 }
 ''';

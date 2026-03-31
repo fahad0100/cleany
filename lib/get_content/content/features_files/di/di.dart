@@ -6,9 +6,9 @@ String diFeatureFile({
   required bool isSub,
 }) {
   final nameCab = featureName.toCapitalized().toCapitalizeSecondWord();
-  final ownFeaturesNameCab = ownFeaturesName != null
-      ? ownFeaturesName.toCapitalized().toCapitalizeSecondWord()
-      : null;
+  final ownFeaturesNameCab = ownFeaturesName
+      ?.toCapitalized()
+      .toCapitalizeSecondWord();
 
   return '''
 import 'package:get_it/get_it.dart';

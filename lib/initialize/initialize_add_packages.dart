@@ -63,7 +63,6 @@ const List<String> corePackages = [
   "multiple_result",
   "flutter_bloc",
   "bloc",
-  "dart_mappable",
   "dio",
   "easy_localization",
   "flutter_secure_storage",

@@ -1,3 +1,20 @@
+## [1.0.19] - 31-03-2025
+
+### ✨ Improvements
+* General library updates and minor bug fixes to enhance overall performance and stability.
+
+## [1.0.18] - 31-03-2025
+
+### ♻️ Changed
+* **Models:** Fully migrated from `dart_mappable` to `freezed` for data classes and code generation.
+
+### 🐛 Fixed
+* **Localization:** Resolved the naming issue for language files in the `assets` directory. Renamed the files from `ar-Ar.json` and `en-US.json` to the standard format `ar.json` and `en.json`.
+
+### ✨ Improvements
+* General library updates and minor bug fixes to enhance overall performance and stability.
+
+
 ## [1.0.16] - 07-03-2025
 
 ### Added
@@ -14,6 +31,7 @@
 
 ### Fixed
 - Bug di file
+
 
 ## [1.0.14] 
 

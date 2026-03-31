@@ -11,65 +11,41 @@ String baseRemoteDataScreenFeatureFile({
 
   return '''
 import 'package:injectable/injectable.dart';
-import 'package:multiple_result/multiple_result.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:$projectName/core/services/local_keys_service.dart';
 import 'package:$projectName/features/${ownFeaturesName != null
       ? '$ownFeaturesName/sub/'
       : isSub
       ? 'sub/'
       : ''}$featureName/data/models/${featureName}_model.dart';
-import 'package:$projectName/core/errors/failure.dart';
 import 'package:$projectName/core/errors/network_exceptions.dart';
 
 
 abstract class Base${nameCab}RemoteDataSource {
-  Future<Result<${nameCab}Model, Failure>> get$nameCab();
+  Future<${nameCab}Model> get$nameCab();
 }
 
 
 @LazySingleton(as: Base${nameCab}RemoteDataSource)
 class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
-  // final DioClient _dio;
-  // final SupabaseClient _supabase;
-  // final GetStorage _storage;
-  // final FlutterSecureStorage _secureStorage;
-  // final LocalKeysService _localKeysService;
+ 
+  final SupabaseClient _supabase;
+  final LocalKeysService _localKeysService;
+  
   
 
-   // ${nameCab}RemoteDataSource(
-  //   this._dio,
-  //   this._supabase,
-  //   this._storage,
-  //   this._secureStorage,
-  //   this._localKeysService
-  // );
+   ${nameCab}RemoteDataSource(this._localKeysService, this._supabase);
 
 
 
     @override
-  Future<Result<${nameCab}Model, Failure>> get$nameCab() async {
+  Future<${nameCab}Model> get$nameCab() async {
     try {
-      return Success(${nameCab}Model(id: "d"));
+      return ${nameCab}Model(id: 1, firstName: "Last Name", lastName: "First Name");
     } catch (error) {
-      return Error(FailureExceptions.getException(error));
+     throw FailureExceptions.getException(error);
     }
   }
 }
 ''';
 }
-
-final x = '''
-import 'package:freezed_annotation/freezed_annotation.dart';
-part '$featureName.freezed.dart';
-part '$featureName.g.dart';
-
-@freezed
-abstract class $featureName with _\$$featureName {
-  const factory $featureName({
-    required String firstName,
-    required String lastName,
-    required int age,
-  }) = _$featureName;
-
-  factory $featureName.fromJson(Map<String, Object?> json) => _\$${featureName}FromJson(json);
-}
-''';

@@ -32,7 +32,7 @@ Future<void> generateFeatureWidgetStructure({
       ],
       'presentation/pages': ['${featureName}_feature_widget.dart'],
       // Dependency Injection
-      'di': ['${featureName}_di.dart'],
+      if (ownFeaturesName == null) 'di': ['${featureName}_di.dart'],
     };
 
     // 1. Create Directories and Files
@@ -57,15 +57,14 @@ Future<void> generateFeatureWidgetStructure({
     // 2. Setup Dependency Injection
     Logger.info("⚙️ Updating dependency injection file...");
     final projectName = FileModifier.getProjectName();
-
-    await FileModifier.updateMainDiFile(
-      featureName: featureName,
-      packageName: projectName,
-      ownFeaturesName: ownFeaturesName,
-      isSub: true,
-    );
-
-    // Note: Removed runBuildRunner here because it's already handled sequentially by the parent function (initializeFeatureWidget)
+    if (ownFeaturesName == null) {
+      await FileModifier.updateMainDiFile(
+        featureName: featureName,
+        packageName: projectName,
+        ownFeaturesName: ownFeaturesName,
+        isSub: true,
+      );
+    }
 
     Logger.success(
       '✅ Feature "$featureName" structure generated successfully!',
