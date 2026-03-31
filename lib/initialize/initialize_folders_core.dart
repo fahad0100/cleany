@@ -38,12 +38,12 @@ Future<void> initializeFoldersCore() async {
       ),
       FileModifier.setupEnvFile(),
       FileModifier.replaceFileContent(
-        filePath: 'assets/translations/ar-AR.json',
+        filePath: 'assets/translations/ar.json',
         newContent: arJsonContent(),
         createIfNotExists: true,
       ),
       FileModifier.replaceFileContent(
-        filePath: 'assets/translations/en-US.json',
+        filePath: 'assets/translations/en.json',
         newContent: enJsonContent(),
         createIfNotExists: true,
       ),

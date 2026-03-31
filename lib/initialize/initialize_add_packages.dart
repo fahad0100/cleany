@@ -78,12 +78,15 @@ const List<String> corePackages = [
   "device_info_plus",
   "loading_animation_widget",
   "uuid",
+  'freezed_annotation',
+  'json_annotation',
 ];
 
 //------------------------- packages dev_dependencies --------------------------
 const List<String> devPackages = [
   "flutter_lints",
   "build_runner",
-  "dart_mappable_builder",
+  "freezed",
   "injectable_generator",
+  'json_serializable',
 ];

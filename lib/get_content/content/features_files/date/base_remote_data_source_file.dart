@@ -56,3 +56,20 @@ class ${nameCab}RemoteDataSource implements Base${nameCab}RemoteDataSource {
 }
 ''';
 }
+
+final x = '''
+import 'package:freezed_annotation/freezed_annotation.dart';
+part '$featureName.freezed.dart';
+part '$featureName.g.dart';
+
+@freezed
+abstract class $featureName with _\$$featureName {
+  const factory $featureName({
+    required String firstName,
+    required String lastName,
+    required int age,
+  }) = _$featureName;
+
+  factory $featureName.fromJson(Map<String, Object?> json) => _\$${featureName}FromJson(json);
+}
+''';
