@@ -1,3 +1,8 @@
+## [1.0.22] 
+
+### ✨ Improvements
+* General library updates and minor bug fixes to enhance overall performance and stability.
+
 ## [1.0.20] - 31-03-2025
 
 ### ✨ Improvements

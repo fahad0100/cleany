@@ -11,6 +11,7 @@ import 'package:injectable/injectable.dart';
   initializerName: 'init', 
   preferRelativeImports: true,
   asExtension: true, 
+  generateForDir: ['lib/core'],
 )
 
 Future<void> configureDependencies() async {
