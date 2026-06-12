@@ -1,13 +1,4 @@
-import 'dart:io';
-import 'package:args/args.dart';
 import 'package:cleany/new/command/feature/feature_command.dart';
-import 'package:cleany/utils/logger.dart';
-import 'package:cleany/utils/file_modifier.dart';
-import 'package:cleany/print_help_method.dart';
-import 'package:cleany/initialize/initialize_feature_screen.dart';
-import 'package:cleany/initialize/initialize_feature_widget.dart';
-import 'package:cleany/initialize/initialize_folders_core.dart';
-
 import 'package:interact/interact.dart';
 
 void main(List<String> arguments) async {
