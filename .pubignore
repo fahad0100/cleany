@@ -1,0 +1,17 @@
+.git/
+.github/
+.dart_tool/
+.cleany/
+.idea/
+.vscode/
+build/
+coverage/
+doc/api/
+doc/REVIEW_AR.md
+assets/
+*.log
+*.cleany-tmp
+.DS_Store
+.env
+.env.*
+!.env.example

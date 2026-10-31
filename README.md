@@ -1,182 +1,425 @@
-# 🚀 Cleany — Flutter Clean Architecture Generator
+# CLEANY
 
-[![Pub Version](https://img.shields.io/pub/v/cleany.svg)](https://pub.dev/packages/cleany)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)]()
+**Release 2.0.0** · Interactive architecture tooling for Flutter.
 
-**Stop writing boilerplate. Start building features.**
+Cleany creates features and reusable components using one consistent **Feature-Based + Clean Architecture** template, with **Cubit or Bloc, Freezed, and multiple_result**. A numbered terminal menu guides each operation, validates the generated project in isolation, and applies changes with recoverable file updates.
 
-**Cleany** is more than just a feature generator—it’s a **complete automation toolkit** designed to bootstrap full Flutter projects using **Clean Architecture** and **Cubit** state management. 
+[Installation](#installation) · [Quick start](#quick-start) · [Architecture](#generated-architecture) · [Menu guide](#menu-guide) · [Safety](#safety-and-recovery) · [Usage guide](doc/USAGE_AR.md)
 
-Setting up a scalable architecture from scratch takes hours. Wiring Dependency Injection, configuring routers, and creating layers of Data, Domain, and Presentation for every single feature is exhausting. **Cleany does all of this in seconds.**
+## What you get
 
+- Full features with Data, Domain, and Presentation layers.
+- Lightweight components with optional Cubit/Bloc, without unnecessary data layers.
+- Cubit/Bloc selection for every feature; immutable Freezed states.
+- Central GetIt composition, controller factories, and go_router integration through Dart AST edits.
+- Direct Dio or Retrofit over Dio, with a dedicated client and auth interceptor.
+- Raw JSON datasources; repository-owned Model → Entity and exception → Failure conversion.
+- `Result<Entity, Failure>` from multiple_result; Domain stays independent of Dio, Retrofit, and GetIt.
+- Compact response fields: `fieldName:type:jsonKey`, followed by y/n nullability.
+- Official Flutter Arabic/English localization, ARB files, gen-l10n, and RTL support.
+- Dev/UAT/prod bootstrap and guided native Flavorizr setup.
+- Custom locations inside `lib`, nested features, ownership tracking, safe removal, and rename/move.
+- Project Doctor, interrupted-operation recovery, local cache cleanup, and archived reset.
+- Progress, command deadlines, cancellation, and retryable input/operation errors.
 
+The template is fixed. Cleany does not require a database SDK or a custom template system.
 
----
+## Requirements and platform support
 
-## ✨ Why Choose Cleany?
+| Requirement | Details |
+| --- | --- |
+| Dart for Cleany | **3.13.0 or newer within Dart 3.x** |
+| Flutter | A stable Flutter SDK available on PATH for package resolution, builders, localization, and analysis |
+| CLI host systems | Linux, macOS, Windows |
+| Native flavor setup | Android, iOS, macOS folders already present in the project; platform-specific toolchains must be installed |
+| Verified local environment | Flutter 3.47.7 / Dart 3.13.5 on macOS |
 
-* **⚡ Zero Config:** Run a command and start coding your business logic immediately.
-* **🛡️ Safe & Smart:** Built-in collision detection ensures you never accidentally overwrite existing code or create import loops.
-* **🌍 Cross-Platform:** Works flawlessly on Windows, macOS, and Linux.
-* **📦 Modern Stack:** Automatically installs and configures the industry's best tools: `go_router`, `get_it`, `flutter_bloc`, `dio`, `supabase_flutter`, and more.
+Cleany runs on the developer's computer. Its pub.dev platform declarations describe the **CLI host**, while the generated application uses Flutter. Cleany is not a mobile or browser runtime dependency. CI covers Linux/macOS/Windows; an available CI configuration does not by itself prove a successful run on every system. Native project configuration tests do not replace signed builds or device testing.
 
----
+## Installation
 
+After this release is published to pub.dev:
 
-## 🛠️ Installation
-
-Activate the package globally via Dart:
-
-```bash
-dart pub global activate cleany
-
+```sh
+dart pub global activate cleany 2.0.0
 ```
 
----
+For the current checkout, activate the local source instead:
 
-### 🪟 Windows Users: Fixing the "Not on your path" Warning
-
-If you see a warning stating that the executable was installed in a directory:
-
-```bash
-Warning: Pub installs executables into C:\Users\user_name\AppData\Local\Pub\Cache\bin, which is not on your path.
-You can fix that by adding that directory to your system's "Path" environment variable.
-A web search for "configure windows path" will show you how.
-Activated cleany x.x.x.
-
+```sh
+# Run from the Cleany repository.
+dart pub global activate --source path .
 ```
 
-don't worry! This just means Windows doesn't know where to find the `cleany` command yet.
+Add the pub-cache `bin` directory to PATH if `cleany` is not found. Typical locations are `$HOME/.pub-cache/bin` on macOS/Linux and `%LOCALAPPDATA%\Pub\Cache\bin` on Windows. You can also invoke the installed executable with:
 
-**Fix it in 5 easy steps:**
+```sh
+dart pub global run cleany:cleany
+```
 
-1. 🔍 **Search:** Press the Windows key, type **"Environment Variables"**, and hit Enter.
-2. 🖱️ **Navigate:** Click the **Environment Variables...** button at the bottom right of the window.
-3. 📂 **Edit Path:** In the top section (*User variables*), find the variable named **Path**, click on it, and select **Edit...**.
-4. ➕ **Add the Path:** Click **New** and paste the exact path below:
+After updating a local installation, close any running Cleany session and start it again.
+
+## Quick start
+
+1. Create or open a Flutter project and enter its root directory.
+2. Run `cleany`.
+3. Choose **7 — Initialize project**, select the production identity and API provider, then apply.
+4. Choose **1 — Create feature**, enter a name, select Cubit/Bloc, and choose a location.
+5. Select default response fields or define your own fields, then apply and validate.
+6. Configure the API base URL and run the chosen application entrypoint.
+
+```sh
+flutter create playground
+cd playground
+cleany
+```
+
+Cleany presents:
+
 ```text
-%USERPROFILE%\AppData\Local\Pub\Cache\bin
-
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10 Project doctor / repair
+  11 Rename or move an entry
+  12 Configure native flavors
+  0  Exit
 ```
 
+All normal actions use the menu. The direct shortcut `cleany maintenance` opens option 9. Feature/init flags and the old feature/component subcommands are not accepted.
 
-5. 🔄 **Save & Restart:** Click **OK** on all open windows to save. **Crucial:** Close your current terminal (VS Code, CMD, or PowerShell) and open a new one.
-6. ✅ **Verify:** Type `cleany -h` in your new terminal. If you see the help menu, you are ready to go!
+## Generated architecture
 
+```text
+my_flutter_app/
+├── android/
+├── ios/
+├── assets/
+│   ├── images/
+│   ├── icons/
+│   └── translations/
+│       ├── app_en.arb
+│       └── app_ar.arb
+├── config/flavors/
+│   ├── dev.yaml
+│   ├── uat.yaml
+│   └── prod.yaml
+├── lib/
+│   ├── app/
+│   │   ├── app.dart
+│   │   ├── bootstrap.dart
+│   │   ├── config/
+│   │   │   ├── app_config.dart
+│   │   │   ├── app_environment.dart
+│   │   │   └── flavor_config.dart
+│   │   ├── composition/feature_pages.dart
+│   │   ├── di/injection.dart
+│   │   └── router/
+│   │       ├── app_router.dart
+│   │       └── route_names.dart
+│   ├── core/
+│   │   ├── errors/
+│   │   │   ├── failure.dart
+│   │   │   └── error_reporter.dart
+│   │   ├── network/
+│   │   │   ├── api_endpoints.dart
+│   │   │   ├── failure_mapper.dart
+│   │   │   ├── dio/
+│   │   │   │   ├── dio_client.dart
+│   │   │   │   └── interceptors/auth_interceptor.dart
+│   │   │   └── retrofit/home_api.dart
+│   │   ├── localization/generated/
+│   │   ├── storage/
+│   │   ├── theme/
+│   │   ├── constants/
+│   │   ├── utils/
+│   │   └── widgets/
+│   ├── features/home/
+│   │   ├── data/
+│   │   │   ├── datasources/home_remote_data_source.dart
+│   │   │   ├── models/home_model.dart
+│   │   │   └── repositories/home_repository_impl.dart
+│   │   ├── domain/
+│   │   │   ├── entities/home_entity.dart
+│   │   │   ├── repositories/home_repository.dart
+│   │   │   └── usecases/get_home.dart
+│   │   └── presentation/
+│   │       ├── cubit/
+│   │       │   ├── home_cubit.dart
+│   │       │   └── home_state.dart
+│   │       ├── pages/home_page.dart
+│   │       └── widgets/
+│   ├── components/user_card/
+│   │   ├── cubit/
+│   │   └── widgets/user_card_widget.dart
+│   ├── main_dev.dart
+│   ├── main_uat.dart
+│   └── main_prod.dart
+├── test/
+├── integration_test/
+├── .cleany/features.json
+├── flavorizr.yaml
+├── l10n.yaml
+├── analysis_options.yaml
+└── pubspec.yaml
+```
 
----
+This example selects Cubit and Retrofit. Bloc uses a `bloc/` folder with event/state files. Direct Dio omits the Retrofit client. Components without state management have only their widget scaffold. Native folders are supplied by Flutter, not recreated by Cleany initialization.
 
-## 🚀 How Cleany Works
+### Data flow and ownership
 
-For the best experience, start with a fresh Flutter project.
+```text
+API JSON → DataSource → Repository → Model → Entity → UseCase → Cubit/Bloc → UI
+                            └── exception → Failure → Result
+```
 
-### 🧱 1. Core Structure Automation (`cleany -c`)
+The datasource returns raw JSON and propagates exceptions. The repository decodes a Freezed model, constructs the Entity, and returns one Success/Failure result. Presentation consumes entities rather than transport models. Failures distinguish network, unauthorized, validation, business, server, and unexpected errors; adapt the business mapping to your backend.
 
-Run this once at the beginning of your project. It generates all foundational components of a scalable Flutter application, including:
+Application services/repositories use lazy singletons inside an application GetIt scope. Controllers are factories owned by BlocProvider. All registrations live in the application composition root; the router calls page factories without importing controllers. Authored generated Dart files include purpose comments.
 
-* Error handling & Network configuration (`dio`)
-* Navigation (`go_router`)
-* Theming & Constants
-* Dependency Injection (`get_it` & `injectable`)
+## Menu guide
 
-**Automatic Dependency Management:** Cleany doesn't just create folders; it automatically finds the **latest compatible versions** of essential packages and injects them into your `pubspec.yaml`. *No manual editing required—everything is wired automatically.*
+Examples below show representative inputs; native identifiers, file lists, and diagnostic results depend on your project. Mutating source plans finish with **1 — Apply and validate** or **2 — Cancel**. Enter defaults to Cancel at review.
 
-### 📱 2. Screen Feature Generation (`cleany -s <name>`)
+### 7 — Initialize project
 
-Need a new page? Cleany generates a complete module containing **Data, Domain, and Presentation** layers.
-But it doesn't stop there—it automatically updates your `app_router.dart` and `configure_dependencies.dart` so **your feature is functional immediately**.
+Choose this first in an uninitialized Flutter project:
 
-### 🧩 3. Widget & Sub-Feature Generation (`cleany -w <name>`)
+```text
+Choose a number: 7
+Detected production app id: com.example.playground
+API provider: 1  # Retrofit over Dio; 2 selects direct Dio
+Continue [2]: 1
+```
 
-Perfect for standalone, reusable UI modules that still need clean architecture (like a complex custom card or a bottom sheet).
-**Need to nest it?** Use the `-f` flag to create a sub-feature inside an existing parent feature!
-`cleany -w header -f profile` ➔ Generates the `header` feature safely inside `lib/features/profile/sub/header`.
+Cleany resolves supported static Gradle properties and Apple project/xcconfig identifiers. If there are multiple candidates, select the production id; if unresolved, enter it. No platform script is executed just to discover the identifier.
 
----
+| Environment | Application / bundle id |
+| --- | --- |
+| prod | com.example.playground |
+| dev | com.example.playground.dev |
+| uat | com.example.playground.uat |
 
-## 📘 Usage & Commands
+Initialization adds the fixed architecture, required dependencies, localization, and public flavor configuration. Existing dependencies, comments, assets, overrides, main entrypoint, and analysis rules are preserved where possible. Existing `lib/app` or `lib/core` directories are protected from initialization overwrite. Use Doctor for supported repairs; older unrelated architectures need an explicit migration.
 
-| Command | Description | Example |
+### 1 — Create feature
+
+```text
+Choose a number: 1
+Name (snake_case): home
+State management: 1  # Cubit; 2 selects Bloc
+Location [1]: 1      # Default: lib/features/home
+Data contract [1]: 2
+Response field count (1 to 30): 3
+Response field 1, lowerCamelCase:type:JSON key: userName:string:home
+Nullable [1] (y/N): y
+Response field 2, lowerCamelCase:type:JSON key: favourite:list<string>:favourite
+Nullable [2] (y/N): y
+Response field 3, lowerCamelCase:type:JSON key: age:int:age
+Nullable [3] (y/N): y
+Continue [2]: 1
+```
+
+Each field uses `name:type:jsonKey`. Supported types are `string`, `int`, `double`, `bool`, `datetime`, `list<string>`, and `list<int>`; type names are case insensitive. Nullable accepts y/n, yes/no, or legacy 2/1; Enter means No. Counts are 1–30. Names must be lowerCamelCase; field names and JSON keys must be unique. Invalid input is retried at the current question. Arabic/Persian digits are accepted in numeric choices.
+
+After the last response field, Cleany opens review directly. It does not ask for a method, endpoint, or request data. The API scaffold defaults to GET and a path based on the feature name; adapt its data-layer API to your real backend. Library callers can supply advanced typed `FeatureSpec` request contracts.
+
+Location choices:
+
+| Choice | Example | Result |
 | --- | --- | --- |
-| `cleany -h` | Show help and usage information. | `cleany -h` |
-| `cleany -c` | **Initialize Core:** Builds the entire core folder structure and installs all dependencies. *(Run this first in a fresh project)* | `cleany -c` |
-| `cleany -s <name>` | **Create Screen Feature:** Generates a full feature with routing & DI. | `cleany -s auth` |
-| `cleany -w <name>` | **Create Widget Feature:** Generates a standalone feature intended as a reusable widget. | `cleany -w custom_button` |
-| `cleany -w <name> -f <parent>` | **Create Sub-Feature:** Generates a widget feature nested inside an existing parent feature. | `cleany -w user_card -f auth` |
+| 1 — Default directory | name `home` | `lib/features/home` |
+| 2 — Custom directory inside lib | parent `lib/modules/account`, name `auth` | `lib/modules/account/auth` |
+| 3 — Inside an existing feature | parent `auth`, name `profile` | `<auth path>/subfeatures/profile` |
 
----
+Names use nonreserved snake_case and must not collide with existing public Dart symbols or registered entries. Paths remain inside `lib`.
 
-## 📦 What gets generated?
-
-### 🌟 Feature Structure (`cleany -s` & `cleany -w`)
-
-Whether it's a screen or a widget, Cleany enforces a strict, scalable structure:
+### 2 — Create component
 
 ```text
-lib/features/feature_name/
-├── data/
-│   ├── datasources/   (remote_data_source.dart)
-│   ├── models/        (model.dart)
-│   └── repositories/  (repository_data.dart)
-├── domain/
-│   ├── entities/      (entity.dart)
-│   ├── repositories/  (repository_domain.dart)
-│   └── use_cases/     (use_case.dart)
-├── presentation/
-│   ├── cubit/         (cubit.dart, state.dart)
-│   ├── pages/         (feature_screen.dart / feature_widget.dart)
-│   └── widgets/       (widget.dart) // Only for -s (Screen)
-└── di/                (feature_di.dart)
-
+Choose a number: 2
+Name (snake_case): user_card
+State management: 1  # Cubit; 2 = Bloc; 3 = no state management
+Location [1]: 2
+Parent directory (example: lib/shared/components): lib/shared/components
+Continue [2]: 1
 ```
 
-### 🏗️ Core Structure (`cleany -c`)
+Creates `lib/shared/components/user_card`. Components contain a widget and optional controller/state files. They do not add feature routes, data/domain layers, or response-field prompts.
 
-A rock-solid foundation for any enterprise-level app:
+### 3 / 4 — List features / components
 
 ```text
-lib/core/
-├── common/
-├── constants/
-│   ├── app_colors.dart
-│   ├── app_images.dart
-│   ├── app_enums.dart
-│   └── app_icons.dart
-├── di/
-│   ├── configure_dependencies.dart
-│   └── third_part.dart
-├── errors/
-│   ├── failure.dart
-│   └── network_exceptions.dart
-├── extensions/
-│   ├── context_extensions.dart
-│   ├── string_extensions.dart
-│   ├── color_extensions.dart
-│   └── font_extensions.dart
-├── navigation/
-│   ├── app_router.dart
-│   └── routers.dart
-├── network/
-│   ├── dio_client.dart
-│   └── api_endpoints.dart
-├── services/
-│   ├── local_keys_service.dart
-│   └── app_device_utils.dart
-├── theme/
-│   ├── app_theme.dart
-│   └── app_text_theme.dart
-├── utils/
-│   ├── validators.dart
-│   └── formatters.dart
-├── widgets/
-│   └── loading_widget.dart
-└── setup.dart
+Choose a number: 3
+home  ·  cubit  ·  lib/features/home
 
+Choose a number: 4
+user_card  ·  cubit  ·  lib/shared/components/user_card
 ```
 
----
+Lists the matching registered entry kind, its state-management style, and location. Missing/corrupt metadata can be inspected through Doctor.
 
-## ❤️ Contributions & Issues
+### 5 / 6 — Remove feature / component
 
-Found a bug or have a feature request? Feel free to open an issue or contribute to the repository! Let's build the ultimate Flutter architecture tool together.
+```text
+Choose a number: 5  # 6 selects component removal
+Select feature to remove: 1  # Select from the displayed entries
+Continue [2]: 1
+```
 
+Review every planned removal. Removing a parent removes its registered descendants and the contents of its folder, **including user edits inside that folder**. External files require recorded ownership; matching names alone do not authorize deletion. Cleany updates DI, page factories, routes, owned API outputs, and the registry together. Remaining unrelated references cause staged analysis to fail before application.
+
+### 8 — Recover interrupted operation
+
+```text
+Choose a number: 8
+Recovery [2]: 1
+```
+
+Attempts restoration from the durable journal. Kernel locks are released when their process dies, and dead legacy PID locks are reclaimed automatically. Safe files are restored even if another file conflicts. Conflicting edits and backups are retained for resolution and a later recovery attempt; first save edits you want to keep before resolving them.
+
+### 9 — Maintenance / reset
+
+```sh
+cleany maintenance
+```
+
+Or choose **9** from the main menu:
+
+| Subchoice | Example | Behavior |
+| --- | --- | --- |
+| 1 — Clean abandoned local cache | Action `1`, then Apply | Removes marked project-local staging folders; preserves recovery journals/backups and global pub/Flutter caches |
+| 2 — Archive and reset | Action `2`, then Apply and validate | Archives managed files under `.cleany/backups/reset_<timestamp>/`, then installs a fresh architecture and empty entry registry |
+| 3 — Set command timeout | Action `3`, timeout `600`, then Apply | Stores a 600-second deadline per command in `.cleany/settings.json` |
+| 4 — Cancel | Action `4` | Returns to the main menu |
+
+Reset archives app/core, registered folders, and managed configuration, including their edits. Unrelated source/dependencies and native projects remain. Unrelated imports of removed entries can prevent validation; the original project is then preserved. Default command timeout is 300 seconds; accepted values are 5–3600.
+
+### 10 — Project Doctor / repair
+
+```text
+Choose a number: 10
+REPAIR  ...missing registry, source, dependency, or binding...
+NOTICE  ...preserved edit or unsupported custom structure...
+Continue [2]: 1
+```
+
+Doctor compares folders, the ownership registry, required dependency constraints, DI, page factories, and routes. It proposes specific supported repairs, archives corrupt registry contents, and can infer supported field contracts when rebuilding metadata. Edited files are preserved. Unsupported composition structures require manual resolution rather than guessed edits. All proposed repairs pass the same validation transaction.
+
+### 11 — Rename or move an entry
+
+```text
+Choose a number: 11
+Entry: 1
+New name [home]: dashboard
+Parent directory [lib/features]: lib/modules
+Continue [2]: 1
+```
+
+Moves the entry to `lib/modules/dashboard`, updating known generated symbols, owned filenames, imports/exports/parts, DI, routes, child metadata, and registry paths. Backend API endpoint strings remain unchanged. References outside supported source roots or dynamic string references need manual review.
+
+### 12 — Configure native flavors
+
+```text
+Choose a number: 12
+Platforms: 1  # Select an existing platform, or All available
+Continue [2]: 1
+```
+
+Stages only selected Android/iOS/macOS folders and runs the configured Flavorizr platform processors in isolation. Native files participate in validation, ownership, and recovery. Your platform SDKs, Ruby/Xcode dependencies, signing, icons, and device QA remain application-specific work.
+
+### 0 — Exit
+
+Choose `0` to close the session. EOF cancels incomplete entry input. Failed operations offer retry or return to the main menu.
+
+## Run the generated application
+
+Set a public API URL in `config/flavors/dev.yaml`, or pass it at launch:
+
+```sh
+# Add --flavor dev after applying native flavor setup for that platform.
+flutter run --target lib/main_dev.dart --dart-define=API_BASE_URL=https://api.example.com
+```
+
+Use `main_uat.dart` or `main_prod.dart` for those environments. UAT and production require HTTPS. YAML assets and dart-define values are extractable public configuration; keep privileged credentials on the backend. Dio can fetch session tokens at request time via `TokenProvider` and attaches them only to the trusted origin.
+
+The generated main entrypoints are separate from an existing `main.dart`; choose the desired target explicitly. The initial UI is a scaffold: connect routes, forms, business rules, and backend contracts for your application.
+
+## Localization
+
+Edit `assets/translations/app_en.arb` and `app_ar.arb`. The official Flutter SDK `flutter_localizations` and gen-l10n produce source in `lib/core/localization/generated/`. The app follows the device language and supplies Material/Widgets/Cupertino delegates and Arabic RTL layout. No easy_localization dependency is added.
+
+## Safety and recovery
+
+1. Build a plan and show source changes for review.
+2. Acquire a project lock and create a selective staging workspace.
+3. Resolve packages, run gen-l10n and builders, and analyze the result.
+4. Check original inputs and validated output fingerprints for changes.
+5. Apply the collected files with atomic replacement per file and a durable recovery journal.
+
+The multi-file application is recoverable, not one indivisible filesystem operation. External observers can see intermediate states during application. Recovery preserves conflicting user edits and continues restoring safe records, including when another backup is damaged. Ctrl+C requests controlled cancellation; active commands have deadlines and command-tree termination.
+
+Relevant source/configuration, declared assets/fonts, and selected native folders are copied using filesystem operations and streaming hashes. Build caches, Pods, unselected native folders, and unrelated root binaries are excluded. Abandoned marked staging folders are cleaned automatically. Unexpected output locations and changes during/after analysis fail explicitly rather than silently discarding generated files.
+
+Commit `.cleany/features.json`; it records schema/template versions, contracts, paths, types, ownership, and hashes. Generated ignore entries exclude runtime cache/journal/backup files. Do not remove `.cleany/operation.lock` to bypass a live operation. Progress is shown in the terminal and recorded in `.cleany/logs/latest.jsonl`.
+
+## Limits and migration
+
+- One fixed template; existing 1.x layouts are not silently migrated by init.
+- Pub workspaces and symlinked source paths are unsupported.
+- AST edits support the fixed composition contracts and several function/list forms; arbitrary conditional DI or renamed composition entrypoints need manual integration.
+- Native id discovery is static and conservative; dynamic scripts may require manual input.
+- CLI field input supports flat response fields. Nested DTOs, envelopes, multipart, pagination, multiple operations, and path parameters require application code.
+- Rename/move handles known symbols and URI directives in lib/test/integration_test/tool; runtime strings and external references need review.
+- Memory holds changed file contents and fingerprint metadata. Very large resets/moves still need performance evaluation for the particular repository.
+
+See [CHANGELOG](CHANGELOG.md) for the release summary and [the usage guide](doc/USAGE_AR.md) for a guided walkthrough.
+
+## Library example
+
+`package:cleany/cleany.dart` exposes planning, transaction, recovery, and maintenance APIs. The [runnable example](example/cleany_example.dart) prepares a plan using a disposable project and cleans it up; it does not alter your application:
+
+```sh
+dart run example/cleany_example.dart
+```
+
+For real applications, leave package installation, builders, and analysis enabled in `GenerationTransaction.apply`.
+
+## Development and release checks
+
+```sh
+dart pub get
+dart format --output=none --set-exit-if-changed lib bin test example
+dart analyze --fatal-infos
+dart test test/generator_test.dart test/advanced_test.dart
+dart run example/cleany_example.dart
+dart doc
+dart pub outdated
+dart pub publish --dry-run
+```
+
+Actual generated-app tests resolve Flutter dependencies and run builders, analysis, runtime tests, refactoring, repair, removal, reset, and native flavor configuration:
+
+```sh
+# macOS: full suite, including Apple native configuration
+CLEANY_FLUTTER_INTEGRATION=true dart test test/generated_app_test.dart --concurrency=1
+```
+
+On Linux, set `CLEANY_FLUTTER_INTEGRATION=true` and select `--name 'generated dio'` to run the Dio fixture without Apple native configuration. On PowerShell, set `$env:CLEANY_FLUTTER_INTEGRATION = 'true'`, then run `dart test test/generated_app_test.dart --name 'generated dio' --concurrency=1`. The complete native Apple configuration fixture requires macOS. CI uses stable toolchains and the minimum supported Dart SDK. Package review can additionally use [pana](https://pub.dev/packages/pana) on a disposable copy; pub.dev determines the final published score.
+
+## Local release audit
+
+The 2.0.0 local pana audit achieved **160/160**, with **100% public API documentation**, clean analysis, and current dependency support. See the [dated report and verification details](doc/PUBDEV_REPORT.md). pub.dev determines the final published score after upload.
+
+## License and support
+
+BSD 3-Clause; see [LICENSE](LICENSE). Report reproducible problems through [GitHub issues](https://github.com/fahad0100/cleany/issues), including the Cleany/Flutter/Dart versions, selected menu action, and sanitized diagnostics.

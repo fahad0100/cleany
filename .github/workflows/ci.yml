@@ -1,0 +1,54 @@
+name: Validate Cleany
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  generator:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed lib bin test example
+      - run: dart analyze --fatal-infos
+      - run: dart test test/generator_test.dart test/advanced_test.dart --concurrency=1
+      - run: dart run example/cleany_example.dart
+      - run: dart doc --output .dart_tool/api-docs
+      - run: dart pub publish --dry-run
+  minimum-sdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.13.0'
+      - run: dart pub get
+      - run: dart pub downgrade
+      - run: dart analyze --fatal-infos
+      - run: dart test test/generator_test.dart test/advanced_test.dart --concurrency=1
+  generated-apps:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: dart pub get
+      - run: dart test test/generated_app_test.dart --concurrency=1 --reporter expanded
+        env:
+          CLEANY_FLUTTER_INTEGRATION: 'true'

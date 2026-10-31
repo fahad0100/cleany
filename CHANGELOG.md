@@ -1,3 +1,15 @@
+# Changelog
+
+## [2.0.0] - 2026-10-31
+
+- Replace legacy commands with a colored numbered CLI for initialization, feature/component generation, listing, removal, repair, refactoring, maintenance, and native flavors.
+- Generate one Feature-Based + Clean Architecture template with Cubit/Bloc, Freezed, multiple_result, central DI, and optional Retrofit over Dio.
+- Add compact response fields (`name:type:jsonKey`) with y/n nullability and direct review; fix repository constructor lints on current Dart.
+- Add isolated validation, versioned file ownership, selective staging, kernel locks, per-file rollback/recovery, and archived reset.
+- Support official Arabic/English localization, dev/UAT/prod identities, and transactional Android/iOS/macOS Flavorizr configuration.
+- Refresh pub.dev metadata, API documentation, runnable examples, usage guides, and current dependencies. Cleany now requires Dart 3.13+.
+- **Breaking:** replace the 1.x template/helper APIs and command aliases; existing generated layouts require an explicit migration. No database SDK is forced.
+
 ## [1.0.22] 
 
 ### ✨ Improvements
