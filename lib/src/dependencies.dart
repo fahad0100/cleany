@@ -1,3 +1,7 @@
+import 'package:pub_semver/pub_semver.dart';
+import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/yaml_edit.dart';
+
 import 'project.dart';
 
 Map<String, Map<String, Object>> packageRequirements(ApiProvider provider) => {
@@ -23,3 +27,91 @@ Map<String, Map<String, Object>> packageRequirements(ApiProvider provider) => {
     if (provider == ApiProvider.retrofit) 'retrofit_generator': '^10.3.2',
   },
 };
+
+/// Applies the same runtime manifest policy for init, repair, and reset.
+/// Existing custom dependencies, asset maps, fonts, and comments are retained.
+String configurePubspec(
+  String source,
+  ApiProvider provider, {
+  bool repairConstraints = false,
+  void Function(String message)? onRepair,
+}) {
+  final original = loadYaml(source) as YamlMap;
+  final editor = YamlEditor(source);
+  for (final section in packageRequirements(provider).entries) {
+    if (original[section.key] != null && original[section.key] is! Map) {
+      throw GenerationException('Expected a mapping for ${section.key}.');
+    }
+    if (original[section.key] == null) {
+      editor.update([section.key], <String, Object>{});
+    }
+    for (final dependency in section.value.entries) {
+      final current = (original[section.key] as Map?)?[dependency.key];
+      if (current == null &&
+          section.key == 'dependencies' &&
+          (original['dev_dependencies'] as Map?)?.containsKey(dependency.key) ==
+              true) {
+        throw GenerationException(
+          'Move ${dependency.key} from dev_dependencies to dependencies.',
+        );
+      }
+      if (current == null &&
+          section.key == 'dev_dependencies' &&
+          (original['dependencies'] as Map?)?.containsKey(dependency.key) ==
+              true) {
+        continue;
+      }
+      var replace = current == null;
+      Object replacement = dependency.value;
+      if (repairConstraints && dependency.value is Map) {
+        replace =
+            current is! Map ||
+            current['sdk'] != (dependency.value as Map)['sdk'];
+      } else if (repairConstraints &&
+          current is String &&
+          dependency.value is String) {
+        try {
+          final declared = VersionConstraint.parse(current);
+          final supported = declared.intersect(
+            VersionConstraint.parse(dependency.value as String),
+          );
+          replace = supported.isEmpty || supported != declared;
+          if (!supported.isEmpty) replacement = supported.toString();
+        } on FormatException {
+          throw GenerationException(
+            'Invalid dependency constraint for ${dependency.key}: $current',
+          );
+        }
+      }
+      if (replace) {
+        editor.update([section.key, dependency.key], replacement);
+        onRepair?.call('Set ${dependency.key} to $replacement.');
+      }
+    }
+  }
+  final flutter = original['flutter'];
+  if (flutter != null && flutter is! Map) {
+    throw const GenerationException('Expected a flutter mapping.');
+  }
+  if (flutter == null) editor.update(['flutter'], <String, Object>{});
+  editor.update(['flutter', 'generate'], true);
+  final existing = (flutter as Map?)?['assets'];
+  if (existing != null && existing is! List) {
+    throw const GenerationException('Expected a flutter assets list.');
+  }
+  final assets = <Object?>[...?existing as List?];
+  for (final path in [
+    'assets/images/',
+    'assets/icons/',
+    'assets/translations/',
+    'config/flavors/',
+  ]) {
+    if (!assets.any(
+      (entry) => (entry is Map ? entry['path'] : entry) == path,
+    )) {
+      assets.add(path);
+    }
+  }
+  editor.update(['flutter', 'assets'], assets);
+  return editor.toString();
+}

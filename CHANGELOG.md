@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.2] - 2026-10-31
+
+- Reorganize the colored CLI into Generation, Cleanup, Inspection & Management, Core & Setup, and Maintenance & Recovery, using the new 1–13 numbering.
+- Explain each command before its prompts, including listing, recovery, maintenance, and exit; keep retry and maintenance-shortcut routing independent of menu numbers.
+- Generate component widgets directly inside their component folder, with sibling Cubit/Bloc directories and corrected imports and page factories.
+- Track component layouts so Doctor, registry recovery, rename/move, and removal preserve components generated with the previous widgets subfolder.
+- Refresh the pub.dev README, command examples, environment setup guide, and CLI/generated Flutter regression coverage.
+- Add menu option 3 to create entity-returning or void use cases on existing features, with shared feature repository contracts and Data implementations, central DI, independent typed Cubit/Bloc action state, and a documented backend connection hook that returns Failure until implemented.
+- Include added use cases in ownership, Doctor repair/discovery, rename/move, removal, and generated Flutter runtime tests for both API providers.
+- Extend the existing feature repository for new use cases instead of creating one repository per operation; retain compatibility with legacy operation contracts.
+- Add environment/native VS Code launch profiles with public API URL prompts and a generated run guide. Connect recognizable Flutter scaffold main functions to dev with exact original backups, preserve custom entrypoints/profiles, and support Doctor/reset.
+- Prevent builders from replacing existing unstaged files; freeze validated plans and preserve output permissions.
+- Preserve customized Doctor integrations and unrelated refactoring bytes; track ownership of individual integration nodes.
+- Retain unknown recovery backups, add independent checksummed journal snapshots, and append per-file transitions.
+- Separate application outcomes from progress/log/cleanup warnings, retain retry inputs, and isolate operation logs.
+- Share pubspec repair/reset settings, follow referenced configurations, validate SDK consistency and flavor prerequisites, and improve startup/service lifecycle diagnostics.
+
+## [2.0.1]
+
+### Fixed
+
+- fix some bugs file
+
 ## [2.0.0] - 2026-10-31
 
 - Replace legacy commands with a colored numbered CLI for initialization, feature/component generation, listing, removal, repair, refactoring, maintenance, and native flavors.

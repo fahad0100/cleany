@@ -85,26 +85,70 @@ class OperationContext {
   /// Monotonic clock used to timestamp progress events.
   final Stopwatch watch = Stopwatch()..start();
 
-  /// Emits a progress update to the configured observer.
+  /// Nonfatal monitoring and cleanup diagnostics, independent of application.
+  final List<String> warnings = [];
+
+  /// Records a bounded diagnostic without interrupting durable work.
+  void warn(String message) {
+    if (warnings.length < 50 && !warnings.contains(message)) {
+      warnings.add(message);
+    }
+  }
+
+  /// Emits an update; observers cannot change the outcome of an operation.
   void report(
     String stage, {
     String? command,
     String? detail,
     bool completed = false,
   }) {
-    onProgress?.call(
-      OperationEvent(
-        stage,
-        watch.elapsed,
-        command: command,
-        detail: detail,
-        completed: completed,
-      ),
-    );
+    try {
+      onProgress?.call(
+        OperationEvent(
+          stage,
+          watch.elapsed,
+          command: command,
+          detail: detail,
+          completed: completed,
+        ),
+      );
+    } on Object catch (error) {
+      warn('Progress observer failed: $error');
+    }
   }
 
   /// Watches Ctrl+C; cancel the returned subscription after the operation.
   StreamSubscription<ProcessSignal>? watchInterrupts() {
     return ProcessSignal.sigint.watch().listen((_) => cancellation.cancel());
   }
+}
+
+/// Durable outcome, separate from progress delivery and temporary-file cleanup.
+enum OperationStatus {
+  applied,
+  appliedWithWarnings,
+  rolledBack,
+  recoveryRequired,
+}
+
+/// Reports whether application succeeded and any nonfatal diagnostics.
+class OperationResult {
+  /// Creates an immutable outcome.
+  OperationResult(this.status, [Iterable<String> warnings = const []])
+    : warnings = List.unmodifiable(warnings);
+
+  /// State of the durable project files.
+  final OperationStatus status;
+
+  /// Monitoring or cleanup diagnostics that did not undo a successful commit.
+  final List<String> warnings;
+}
+
+/// An operation failure with an explicit rollback/recovery outcome.
+class OperationFailure extends GenerationException {
+  /// Preserves the original diagnostic and its durable outcome.
+  OperationFailure(super.message, this.result);
+
+  /// State to present alongside the failure.
+  final OperationResult result;
 }

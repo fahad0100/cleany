@@ -32,6 +32,7 @@ String documentGeneratedDart(String path, String source) {
     _ when path.contains('/repositories/') => 'Defines the domain repository contract returning an Entity or Failure in a Result.',
     _ when path.contains('/usecases/') =>
       'Exposes one business operation through the domain repository contract.',
+    _ when path.endsWith('/use_case_state.dart') => 'Tracks each use case independently with typed loading, success, and failure states.',
     _ when path.endsWith('_state.dart') =>
       'Defines immutable presentation states for the generated Cubit or Bloc.',
     _ when path.endsWith('_event.dart') =>
@@ -39,7 +40,7 @@ String documentGeneratedDart(String path, String source) {
     _ when path.endsWith('_cubit.dart') || path.endsWith('_bloc.dart') =>
       'Runs presentation actions and emits the corresponding immutable states.',
     _ when path.contains('/pages/') => 'Builds the feature page and renders loading, entity success, and failure states.',
-    _ when path.contains('/widgets/') =>
+    _ when path.contains('/widgets/') || path.endsWith('_widget.dart') =>
       'Builds a reusable widget and renders its optional presentation state.',
     _ when path.contains('/theme/') =>
       'Provides the shared Material theme for the application.',

@@ -1,0 +1,461 @@
+{
+  "version": 2,
+  "template_version": "2.0.0",
+  "app_id": "com.example.testCleanyDio",
+  "project_files": [
+    {
+      "path": "lib/app/app.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "deeb13e5aaa8690f1e59158e50136e25d4fa17f56c477ebdb5509005c47e245c",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/bootstrap.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "7fbd521aed3434e9a4565473cef98536fd7574d4ecfab5e137d71f446eea4bbc",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/config/app_environment.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "9ef8aa34823bcf0432c9b2467f4c19603ee714fb42f382cf6846878283ffaf35",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/config/app_config.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "5cbf30bebf20dde88731bdb443a5a7fe9ac19805a954a0b530ddc570fa0b354f",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/errors/error_reporter.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "7787ef3874a35b59500a2df374c597226d72810cd441631fc30128c3569dae22",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/errors/failure.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "bc5e1fa6947e6a2960d2786a90eb39b76b223f1bb47f437b8cec960ec4351e19",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/network/failure_mapper.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "96e94c625de47e7908c65cea3c0b750b8253d4aedd169db570c610399d27f9a8",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/network/dio/dio_client.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "bd60cda1018aa0f352f1eb8a97375fdc0105aaed7bf71e5db84a7e636d6fe239",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/network/dio/interceptors/auth_interceptor.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "ee7fd828fba0bd4a4202056ab86770b6bf546a536e35425b295ca05b3554c57e",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/network/api_endpoints.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "8540fb0ef71b42d7c8f190900310a7b5ca20ebeb7ac696f5d9948b328e4df020",
+      "origin": "template"
+    },
+    {
+      "path": "l10n.yaml",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "38f6887d4badcdbca9a23521d607fa6f7f3ea495c7dfbad135be7b466657224e",
+      "origin": "template"
+    },
+    {
+      "path": "assets/translations/app_en.arb",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "f556f12e3204c3b3e29564adc511417513c96c43fd0da5298a9836d99d18692f",
+      "origin": "template"
+    },
+    {
+      "path": "assets/translations/app_ar.arb",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "2ffc5a821319357aaee83655251571f1690e6c0efce28d206b788b216dc1a913",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/config/flavor_config.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "2e4ca6ff8a4cb3475f2b9f23a0ff5cbdf712364f427bd87a117b07a4a3040c86",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/theme/app_theme.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "4363d53fb90b0e24ac5870898b79c8b1ce8a3c969f8d9f34aeedf2e4b229c2aa",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/widgets/loading_widget.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "e94cfcb0436acf9a39368ef6225bedac0429bfc8cdb9eaa39dd63317379b0b45",
+      "origin": "template"
+    },
+    {
+      "path": "assets/images/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "assets/icons/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "test/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "integration_test/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/storage/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/localization/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/constants/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/utils/.gitkeep",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "origin": "template"
+    },
+    {
+      "path": "lib/main_dev.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "52413975d2aa3bf975423d03895a1b724dfcf9d969e0a518b77b2da09a0cd1cf",
+      "origin": "template"
+    },
+    {
+      "path": "config/flavors/dev.yaml",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "495fc3b7c3619b90d4b0345efc237332755df0d0d4918b607e40e598600f80ea",
+      "origin": "template"
+    },
+    {
+      "path": "lib/main_uat.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "1613cceb3cbe4e9729531787758c6d59930dd62e243da99a2142d602ae5830a9",
+      "origin": "template"
+    },
+    {
+      "path": "config/flavors/uat.yaml",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "4426697c30c392ad7cda836c609472337100a9f26ca480d73d852d83807f25f6",
+      "origin": "template"
+    },
+    {
+      "path": "lib/main_prod.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "ca5d993fbb10c220ea2369e02ccc83e076db201f064cecdc02a7f3b084e0d4ff",
+      "origin": "template"
+    },
+    {
+      "path": "config/flavors/prod.yaml",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "f70f324323b7953d88cb3390259fab74e9be92419cdae6fd3f8cca96aa370ba7",
+      "origin": "template"
+    },
+    {
+      "path": "flavorizr.yaml",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "499801865504b03e024f97ad8b74e62b67ce9d4c8accc9dfd93694a7cca90563",
+      "origin": "template"
+    },
+    {
+      "path": "pubspec.yaml",
+      "owner": "@project",
+      "kind": "configuration",
+      "sha256": "35752db11f06436901642ea1ad2b992ea1f31b61174ad4adcc8f4cf5bdb72766",
+      "origin": "template"
+    },
+    {
+      "path": "lib/core/localization/generated/app_localizations.dart",
+      "owner": "@project",
+      "kind": "generated",
+      "sha256": "92d36952259c809863b69d53d5239243f3f047398b96bbb366c00a216363721f",
+      "origin": "builder"
+    },
+    {
+      "path": "lib/core/localization/generated/app_localizations_ar.dart",
+      "owner": "@project",
+      "kind": "generated",
+      "sha256": "907d19eebfa93e7960adaa0f79cfba2428230110bca1a86c03740ee4b34ed5f5",
+      "origin": "builder"
+    },
+    {
+      "path": "lib/core/localization/generated/app_localizations_en.dart",
+      "owner": "@project",
+      "kind": "generated",
+      "sha256": "cec8ae33faa8b5c39f36a844247fac03e2d62b2746364d245b48e051d8e5fe58",
+      "origin": "builder"
+    },
+    {
+      "path": "lib/app/di/injection.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "60c61b63cf5c0433a959bdf06f448a3ce7b8f92ad3be3e811c5c2e53d7643fb8",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/composition/feature_pages.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "ea57ce0d835ec2be23303583b95b47a4a0671812a7d57123e6d123dfeb7088b6",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/router/route_names.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "3b477f6db292f68aa7c733ba0877d1edcab9c1ce2400d5839aa55984c03d5f8f",
+      "origin": "template"
+    },
+    {
+      "path": "lib/app/router/app_router.dart",
+      "owner": "@project",
+      "kind": "source",
+      "sha256": "a2f354ff53391d882a31c759bbbbfce639457c4da656c1d74773b3463e4719cd",
+      "origin": "template"
+    }
+  ],
+  "api_provider": "dio",
+  "features": [
+    {
+      "name": "probe",
+      "path": "lib/features/probe",
+      "kind": "feature",
+      "state": "bloc",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.ProbeRemoteDataSource",
+          "owner": "probe",
+          "sha256": "84ae3c4ae6ab530f3a248b61ce3cd4d749a602b8658ad985bd3d910bbe8ab008"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.ProbeRepository",
+          "owner": "probe",
+          "sha256": "bfe10b40b0a295b531853ddbc8c2a8cbc52e7852a783402b1fa57982ca87b735"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.GetProbe",
+          "owner": "probe",
+          "sha256": "a1cdaa2e480ffc32d5699fe0dec36fcb21ae9f7195c34ca083f56f189b71bea8"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.ProbeBloc",
+          "owner": "probe",
+          "sha256": "14019bbb739e3aa2a6805e1fe5463bca0f84ebf39a24a23551976fba3e306cd5"
+        },
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.probe",
+          "owner": "probe",
+          "sha256": "76288d1f0780ced4e2e0aed7799dcb5230fb0fb6fd7cb207ac7b7e5f2c0d6a4e"
+        },
+        {
+          "path": "lib/app/router/route_names.dart",
+          "node": "RouteNames.probe",
+          "owner": "probe",
+          "sha256": "1e967d078b9290b85d5f826dc67b8e683caa718b648c3bb2a3b0324d7e48e4c7"
+        },
+        {
+          "path": "lib/app/router/app_router.dart",
+          "node": "Router.probe",
+          "owner": "probe",
+          "sha256": "66e20ae06b1fed484e5fed09083513d225523cd068a171c3d4379f05a7db4e74"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/features/probe/domain/entities/probe_entity.dart",
+          "owner": "probe",
+          "kind": "entity",
+          "sha256": "8c8c2b2b8d49a60503dee73c6625aa61cf91fa47f4a5973a4e9c661d70335807",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/domain/repositories/probe_repository.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "5f77f5b60ecba1a4ce17cbebcb8ab23fd0640eff59d0fbac3eceb97b6e2ed211",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/domain/usecases/get_probe.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "d2d8d77ccb672ee75f97480024eaa867f05b94945363e9ae98f3e04cb209811f",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/data/models/probe_model.dart",
+          "owner": "probe",
+          "kind": "model",
+          "sha256": "f2f97bda8b10700a1ae7b86dc2082b08178b941cc42f81b3493345da927d071b",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/data/datasources/probe_remote_data_source.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "184bbb3aa68b069a681821525ea1b8ff29cbf9365b8e251394dad8ca7fee369b",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/data/repositories/probe_repository_impl.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "fc8d12d6bf3b5efad86d72e689de738d75823d541a730d214d0149507e62ce59",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/presentation/widgets/.gitkeep",
+          "owner": "probe",
+          "kind": "configuration",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/presentation/bloc/probe_state.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "90cfb5a4a8f7445a58c67771b79d108a8175098cb168257c0f234af2b5a269e2",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/presentation/bloc/probe_event.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "109bbe54409b99ee168ad0f53c8f20d88b37fd8b6939fd765759d4d67a63460c",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/presentation/bloc/probe_bloc.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "4f0083dbd7e055da1328f6f9dd68b7aab56eff7adc5c366ce84d88704a9513c2",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/presentation/pages/probe_page.dart",
+          "owner": "probe",
+          "kind": "source",
+          "sha256": "324f90b2a156a3359bcca740c1611482cce114edc546f16241cce0d24c8df6e2",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/probe/data/models/probe_model.g.dart",
+          "owner": "probe",
+          "kind": "generated",
+          "sha256": "eced6c2567a2940605dd5a1e373a239392fd07500dff38b53c16a9e189d9ab78",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/probe/data/models/probe_model.freezed.dart",
+          "owner": "probe",
+          "kind": "generated",
+          "sha256": "00d89aadfcba8ea8f87850503605477f6f51f698d1b7d1d943318082c166c501",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/probe/domain/entities/probe_entity.freezed.dart",
+          "owner": "probe",
+          "kind": "generated",
+          "sha256": "ff5832d1688898e7395dafad5e4e637d2690f2b490ad76762b507ee4ac6beb0e",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/probe/presentation/bloc/probe_state.freezed.dart",
+          "owner": "probe",
+          "kind": "generated",
+          "sha256": "45b70aa11656236b97b6fa437f679c5cb59847cde922e56d0367de41a5405efe",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/probe/presentation/bloc/probe_event.freezed.dart",
+          "owner": "probe",
+          "kind": "generated",
+          "sha256": "3d6a417129c3d4995012769e96646d5d73881c723d422e4bb6fecc4e61a868cc",
+          "origin": "builder"
+        }
+      ]
+    }
+  ]
+}

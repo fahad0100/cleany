@@ -1,0 +1,223 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Cleany maintenance
+╰────────────────────────────────────────────╯
+  1  Clean abandoned local cache
+  2  Archive managed folders and reset Cleany
+  3  Set command timeout
+  4  Cancel
+› Action: Current lib/app, lib/core, registered entry folders, and managed configuration are archived before replacing the architecture. Unrelated code, dependencies, and native projects are preserved.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  .cleany/backups/reset_1793458463357275/.cleany/features.json
+  UPDATE  .cleany/features.json
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/app.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/bootstrap.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/config/app_environment.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/config/app_config.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/errors/error_reporter.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/errors/failure.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/failure_mapper.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/dio/dio_client.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/dio/interceptors/auth_interceptor.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/api_endpoints.dart
+  CREATE  .cleany/backups/reset_1793458463357275/l10n.yaml
+  CREATE  .cleany/backups/reset_1793458463357275/assets/translations/app_en.arb
+  CREATE  .cleany/backups/reset_1793458463357275/assets/translations/app_ar.arb
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/config/flavor_config.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/theme/app_theme.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/widgets/loading_widget.dart
+  CREATE  .cleany/backups/reset_1793458463357275/assets/images/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/assets/icons/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/test/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/integration_test/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/storage/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/localization/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/constants/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/utils/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/main_dev.dart
+  CREATE  .cleany/backups/reset_1793458463357275/config/flavors/dev.yaml
+  CREATE  .cleany/backups/reset_1793458463357275/lib/main_uat.dart
+  CREATE  .cleany/backups/reset_1793458463357275/config/flavors/uat.yaml
+  CREATE  .cleany/backups/reset_1793458463357275/lib/main_prod.dart
+  CREATE  .cleany/backups/reset_1793458463357275/config/flavors/prod.yaml
+  CREATE  .cleany/backups/reset_1793458463357275/flavorizr.yaml
+  CREATE  .cleany/backups/reset_1793458463357275/pubspec.yaml
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/localization/generated/app_localizations.dart
+  REMOVE  lib/core/localization/generated/app_localizations.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/localization/generated/app_localizations_ar.dart
+  REMOVE  lib/core/localization/generated/app_localizations_ar.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/localization/generated/app_localizations_en.dart
+  REMOVE  lib/core/localization/generated/app_localizations_en.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/router/app_router.dart
+  UPDATE  lib/app/router/app_router.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/di/injection.dart
+  UPDATE  lib/app/di/injection.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/app/router/route_names.dart
+  UPDATE  lib/app/router/route_names.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/dashboard_api.g.dart
+  REMOVE  lib/core/network/retrofit/dashboard_api.g.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/dashboard_api.dart
+  REMOVE  lib/core/network/retrofit/dashboard_api.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/data/datasources/dashboard_remote_data_source.dart
+  REMOVE  lib/modules/dashboard/data/datasources/dashboard_remote_data_source.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/data/repositories/dashboard_repository_impl.dart
+  REMOVE  lib/modules/dashboard/data/repositories/dashboard_repository_impl.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/data/models/dashboard_model.dart
+  REMOVE  lib/modules/dashboard/data/models/dashboard_model.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/data/models/dashboard_model.freezed.dart
+  REMOVE  lib/modules/dashboard/data/models/dashboard_model.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/data/models/dashboard_model.g.dart
+  REMOVE  lib/modules/dashboard/data/models/dashboard_model.g.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/domain/repositories/dashboard_repository.dart
+  REMOVE  lib/modules/dashboard/domain/repositories/dashboard_repository.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/domain/usecases/get_dashboard.dart
+  REMOVE  lib/modules/dashboard/domain/usecases/get_dashboard.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/domain/entities/dashboard_entity.freezed.dart
+  REMOVE  lib/modules/dashboard/domain/entities/dashboard_entity.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/domain/entities/dashboard_entity.dart
+  REMOVE  lib/modules/dashboard/domain/entities/dashboard_entity.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/presentation/cubit/dashboard_state.dart
+  REMOVE  lib/modules/dashboard/presentation/cubit/dashboard_state.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/presentation/cubit/dashboard_state.freezed.dart
+  REMOVE  lib/modules/dashboard/presentation/cubit/dashboard_state.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/presentation/cubit/dashboard_cubit.dart
+  REMOVE  lib/modules/dashboard/presentation/cubit/dashboard_cubit.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/presentation/pages/dashboard_page.dart
+  REMOVE  lib/modules/dashboard/presentation/pages/dashboard_page.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/presentation/widgets/.gitkeep
+  REMOVE  lib/modules/dashboard/presentation/widgets/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/catalog_api.dart
+  REMOVE  lib/core/network/retrofit/catalog_api.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/catalog_api.g.dart
+  REMOVE  lib/core/network/retrofit/catalog_api.g.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/data/datasources/catalog_remote_data_source.dart
+  REMOVE  lib/features/catalog/data/datasources/catalog_remote_data_source.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/data/repositories/catalog_repository_impl.dart
+  REMOVE  lib/features/catalog/data/repositories/catalog_repository_impl.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/data/models/catalog_model.g.dart
+  REMOVE  lib/features/catalog/data/models/catalog_model.g.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/data/models/catalog_model.dart
+  REMOVE  lib/features/catalog/data/models/catalog_model.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/data/models/catalog_model.freezed.dart
+  REMOVE  lib/features/catalog/data/models/catalog_model.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/domain/repositories/catalog_repository.dart
+  REMOVE  lib/features/catalog/domain/repositories/catalog_repository.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/domain/usecases/get_catalog.dart
+  REMOVE  lib/features/catalog/domain/usecases/get_catalog.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/domain/entities/catalog_entity.dart
+  REMOVE  lib/features/catalog/domain/entities/catalog_entity.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/domain/entities/catalog_entity.freezed.dart
+  REMOVE  lib/features/catalog/domain/entities/catalog_entity.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/pages/catalog_page.dart
+  REMOVE  lib/features/catalog/presentation/pages/catalog_page.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/bloc/catalog_event.freezed.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_event.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/bloc/catalog_state.freezed.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_state.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/bloc/catalog_state.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_state.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/bloc/catalog_event.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_event.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/bloc/catalog_bloc.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_bloc.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/features/catalog/presentation/widgets/.gitkeep
+  REMOVE  lib/features/catalog/presentation/widgets/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/details_api.dart
+  REMOVE  lib/core/network/retrofit/details_api.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/core/network/retrofit/details_api.g.dart
+  REMOVE  lib/core/network/retrofit/details_api.g.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/data/datasources/details_remote_data_source.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/datasources/details_remote_data_source.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/data/repositories/details_repository_impl.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/repositories/details_repository_impl.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/data/models/details_model.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/models/details_model.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/data/models/details_model.freezed.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/models/details_model.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/data/models/details_model.g.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/models/details_model.g.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/domain/repositories/details_repository.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/repositories/details_repository.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/domain/usecases/get_details.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/usecases/get_details.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.freezed.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.freezed.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/presentation/cubit/details_cubit.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_cubit.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/presentation/pages/details_page.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/pages/details_page.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/details/presentation/widgets/.gitkeep
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/widgets/.gitkeep
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/widgets/profile_card/cubit/profile_card_state.freezed.dart
+  REMOVE  lib/shared/widgets/profile_card/cubit/profile_card_state.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/widgets/profile_card/cubit/profile_card_cubit.dart
+  REMOVE  lib/shared/widgets/profile_card/cubit/profile_card_cubit.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/widgets/profile_card/cubit/profile_card_state.dart
+  REMOVE  lib/shared/widgets/profile_card/cubit/profile_card_state.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/widgets/profile_card/widgets/profile_card_widget.dart
+  REMOVE  lib/shared/widgets/profile_card/widgets/profile_card_widget.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/components/status_badge/bloc/status_badge_state.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_state.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/components/status_badge/bloc/status_badge_event.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_event.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/components/status_badge/bloc/status_badge_bloc.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_bloc.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/components/status_badge/widgets/status_badge_widget.dart
+  REMOVE  lib/shared/components/status_badge/widgets/status_badge_widget.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/components/status_badge/bloc/status_badge_state.freezed.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_state.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/shared/components/status_badge/bloc/status_badge_event.freezed.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_event.freezed.dart
+  CREATE  .cleany/backups/reset_1793458463357275/lib/modules/dashboard/subfeatures/empty_state/widgets/empty_state_widget.dart
+  REMOVE  lib/modules/dashboard/subfeatures/empty_state/widgets/empty_state_widget.dart
+  CREATE  .cleany/backups/reset_1793458463357275/README.txt
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Cancelled. No files were changed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

@@ -1,0 +1,395 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:test_cleany_project/app/config/app_config.dart';
+import 'package:test_cleany_project/app/config/app_environment.dart';
+import 'package:test_cleany_project/app/di/injection.dart';
+import 'package:test_cleany_project/core/errors/failure.dart';
+import 'package:test_cleany_project/core/state/use_case_state.dart';
+import 'package:test_cleany_project/features/home/data/repositories/refresh_home_repository_impl.dart';
+import 'package:test_cleany_project/features/home/data/repositories/clear_home_repository_impl.dart';
+import 'package:test_cleany_project/features/home/domain/entities/home_entity.dart';
+import 'package:test_cleany_project/features/home/domain/usecases/refresh_home.dart';
+import 'package:test_cleany_project/features/home/domain/usecases/clear_home.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_cubit.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_state.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/entities/catalog_entity.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/usecases/refresh_catalog.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/usecases/clear_catalog.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_event.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_state.dart';
+
+import 'support/use_case_fixture.dart';
+
+class RejectHttp implements HttpClientAdapter {
+  int calls = 0;
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    calls++;
+    throw StateError('An unconnected operation must not make an HTTP request.');
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+void main() {
+  late UseCaseFixture fixture;
+  setUp(() async {
+    fixture = UseCaseFixture();
+    await fixture.open();
+  });
+  tearDown(() => fixture.dispose());
+
+  test(
+    'Entity use cases reuse the current Home and Catalog models and entities',
+    () async {
+      expect(
+        (await fixture.container<RefreshHome>()()).tryGetSuccess(),
+        const HomeEntity(
+          id: 'HOME_ACTION_OK',
+          title: 'Existing model',
+          visits: 9,
+        ),
+      );
+      expect(
+        (await fixture.container<RefreshCatalog>()()).tryGetSuccess(),
+        const CatalogEntity(id: 'CATALOG_ACTION_OK'),
+      );
+      expect(fixture.homeSource.refreshCalls, 1);
+      expect(fixture.catalogSource.refreshCalls, 1);
+    },
+  );
+
+  test('void operations complete without decoding the feature Model', () async {
+    fixture.homeSource.json = {'id': false, 'visits': 'invalid'};
+    fixture.catalogSource.json = {'id': false};
+    expect((await fixture.container<ClearHome>()()).isSuccess(), isTrue);
+    expect((await fixture.container<ClearCatalog>()()).isSuccess(), isTrue);
+    expect(fixture.homeSource.clearCalls, 1);
+    expect(fixture.catalogSource.clearCalls, 1);
+  });
+
+  test('new repositories preserve business Failure identity and map technical errors once', () async {
+    const business = BusinessFailure('Action rejected.');
+    fixture.homeSource.error = business;
+    final repository = RefreshHomeRepositoryImpl(fixture.homeSource);
+    expect(
+      identical((await repository.refreshHome()).tryGetError(), business),
+      isTrue,
+    );
+    expect(
+      identical(
+        (await ClearHomeRepositoryImpl(
+          fixture.homeSource,
+        ).clearHome()).tryGetError(),
+        business,
+      ),
+      isTrue,
+    );
+    fixture.homeSource.error = DioException(
+      requestOptions: RequestOptions(path: '/test-only'),
+      type: DioExceptionType.connectionError,
+    );
+    expect(
+      (await repository.refreshHome()).tryGetError(),
+      isA<NetworkFailure>(),
+    );
+    fixture.homeSource.error = null;
+    fixture.homeSource.json = {'id': false, 'visits': 'invalid'};
+    expect(
+      (await repository.refreshHome()).tryGetError(),
+      isA<ValidationFailure>(),
+    );
+  });
+
+  test(
+    'a failing diagnostic reporter cannot escape the new Result contract',
+    () async {
+      fixture.homeSource.error = StateError('technical failure');
+      var reports = 0;
+      final repository = RefreshHomeRepositoryImpl(
+        fixture.homeSource,
+        reportError: (_, _) {
+          reports++;
+          throw StateError('reporter failure');
+        },
+      );
+      expect(
+        (await repository.refreshHome()).tryGetError(),
+        isA<UnexpectedFailure>(),
+      );
+      expect(reports, 1);
+    },
+  );
+
+  test(
+    'Cubit emits loading and Entity success through its generated DI action',
+    () async {
+      final states = <UseCaseState<HomeEntity>>[];
+      final subscription = fixture.home.stream.listen(
+        (state) => states.add(state.refreshHomeStatus),
+      );
+      await fixture.home.refreshHome();
+      await Future<void>.delayed(Duration.zero);
+      expect(states, [
+        const UseCaseState<HomeEntity>.loading(),
+        const UseCaseState<HomeEntity>.success(
+          HomeEntity(id: 'HOME_ACTION_OK', title: 'Existing model', visits: 9),
+        ),
+      ]);
+      await subscription.cancel();
+    },
+  );
+
+  test('Cubit preserves independent actions through primary loads and blocks duplicate calls', () async {
+    fixture.homeSource.refreshPending = Completer<Map<String, dynamic>>();
+    fixture.homeSource.clearPending = Completer<void>();
+    final refresh = fixture.home.refreshHome();
+    final clear = fixture.home.clearHome();
+    await fixture.home.refreshHome();
+    expect(fixture.homeSource.refreshCalls, 1);
+    expect(
+      fixture.home.state.refreshHomeStatus,
+      isA<UseCaseLoading<HomeEntity>>(),
+    );
+    expect(fixture.home.state.clearHomeStatus, isA<UseCaseLoading<void>>());
+    await fixture.home.load();
+    expect(fixture.home.state, isA<HomeSuccess>());
+    expect(
+      fixture.home.state.refreshHomeStatus,
+      isA<UseCaseLoading<HomeEntity>>(),
+    );
+    expect(fixture.home.state.clearHomeStatus, isA<UseCaseLoading<void>>());
+    fixture.homeSource.clearPending!.complete();
+    await clear;
+    fixture.homeSource.refreshPending!.complete(fixture.homeSource.json);
+    await refresh;
+    expect(fixture.home.state.clearHomeStatus, isA<UseCaseSuccess<void>>());
+    expect(
+      fixture.home.state.refreshHomeStatus,
+      isA<UseCaseSuccess<HomeEntity>>(),
+    );
+  });
+
+  test(
+    'Cubit reports action failure and can retry both return types',
+    () async {
+      fixture.homeSource.error = const UnauthorizedFailure();
+      await fixture.home.refreshHome();
+      await fixture.home.clearHome();
+      expect(
+        (fixture.home.state.refreshHomeStatus as UseCaseFailure<HomeEntity>)
+            .failure,
+        isA<UnauthorizedFailure>(),
+      );
+      expect(fixture.home.state.clearHomeStatus, isA<UseCaseFailure<void>>());
+      fixture.homeSource.error = null;
+      await fixture.home.refreshHome();
+      await fixture.home.clearHome();
+      expect(
+        fixture.home.state.refreshHomeStatus,
+        isA<UseCaseSuccess<HomeEntity>>(),
+      );
+      expect(fixture.home.state.clearHomeStatus, isA<UseCaseSuccess<void>>());
+    },
+  );
+
+  test('Cubit ignores late completions and new calls after disposal', () async {
+    fixture.homeSource.refreshPending = Completer<Map<String, dynamic>>();
+    final pending = fixture.home.refreshHome();
+    await fixture.home.close();
+    fixture.homeSource.refreshPending!.complete(fixture.homeSource.json);
+    await pending;
+    await fixture.home.refreshHome();
+    expect(fixture.homeSource.refreshCalls, 1);
+  });
+
+  test(
+    'Bloc actions remain independent while the primary event loads',
+    () async {
+      fixture.catalogSource.refreshPending = Completer<Map<String, dynamic>>();
+      await fixture.send(
+        const CatalogEvent.refreshCatalogRequested(),
+        (s) => s.refreshCatalogStatus is UseCaseLoading<CatalogEntity>,
+      );
+      fixture.catalog.add(const CatalogEvent.refreshCatalogRequested());
+      await fixture.send(
+        const CatalogEvent.clearCatalogRequested(),
+        (s) => s.clearCatalogStatus is UseCaseSuccess<void>,
+      );
+      await fixture.send(
+        const CatalogEvent.requested(),
+        (s) => s is CatalogSuccess,
+      );
+      expect(fixture.catalogSource.refreshCalls, 1);
+      expect(
+        fixture.catalog.state.refreshCatalogStatus,
+        isA<UseCaseLoading<CatalogEntity>>(),
+      );
+      expect(
+        fixture.catalog.state.clearCatalogStatus,
+        isA<UseCaseSuccess<void>>(),
+      );
+      final completed = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>,
+      );
+      fixture.catalogSource.refreshPending!.complete(
+        fixture.catalogSource.json,
+      );
+      await completed;
+      expect(
+        (fixture.catalog.state.refreshCatalogStatus
+                as UseCaseSuccess<CatalogEntity>)
+            .value
+            .id,
+        'CATALOG_ACTION_OK',
+      );
+      expect(
+        fixture.catalog.state.clearCatalogStatus,
+        isA<UseCaseSuccess<void>>(),
+      );
+    },
+  );
+
+  test('Bloc maps failures and retries both generated event types', () async {
+    fixture.catalogSource.error = const BusinessFailure(
+      'Catalog action rejected.',
+    );
+    await fixture.send(
+      const CatalogEvent.refreshCatalogRequested(),
+      (s) => s.refreshCatalogStatus is UseCaseFailure<CatalogEntity>,
+    );
+    await fixture.send(
+      const CatalogEvent.clearCatalogRequested(),
+      (s) => s.clearCatalogStatus is UseCaseFailure<void>,
+    );
+    expect(
+      (fixture.catalog.state.refreshCatalogStatus
+              as UseCaseFailure<CatalogEntity>)
+          .failure,
+      isA<BusinessFailure>(),
+    );
+    fixture.catalogSource.error = null;
+    await fixture.send(
+      const CatalogEvent.refreshCatalogRequested(),
+      (s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>,
+    );
+    await fixture.send(
+      const CatalogEvent.clearCatalogRequested(),
+      (s) => s.clearCatalogStatus is UseCaseSuccess<void>,
+    );
+  });
+
+  test('unconnected production hooks return Failure for all four actions without making HTTP requests', () async {
+    final container = GetIt.asNewInstance();
+    await configureDependencies(
+      container,
+      const AppConfig(
+        environment: AppEnvironment.dev,
+        apiBaseUrl: 'https://example.invalid',
+      ),
+    );
+    final adapter = RejectHttp();
+    container<Dio>().httpClientAdapter = adapter;
+    final home = container<HomeCubit>();
+    final catalog = container<CatalogBloc>();
+    try {
+      expect(home.refreshHomeUseCase, isNotNull);
+      expect(home.clearHomeUseCase, isNotNull);
+      expect(catalog.refreshCatalogUseCase, isNotNull);
+      expect(catalog.clearCatalogUseCase, isNotNull);
+      await home.refreshHome();
+      await home.clearHome();
+      expect(
+        (home.state.refreshHomeStatus as UseCaseFailure<HomeEntity>).failure,
+        isA<UnexpectedFailure>(),
+      );
+      expect(home.state.clearHomeStatus, isA<UseCaseFailure<void>>());
+      final refreshed = catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseFailure<CatalogEntity>,
+      );
+      catalog.add(const CatalogEvent.refreshCatalogRequested());
+      await refreshed;
+      final cleared = catalog.stream.firstWhere(
+        (s) => s.clearCatalogStatus is UseCaseFailure<void>,
+      );
+      catalog.add(const CatalogEvent.clearCatalogRequested());
+      await cleared;
+      expect(adapter.calls, 0);
+    } finally {
+      await home.close();
+      await catalog.close();
+      await disposeDependencies(container);
+    }
+  });
+
+  testWidgets(
+    'test UI exposes Entity and void success and retryable errors for Cubit and Bloc',
+    (tester) async {
+      // The fixture's Bloc listeners run in setUp's real async zone.
+      await tester.pumpWidget(UseCaseHarness(fixture));
+      var catalogCompleted = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>,
+      );
+      await tester.tap(find.byKey(const Key('refresh-home')));
+      await tester.tap(find.byKey(const Key('refresh-catalog')));
+      await tester.pump();
+      await tester.runAsync(
+        () => catalogCompleted.timeout(const Duration(seconds: 5)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('HOME_ACTION_OK'), findsOneWidget);
+      expect(find.text('CATALOG_ACTION_OK'), findsOneWidget);
+      catalogCompleted = fixture.catalog.stream.firstWhere(
+        (s) => s.clearCatalogStatus is UseCaseSuccess<void>,
+      );
+      await tester.tap(find.byKey(const Key('clear-home')));
+      await tester.tap(find.byKey(const Key('clear-catalog')));
+      await tester.pump();
+      await tester.runAsync(
+        () => catalogCompleted.timeout(const Duration(seconds: 5)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('done'), findsNWidgets(2));
+      fixture.homeSource.error = const BusinessFailure('Home denied.');
+      fixture.catalogSource.error = const BusinessFailure('Catalog denied.');
+      catalogCompleted = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseFailure<CatalogEntity>,
+      );
+      await tester.tap(find.byKey(const Key('refresh-home')));
+      await tester.tap(find.byKey(const Key('refresh-catalog')));
+      await tester.pump();
+      await tester.runAsync(
+        () => catalogCompleted.timeout(const Duration(seconds: 5)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Home denied.'), findsOneWidget);
+      expect(find.text('Catalog denied.'), findsOneWidget);
+      fixture.homeSource.error = null;
+      fixture.catalogSource.error = null;
+      catalogCompleted = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>,
+      );
+      await tester.tap(find.byKey(const Key('refresh-home')));
+      await tester.tap(find.byKey(const Key('refresh-catalog')));
+      await tester.pump();
+      await tester.runAsync(
+        () => catalogCompleted.timeout(const Duration(seconds: 5)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('HOME_ACTION_OK'), findsOneWidget);
+      expect(find.text('CATALOG_ACTION_OK'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+}

@@ -1,0 +1,15 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart
+Adding Swift Package Manager integration...                        517ms
+Running Xcode build...                                          
+Xcode build done.                                           21.3s
+Failed to build iOS app
+Error (Xcode): None of the input catalogs contained a matching stickers icon set, app icon set, or icon stack named  "AppIcon-dev".
+/Users/fahad/Documents/cleany/cleany/flutter_example/ios/Runner/Assets.xcassets
+
+Could not build the application for the simulator.
+00:00 +0 -1: loading /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart [E]
+  Failed to load "/Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart": Unable to start the app on the device.
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart: loading /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart

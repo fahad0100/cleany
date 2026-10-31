@@ -10,6 +10,7 @@ class FeatureTemplateContext {
     required this.state,
     required this.provider,
     FeatureSpec? specification,
+    this.legacyComponentWidgets = false,
   }) : spec = specification ?? FeatureSpec();
   final String name;
   final String path;
@@ -18,6 +19,7 @@ class FeatureTemplateContext {
   final StateManagement state;
   final ApiProvider provider;
   final FeatureSpec spec;
+  final bool legacyComponentWidgets;
   String get type => pascalCase(name);
   bool get full => kind == GenerationKind.feature;
   bool get stateful => state != StateManagement.none;
@@ -26,6 +28,12 @@ class FeatureTemplateContext {
   String get controller => '$type${bloc ? 'Bloc' : 'Cubit'}';
   String get imports => 'package:$package/${path.substring(4)}';
   String get core => 'package:$package/core';
+  String get widgetLocation => full
+      ? 'presentation/pages/'
+      : legacyComponentWidgets
+      ? 'widgets/'
+      : '';
+  String get widgetStatePrefix => full || legacyComponentWidgets ? '../' : '';
   String get stateFolder => full ? 'presentation/$mode' : mode;
   String get requestImport => full && spec.hasRequest
       ? "import '$imports/domain/entities/${name}_request.dart';"

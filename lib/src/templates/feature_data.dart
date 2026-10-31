@@ -11,6 +11,23 @@ Map<String, String> featureDataFiles(FeatureTemplateContext c) {
   final parameters = request ? '{Map<String, dynamic>? parameters}' : '';
   final apiCall = request ? 'parameters ?? const {}' : '';
   final wire = c.spec.requestEncoding == 'body' ? 'data' : 'queryParameters';
+  final requestMap = request
+      ? c.spec.requestFields
+            .map((field) {
+              final access = 'request.${field.name}';
+              final value = field.type.replaceAll('?', '') == 'DateTime'
+                  ? '$access${field.nullable ? '?' : ''}.toIso8601String()'
+                  : access;
+              return '${dartLiteral(field.jsonKey)}: $value,';
+            })
+            .join('\n')
+      : '';
+  final remoteArguments = request
+      ? 'parameters: {$requestMap}..removeWhere((_, value) => value == null)'
+      : '';
+  final entityArguments = c.spec.fields
+      .map((field) => '${field.name}: model.${field.name}')
+      .join(', ');
   return {
     '${c.path}/data/models/${n}_model.dart':
         '''
@@ -83,15 +100,9 @@ class ${t}RepositoryImpl implements ${t}Repository {
   @override
   Future<Result<${t}Entity, Failure>> fetch(${c.requestArgument}) async {
     try {
-      final json = await _remote.fetch(${request ? '''parameters: {
-${c.spec.requestFields.map((field) {
-                final access = 'request.${field.name}';
-                final value = field.type.replaceAll('?', '') == 'DateTime' ? '$access${field.nullable ? '?' : ''}.toIso8601String()' : access;
-                return '${dartLiteral(field.jsonKey)}: $value,';
-              }).join('\n')}
-}..removeWhere((_, value) => value == null)''' : ''});
+      final json = await _remote.fetch($remoteArguments);
       final model = ${t}Model.fromJson(json);
-      return Success(${t}Entity(${c.spec.fields.map((field) => '${field.name}: model.${field.name}').join(', ')}));
+      return Success(${t}Entity($entityArguments));
     } catch (error, stackTrace) {
       final failure = mapFailure(error);
       if (failure is UnexpectedFailure) reportError(error, stackTrace);

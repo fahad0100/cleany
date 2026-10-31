@@ -1,0 +1,41 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number:   1  Restore interrupted operation
+  2  Cancel
+› Recovery [2]: Operation stopped: Recovery metadata is missing or invalid. All backups were preserved in .cleany/transaction; restore a valid manifest before retrying.
+Recovery is required. Safe files were restored; conflicting files and backups were preserved.
+  1  Retry this action
+  2  Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

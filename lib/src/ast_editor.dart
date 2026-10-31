@@ -7,8 +7,14 @@ import 'project.dart';
 /// Resolve insertion points from parsed Dart nodes, never brace counting or
 /// textual signatures. Unexpected structures fail before any project write.
 class AstEditor {
-  AstEditor(this.source);
+  AstEditor(this.source, {String Function(String)? resolveUri})
+    : _resolveUri = resolveUri ?? _identityUri;
+  final String Function(String) _resolveUri;
+  static String _identityUri(String uri) => uri;
   String source;
+
+  /// Repair adds absent nodes and preserves all existing custom expressions.
+  bool repairMissing = false;
 
   CompilationUnit get _unit {
     final parsed = parseString(content: source, throwIfDiagnostics: false);
@@ -22,9 +28,15 @@ class AstEditor {
     final unit = _unit;
     final existing = unit.directives
         .whereType<ImportDirective>()
-        .map((directive) => directive.uri.stringValue)
+        .where(
+          (directive) =>
+              directive.prefix == null && directive.combinators.isEmpty,
+        )
+        .map((directive) => _resolveUri(directive.uri.stringValue ?? ''))
         .toSet();
-    final added = paths.toSet().difference(existing);
+    final added = paths
+        .where((path) => !existing.contains(_resolveUri(path)))
+        .toSet();
     if (added.isEmpty) return;
     final directives = unit.directives;
     if (directives.any((d) => d is PartOfDirective)) {
@@ -45,6 +57,15 @@ class AstEditor {
     _insert(offset, '\n${added.map((p) => "import '$p';").join('\n')}\n');
   }
 
+  bool usesUnqualified(String symbol) {
+    var token = _unit.beginToken;
+    while (!token.isEof) {
+      if (token.lexeme == symbol && token.previous?.lexeme != '.') return true;
+      token = token.next!;
+    }
+    return false;
+  }
+
   void addStatements(String functionName, String statements) {
     final matches = _unit.declarations
         .whereType<FunctionDeclaration>()
@@ -54,6 +75,45 @@ class AstEditor {
       throw GenerationException('Expected one function: $functionName');
     }
     final function = matches.single;
+    if (repairMissing) {
+      final existing = _RegistrationVisitor((_) => true);
+      function.accept(existing);
+      final registered = existing.calls
+          .where((call) => call.methodName.name.startsWith('register'))
+          .expand(
+            (call) =>
+                call.typeArguments?.arguments.map(
+                  (type) => type.toSource().split('.').last,
+                ) ??
+                <String>[],
+          )
+          .toSet();
+      final candidate =
+          parseString(content: 'void candidate() { $statements }')
+                  .unit
+                  .declarations
+                  .single
+              as FunctionDeclaration;
+      final body = candidate.functionExpression.body as BlockFunctionBody;
+      statements = body.block.statements
+          .where((statement) {
+            final visitor = _RegistrationVisitor(
+              (call) => call.methodName.name.startsWith('register'),
+            );
+            statement.accept(visitor);
+            return !visitor.calls.any(
+              (call) =>
+                  call.typeArguments?.arguments.any(
+                    (type) =>
+                        registered.contains(type.toSource().split('.').last),
+                  ) ??
+                  false,
+            );
+          })
+          .map((node) => node.toSource())
+          .join('\n');
+      if (statements.trim().isEmpty) return;
+    }
     final body = function.functionExpression.body;
     if (body is BlockFunctionBody) {
       _insert(body.block.rightBracket.offset, '\n$statements\n');
@@ -95,6 +155,9 @@ class AstEditor {
             as ClassDeclaration;
     Set<String> names(BlockClassBody body) => body.members.expand((node) {
       if (node is MethodDeclaration) return [node.name.lexeme];
+      if (node is ConstructorDeclaration && node.name != null) {
+        return [node.name!.lexeme];
+      }
       if (node is FieldDeclaration) {
         return node.fields.variables.map((v) => v.name.lexeme);
       }
@@ -102,6 +165,7 @@ class AstEditor {
     }).toSet();
     final overlap = names(body)
         .intersection(names(added.body as BlockClassBody));
+    if (overlap.isNotEmpty && repairMissing) return;
     if (overlap.isNotEmpty) {
       throw GenerationException(
         'Existing $className member: ${overlap.join(', ')}',
@@ -199,12 +263,85 @@ class AstEditor {
   }
 
   void addRoutes(String routes) {
+    if (repairMissing) {
+      final candidate = RegExp(r'RouteNames\.(\w+)')
+          .firstMatch(routes)
+          ?.group(1);
+      if (candidate != null &&
+          _unit.toSource().contains(
+            RegExp('(?:RouteNames|FeaturePages)\\.$candidate\\b'),
+          )) {
+        return;
+      }
+    }
     final list = _routeList();
     final separator =
         list.elements.isEmpty || list.elements.last.endToken.next?.lexeme == ','
         ? ''
         : ',';
     _insert(list.rightBracket.offset, '$separator\n$routes\n');
+  }
+
+  bool hasMember(String className, String name) {
+    for (final declaration
+        in _unit.declarations.whereType<ClassDeclaration>()) {
+      if (declaration.namePart.typeName.lexeme != className ||
+          declaration.body is! BlockClassBody) {
+        continue;
+      }
+      for (final member in (declaration.body as BlockClassBody).members) {
+        if (member is MethodDeclaration && member.name.lexeme == name) {
+          return true;
+        }
+        if (member is FieldDeclaration &&
+            member.fields.variables.any((v) => v.name.lexeme == name)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /// Stable node ownership records; a differing digest denotes user customization.
+  Map<String, String> integrationNodes() {
+    final nodes = <String, String>{};
+    for (final declaration in _unit.declarations) {
+      if (declaration is ClassDeclaration &&
+          declaration.body is BlockClassBody) {
+        for (final member in (declaration.body as BlockClassBody).members) {
+          if (member is MethodDeclaration) {
+            nodes['${declaration.namePart.typeName.lexeme}.${member.name.lexeme}'] =
+                member.toSource();
+          }
+          if (member is FieldDeclaration) {
+            for (final v in member.fields.variables) {
+              nodes['${declaration.namePart.typeName.lexeme}.${v.name.lexeme}'] =
+                  member.toSource();
+            }
+          }
+        }
+      }
+    }
+    final routesFunction = _unit.declarations
+        .whereType<FunctionDeclaration>()
+        .where((f) => f.name.lexeme == 'buildRoutes');
+    if (routesFunction.isNotEmpty) {
+      for (final element in _routeList().elements) {
+        final match = RegExp(r'(?:RouteNames|FeaturePages)\.(\w+)')
+            .firstMatch(element.toSource());
+        if (match != null) nodes['Router.${match[1]}'] = element.toSource();
+      }
+    }
+    final visitor = _RegistrationVisitor(
+      (call) => call.methodName.name.startsWith('register'),
+    );
+    _unit.accept(visitor);
+    for (final call in visitor.calls) {
+      for (final type in call.typeArguments?.arguments ?? <TypeAnnotation>[]) {
+        nodes['DI.${type.toSource().split('.').last}'] = call.toSource();
+      }
+    }
+    return nodes;
   }
 
   void requireUnusedRoutePath(String path) {
@@ -217,12 +354,21 @@ class AstEditor {
 
   /// Removes only imports owned by the selected registry entries.
   void removeImports(bool Function(String uri) matches) {
-    _removeNodes(
-      _unit.directives
-          .whereType<ImportDirective>()
-          .where((node) => matches(node.uri.stringValue ?? ''))
-          .toList(),
-    );
+    final nodes = <ImportDirective>[];
+    for (final node in _unit.directives.whereType<ImportDirective>()) {
+      final uris = [
+        node.uri.stringValue ?? '',
+        ...node.configurations.map((c) => c.uri.stringValue ?? ''),
+      ];
+      if (!uris.any(matches)) continue;
+      if (!uris.every(matches)) {
+        throw const GenerationException(
+          'A conditional import mixes owned and unrelated libraries; split it before removing the entry.',
+        );
+      }
+      nodes.add(node);
+    }
+    _removeNodes(nodes);
   }
 
   void removeRegistrations(Set<String> types) {
@@ -363,3 +509,40 @@ class _RegistrationVisitor extends RecursiveAstVisitor<void> {
     super.visitMethodInvocation(node);
   }
 }
+
+/// Shared public declaration policy used by generation and rename collisions.
+Set<String> declaredSymbols(String source) =>
+    parseString(content: source, throwIfDiagnostics: false).unit.declarations
+        .expand(
+          (node) => switch (node) {
+            ClassDeclaration() => [node.namePart.typeName.lexeme],
+            EnumDeclaration() => [node.namePart.typeName.lexeme],
+            MixinDeclaration() => [node.name.lexeme],
+            GenericTypeAlias() => [node.name.lexeme],
+            FunctionTypeAlias() => [node.name.lexeme],
+            FunctionDeclaration() => [node.name.lexeme],
+            TopLevelVariableDeclaration() => node.variables.variables.map(
+              (v) => v.name.lexeme,
+            ),
+            _ => <String>[],
+          },
+        )
+        .where((name) => !name.startsWith('_'))
+        .toSet();
+
+/// Public Freezed redirect targets participate in additional-operation collisions.
+Set<String> redirectedSymbols(String source) =>
+    parseString(content: source, throwIfDiagnostics: false).unit.declarations
+        .whereType<ClassDeclaration>()
+        .where((node) => node.body is BlockClassBody)
+        .expand(
+          (node) => (node.body as BlockClassBody).members
+              .whereType<ConstructorDeclaration>(),
+        )
+        .map(
+          (node) =>
+              node.redirectedConstructor?.type.toSource().split('<').first,
+        )
+        .whereType<String>()
+        .where((name) => !name.startsWith('_'))
+        .toSet();

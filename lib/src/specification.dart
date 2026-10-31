@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'project.dart';
 
 /// Fixed-template release recorded for newly generated entries.
-const templateVersion = '2.0.0';
+const templateVersion = '2.0.2';
 
 /// Current ownership-registry schema version, independent of package semver.
 const registryVersion = 2;
@@ -15,6 +15,25 @@ class FieldSpec {
     : jsonKey = jsonKey ?? name {
     if (!RegExp(r'^[a-z][A-Za-z0-9]*$').hasMatch(name)) {
       throw const GenerationException('Field names must be lowerCamelCase.');
+    }
+    if (const {
+      'copyWith',
+      'toJson',
+      'fromJson',
+      'runtimeType',
+      'hashCode',
+      'toString',
+      'noSuchMethod',
+      'when',
+      'whenOrNull',
+      'maybeWhen',
+      'map',
+      'mapOrNull',
+      'maybeMap',
+    }.contains(name)) {
+      throw GenerationException(
+        'Field $name conflicts with Dart, Freezed, or JSON members.',
+      );
     }
     validateName(
       name.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}'),
@@ -145,3 +164,147 @@ class FeatureSpec {
 
 /// Escapes text as a Dart string literal, including interpolation characters.
 String dartLiteral(String text) => jsonEncode(text).replaceAll(r'$', r'\$');
+
+/// Result exposed by an additional operation on an existing feature.
+enum UseCaseReturnType {
+  /// Reports completion without a response entity.
+  voidResult,
+
+  /// Returns the selected feature's existing domain entity.
+  entity,
+}
+
+/// Repository contract used by a generated operation.
+enum UseCaseRepositoryBinding {
+  /// Adds the operation to the feature's existing repository.
+  feature,
+
+  /// Preserves separately generated contracts in older projects.
+  operation,
+}
+
+/// A validated, transport-independent operation added to a registered feature.
+class UseCaseSpec {
+  /// Uses snake_case for the filename and derives public Dart identifiers.
+  UseCaseSpec({
+    required this.name,
+    required this.returnType,
+    this.repositoryBinding = UseCaseRepositoryBinding.feature,
+    List<String>? entityFields,
+  }) : entityFields = entityFields == null
+           ? null
+           : List.unmodifiable(entityFields) {
+    validateName(name);
+    if (entityFields != null &&
+        (entityFields.toSet().length != entityFields.length ||
+            entityFields.any(
+              (field) => !RegExp(r'^[a-z][A-Za-z0-9]*$').hasMatch(field),
+            ))) {
+      throw const GenerationException(
+        'Invalid use case entity mapping fields.',
+      );
+    }
+    if (const {
+      'add',
+      'add_error',
+      'close',
+      'emit',
+      'fetch',
+      'load',
+      'on',
+      'on_change',
+      'on_error',
+      'on_event',
+      'on_transition',
+      'on_done',
+      'state',
+      'stream',
+      'is_closed',
+      'requested',
+      'copy_with',
+      'hash_code',
+      'runtime_type',
+      'to_string',
+      'no_such_method',
+      'use_case_state',
+      'use_case_initial',
+      'use_case_loading',
+      'use_case_success',
+      'use_case_failure',
+    }.contains(name)) {
+      throw GenerationException(
+        'Use case name conflicts with a controller or datasource member: $name',
+      );
+    }
+  }
+
+  /// Stable operation name and filename, independent of feature renames.
+  final String name;
+
+  /// Whether success carries the existing feature Entity or no value.
+  final UseCaseReturnType returnType;
+
+  /// Shared feature contracts are the default; legacy operation contracts remain supported.
+  final UseCaseRepositoryBinding repositoryBinding;
+
+  /// Whether this operation extends the feature's existing repository.
+  bool get usesFeatureRepository =>
+      repositoryBinding == UseCaseRepositoryBinding.feature;
+
+  /// Existing entity fields mapped from the feature model, when captured.
+  final List<String>? entityFields;
+
+  /// Public operation class name.
+  String get type => pascalCase(name);
+
+  /// Repository method and Cubit action name.
+  String get method => camelCase(name);
+
+  /// Common, independently observable field on every feature state variant.
+  String get statusField => '${method}Status';
+
+  /// Optional constructor injection used by the central composition root.
+  String get dependency => '${method}UseCase';
+
+  /// Legacy single-operation repository name; shared operations use the feature name.
+  String get repository => '${type}Repository';
+
+  /// Serializes additive operation metadata into the feature registry.
+  Map<String, Object> toJson() => {
+    'name': name,
+    'return_type': returnType == UseCaseReturnType.entity ? 'entity' : 'void',
+    'repository_binding': repositoryBinding.name,
+    'entity_fields': ?entityFields,
+  };
+
+  /// Restores and validates an operation definition.
+  factory UseCaseSpec.fromJson(Map<String, dynamic> json) {
+    final result = json['return_type'];
+    if (result != 'void' && result != 'entity') {
+      throw const GenerationException('Invalid use case return type.');
+    }
+    final binding = json['repository_binding'] ?? 'operation';
+    if (binding != 'feature' && binding != 'operation') {
+      throw const GenerationException('Invalid use case repository binding.');
+    }
+    return UseCaseSpec(
+      repositoryBinding: UseCaseRepositoryBinding.values.byName(
+        binding as String,
+      ),
+      name: json['name'] as String,
+      entityFields: (json['entity_fields'] as List?)?.cast<String>(),
+      returnType: result == 'entity'
+          ? UseCaseReturnType.entity
+          : UseCaseReturnType.voidResult,
+    );
+  }
+}
+
+/// Reads optional operation metadata; older feature records need no migration.
+List<UseCaseSpec> entryUseCases(Map entry) =>
+    (entry['use_cases'] as List? ?? [])
+        .map(
+          (value) =>
+              UseCaseSpec.fromJson(Map<String, dynamic>.from(value as Map)),
+        )
+        .toList();

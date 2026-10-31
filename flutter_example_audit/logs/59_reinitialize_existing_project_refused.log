@@ -1,0 +1,52 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Initialize project
+╰────────────────────────────────────────────╯
+  1  com.example.testCleanyProject
+  2  com.example.testCleanyProject.uat
+  3  com.example.testCleanyProject.dev
+  4  Enter another app id
+› Production app id:   prod  com.example.testCleanyProject
+  dev   com.example.testCleanyProject.dev
+  uat   com.example.testCleanyProject.uat
+  1  Retrofit over Dio
+  2  Dio
+› API provider [1]: Operation stopped: Already initialized, or lib/app / lib/core exists. Initialization never overwrites an existing architecture.
+No generated changes remain applied. Existing edits are preserved.
+  1  Retry this action
+  2  Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

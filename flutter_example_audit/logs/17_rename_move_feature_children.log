@@ -1,0 +1,139 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number:   1  home (feature)
+  2  catalog (feature)
+  3  details (feature)
+  4  user_card (component)
+  5  status_badge (component)
+  6  empty_state (component)
+  7  Cancel
+› Entry: › New name [home]: › Parent directory [lib/features]: Dart references, owned filenames, routes, and the registry will be updated. Backend API endpoints are preserved.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  REMOVE  lib/core/network/retrofit/home_api.g.dart
+  CREATE  lib/core/network/retrofit/dashboard_api.g.dart
+  REMOVE  lib/core/network/retrofit/home_api.dart
+  CREATE  lib/core/network/retrofit/dashboard_api.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  lib/app/router/route_names.dart
+  REMOVE  lib/features/home/subfeatures/empty_state/widgets/empty_state_widget.dart
+  CREATE  lib/modules/dashboard/subfeatures/empty_state/widgets/empty_state_widget.dart
+  REMOVE  lib/features/home/subfeatures/details/data/datasources/details_remote_data_source.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/data/datasources/details_remote_data_source.dart
+  REMOVE  lib/features/home/subfeatures/details/data/repositories/details_repository_impl.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/data/repositories/details_repository_impl.dart
+  REMOVE  lib/features/home/subfeatures/details/data/models/details_model.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/data/models/details_model.dart
+  REMOVE  lib/features/home/subfeatures/details/data/models/details_model.freezed.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/data/models/details_model.freezed.dart
+  REMOVE  lib/features/home/subfeatures/details/data/models/details_model.g.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/data/models/details_model.g.dart
+  REMOVE  lib/features/home/subfeatures/details/domain/repositories/details_repository.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/domain/repositories/details_repository.dart
+  REMOVE  lib/features/home/subfeatures/details/domain/usecases/get_details.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/domain/usecases/get_details.dart
+  REMOVE  lib/features/home/subfeatures/details/domain/entities/details_entity.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.dart
+  REMOVE  lib/features/home/subfeatures/details/domain/entities/details_entity.freezed.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.freezed.dart
+  REMOVE  lib/features/home/subfeatures/details/presentation/cubit/details_state.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.dart
+  REMOVE  lib/features/home/subfeatures/details/presentation/cubit/details_state.freezed.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.freezed.dart
+  REMOVE  lib/features/home/subfeatures/details/presentation/cubit/details_cubit.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_cubit.dart
+  REMOVE  lib/features/home/subfeatures/details/presentation/pages/details_page.dart
+  CREATE  lib/modules/dashboard/subfeatures/details/presentation/pages/details_page.dart
+  REMOVE  lib/features/home/data/datasources/home_remote_data_source.dart
+  CREATE  lib/modules/dashboard/data/datasources/dashboard_remote_data_source.dart
+  REMOVE  lib/features/home/data/repositories/home_repository_impl.dart
+  CREATE  lib/modules/dashboard/data/repositories/dashboard_repository_impl.dart
+  REMOVE  lib/features/home/data/models/home_model.dart
+  CREATE  lib/modules/dashboard/data/models/dashboard_model.dart
+  REMOVE  lib/features/home/data/models/home_model.freezed.dart
+  CREATE  lib/modules/dashboard/data/models/dashboard_model.freezed.dart
+  REMOVE  lib/features/home/data/models/home_model.g.dart
+  CREATE  lib/modules/dashboard/data/models/dashboard_model.g.dart
+  REMOVE  lib/features/home/domain/repositories/home_repository.dart
+  CREATE  lib/modules/dashboard/domain/repositories/dashboard_repository.dart
+  REMOVE  lib/features/home/domain/usecases/get_home.dart
+  CREATE  lib/modules/dashboard/domain/usecases/get_dashboard.dart
+  REMOVE  lib/features/home/domain/entities/home_entity.freezed.dart
+  CREATE  lib/modules/dashboard/domain/entities/dashboard_entity.freezed.dart
+  REMOVE  lib/features/home/domain/entities/home_entity.dart
+  CREATE  lib/modules/dashboard/domain/entities/dashboard_entity.dart
+  REMOVE  lib/features/home/presentation/cubit/home_state.dart
+  CREATE  lib/modules/dashboard/presentation/cubit/dashboard_state.dart
+  REMOVE  lib/features/home/presentation/cubit/home_state.freezed.dart
+  CREATE  lib/modules/dashboard/presentation/cubit/dashboard_state.freezed.dart
+  REMOVE  lib/features/home/presentation/cubit/home_cubit.dart
+  CREATE  lib/modules/dashboard/presentation/cubit/dashboard_cubit.dart
+  REMOVE  lib/features/home/presentation/pages/home_page.dart
+  CREATE  lib/modules/dashboard/presentation/pages/dashboard_page.dart
+  REMOVE  lib/features/home/subfeatures/details/presentation/widgets/.gitkeep
+  CREATE  lib/modules/dashboard/subfeatures/details/presentation/widgets/.gitkeep
+  REMOVE  lib/features/home/presentation/widgets/.gitkeep
+  CREATE  lib/modules/dashboard/presentation/widgets/.gitkeep
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 382ms ✓
+[0s] dart --version
+[0s] dart --version · 65ms ✓
+[0s] staging
+[0s] staging · 106 inputs copied
+[0s] flutter pub get
+[3s] flutter pub get · 2578ms ✓
+[3s] flutter gen-l10n
+[4s] flutter gen-l10n · 1020ms ✓
+[4s] dart run build_runner build --delete-conflicting-outputs
+[9s] dart run build_runner build --delete-conflicting-outputs · 5s
+[14s] dart run build_runner build --delete-conflicting-outputs · 10s
+[19s] dart run build_runner build --delete-conflicting-outputs · 15s
+[24s] dart run build_runner build --delete-conflicting-outputs · 20s
+[26s] dart run build_runner build --delete-conflicting-outputs · 22094ms ✓
+[26s] flutter analyze --no-pub
+[29s] flutter analyze --no-pub · 3271ms ✓
+[29s] collecting · 106 validated outputs
+[29s] applying · 67 files
+[29s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

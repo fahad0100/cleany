@@ -1,0 +1,84 @@
+Resolving dependencies...
+Downloading packages...
+Got dependencies!
+Publishing cleany 2.0.0 to https://pub.dev:
+├── CHANGELOG.md (4 KB)
+├── LICENSE (1 KB)
+├── README.md (22 KB)
+├── analysis_options.yaml (<1 KB)
+├── bin
+│   └── cleany.dart (<1 KB)
+├── doc
+│   ├── PUBDEV_REPORT.md (2 KB)
+│   └── USAGE_AR.md (7 KB)
+├── example
+│   ├── README.md (<1 KB)
+│   └── cleany_example.dart (<1 KB)
+├── lib
+│   ├── cleany.dart (<1 KB)
+│   └── src
+│       ├── ast_editor.dart (18 KB)
+│       ├── cli.dart (21 KB)
+│       ├── cli_executor.dart (2 KB)
+│       ├── command_runner.dart (6 KB)
+│       ├── dependencies.dart (3 KB)
+│       ├── doctor.dart (20 KB)
+│       ├── environment_config.dart (1 KB)
+│       ├── generator.dart (21 KB)
+│       ├── journal_store.dart (2 KB)
+│       ├── lifecycle.dart (21 KB)
+│       ├── maintenance.dart (8 KB)
+│       ├── native_identity.dart (8 KB)
+│       ├── operation.dart (4 KB)
+│       ├── project.dart (6 KB)
+│       ├── project_lock.dart (2 KB)
+│       ├── registry.dart (6 KB)
+│       ├── specification.dart (5 KB)
+│       ├── templates
+│       │   ├── app_templates.dart (6 KB)
+│       │   ├── core_templates.dart (3 KB)
+│       │   ├── documentation.dart (3 KB)
+│       │   ├── feature_context.dart (1 KB)
+│       │   ├── feature_data.dart (4 KB)
+│       │   ├── feature_domain.dart (1 KB)
+│       │   ├── feature_presentation.dart (4 KB)
+│       │   ├── feature_templates.dart (<1 KB)
+│       │   ├── localization_templates.dart (<1 KB)
+│       │   └── network_templates.dart (4 KB)
+│       ├── transaction.dart (37 KB)
+│       └── workspace.dart (10 KB)
+├── pubspec.yaml (<1 KB)
+└── test
+    ├── advanced_test.dart (27 KB)
+    ├── generated_app_test.dart (26 KB)
+    ├── generator_test.dart (38 KB)
+    └── safety_regression_test.dart (26 KB)
+
+Total compressed archive size: 99 KB.
+Validating package...
+Package validation found the following potential issue:
+* 22 checked-in files are modified in git.
+  
+  Usually you want to publish from a clean git state.
+  
+  Consider committing these files or reverting the changes.
+  
+  Modified files:
+  
+  CHANGELOG.md
+  README.md
+  lib/src/ast_editor.dart
+  lib/src/cli.dart
+  lib/src/command_runner.dart
+  lib/src/dependencies.dart
+  lib/src/doctor.dart
+  lib/src/generator.dart
+  lib/src/lifecycle.dart
+  lib/src/maintenance.dart
+  ...
+  
+  Run `git status` for more information.
+  
+The server may enforce additional checks.
+
+Package has 1 warning.

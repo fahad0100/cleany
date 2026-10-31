@@ -15,3 +15,7 @@ assets/
 .env
 .env.*
 !.env.example
+
+# Local simulator acceptance app and audit artifacts.
+flutter_example/
+flutter_example_audit/

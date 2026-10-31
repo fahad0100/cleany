@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'command_runner.dart';
@@ -10,13 +11,19 @@ import 'project.dart';
 import 'operation.dart';
 import 'project_lock.dart';
 import 'workspace.dart';
+import 'journal_store.dart';
+import 'environment_config.dart';
 import 'registry.dart';
 import 'specification.dart';
 
 /// Original and proposed contents for one recoverable file change.
 class PlannedFile {
   /// Uses null for a missing original or a proposed deletion.
-  PlannedFile(this.before, this.after);
+  PlannedFile(this.before, this.after, {this.beforeMode, this.afterMode});
+
+  /// POSIX permission bits captured with the original and validated output.
+  final int? beforeMode;
+  final int? afterMode;
 
   /// Original bytes, or null if the file did not exist when planned.
   final List<int>? before;
@@ -60,17 +67,36 @@ class GenerationPlan {
 
   /// Deletions share the same snapshots, staging, and rollback as writes.
   void delete(String relative) {
+    relative = p.posix.normalize(relative);
     final target = File(project.file(relative));
     final before = files.containsKey(relative)
         ? files[relative]!.before
         : (target.existsSync() ? target.readAsBytesSync() : null);
-    if (before != null) files[relative] = PlannedFile(before, null);
+    if (before != null) {
+      files[relative] = PlannedFile(
+        before,
+        null,
+        beforeMode:
+            files[relative]?.beforeMode ??
+            (target.existsSync() ? target.statSync().mode & 0x1ff : null),
+      );
+    }
     if (before == null) files.remove(relative);
   }
 
   /// Plans a UTF-8 text write; [createOnly] protects an existing target.
-  void write(String relative, String content, {bool createOnly = false}) {
-    writeBytes(relative, utf8.encode(content), createOnly: createOnly);
+  void write(
+    String relative,
+    String content, {
+    bool createOnly = false,
+    int? mode,
+  }) {
+    writeBytes(
+      relative,
+      utf8.encode(content),
+      createOnly: createOnly,
+      mode: mode,
+    );
   }
 
   /// Plans binary contents while preserving the original snapshot for undo.
@@ -78,7 +104,9 @@ class GenerationPlan {
     String relative,
     List<int> content, {
     bool createOnly = false,
+    int? mode,
   }) {
+    relative = p.posix.normalize(relative);
     final target = File(project.file(relative));
     final type = FileSystemEntity.typeSync(target.path, followLinks: false);
     if (type != FileSystemEntityType.notFound &&
@@ -91,11 +119,37 @@ class GenerationPlan {
     if (createOnly && (before != null || files.containsKey(relative))) {
       throw GenerationException('File already exists: $relative');
     }
-    if (!sameBytes(before, content)) {
-      files[relative] = PlannedFile(before, content);
+    final beforeMode =
+        files[relative]?.beforeMode ??
+        (target.existsSync() ? target.statSync().mode & 0x1ff : null);
+    mode ??= files[relative]?.afterMode ?? beforeMode;
+    if (!sameBytes(before, content) || beforeMode != mode) {
+      files[relative] = PlannedFile(
+        before,
+        List.unmodifiable(content),
+        beforeMode: beforeMode,
+        afterMode: mode,
+      );
     } else {
       files.remove(relative);
     }
+  }
+
+  /// Archives one file, sharing its immutable snapshot with a planned removal.
+  /// This avoids reading and retaining two copies during an archived reset.
+  void archive(String source, String destination, {required bool remove}) {
+    final file = File(project.file(source));
+    final target = File(project.file(destination));
+    if (FileSystemEntity.typeSync(target.path, followLinks: false) !=
+        FileSystemEntityType.notFound) {
+      throw GenerationException(
+        'Archive destination already exists: $destination',
+      );
+    }
+    final bytes = List<int>.unmodifiable(file.readAsBytesSync());
+    final mode = file.statSync().mode & 0x1ff;
+    files[destination] = PlannedFile(null, bytes, afterMode: mode);
+    if (remove) files[source] = PlannedFile(bytes, null, beforeMode: mode);
   }
 
   /// Reads proposed text when present, otherwise the current project file.
@@ -175,13 +229,14 @@ class GenerationTransaction {
 
   /// Project-relative location of the durable interrupted-operation journal.
   static const journalPath = '.cleany/transaction';
+  bool _recoveredCommitted = false;
 
   /// Validates a plan in isolation, then applies it with per-file recovery.
   ///
   /// Keep [install], [build], and [analyze] enabled for real project operations.
   /// Disabling them is intended for controlled fixtures or external validation.
   /// Concurrent edits and unresolved recovery journals prevent application.
-  Future<void> apply(
+  Future<OperationResult> apply(
     GenerationPlan plan, {
     bool install = true,
     bool build = true,
@@ -191,8 +246,34 @@ class GenerationTransaction {
     if (plan.project.root != project.root) {
       throw const GenerationException('The plan belongs to another project.');
     }
+    final snapshots = Map<List<int>, List<int>>.identity();
+    List<int>? freeze(List<int>? bytes) => bytes == null
+        ? null
+        : snapshots.putIfAbsent(bytes, () => List.unmodifiable(bytes));
+    final frozen = GenerationPlan(project)
+      ..directoriesToRemove.addAll(plan.directoriesToRemove)
+      ..platformRoots.addAll(plan.platformRoots)
+      ..stageOverrides.addAll(plan.stageOverrides)
+      ..commands.addAll(
+        plan.commands.map(
+          (command) => PlannedCommand(
+            command.executable,
+            List.unmodifiable(command.arguments),
+          ),
+        ),
+      );
+    for (final entry in plan.files.entries) {
+      frozen.files[entry.key] = PlannedFile(
+        freeze(entry.value.before),
+        freeze(entry.value.after),
+        beforeMode: entry.value.beforeMode,
+        afterMode: entry.value.afterMode,
+      );
+    }
+    plan = frozen;
     final lock = await ProjectLock.acquire(project);
     StagedWorkspace? workspace;
+    var committed = false;
     try {
       if (Directory(project.file(journalPath)).existsSync()) {
         throw const GenerationException(
@@ -203,12 +284,28 @@ class GenerationTransaction {
       context.cancellation.check();
       _verify(plan);
       if (install || build || analyze || plan.commands.isNotEmpty) {
+        if (plan.files['lib/app/config/app_environment.dart']?.after != null ||
+            File(project.file('lib/app/config/app_environment.dart'))
+                .existsSync()) {
+          for (final environment in ['dev', 'uat', 'prod']) {
+            final path = 'config/flavors/$environment.yaml';
+            if (!plan.files.containsKey(path) &&
+                !File(project.file(path)).existsSync()) {
+              throw GenerationException(
+                'Missing $path. Run Project doctor before generation.',
+              );
+            }
+            validatePublicFlavor(plan.read(path), environment, path);
+          }
+        }
+        if (identical(executor, executeCommand)) await _validateToolchain();
         context.report('staging');
         workspace = StagedWorkspace(
           project,
           context,
           platforms: plan.platformRoots,
         );
+        final explicitTargets = plan.files.keys.toSet();
         final baseline = await workspace.create();
         final stage = workspace.directory;
         for (final entry in plan.files.entries) {
@@ -218,6 +315,7 @@ class GenerationTransaction {
           } else {
             file.parent.createSync(recursive: true);
             file.writeAsBytesSync(entry.value.after!);
+            setFileMode(file, entry.value.afterMode);
           }
         }
         final manifestContents = <String, String>{};
@@ -300,21 +398,71 @@ class GenerationTransaction {
             );
           }
         }
+        context.report(
+          'collecting',
+          detail: '${validated.length} validated outputs',
+        );
         for (final relative in {...baseline.keys, ...validated.keys}) {
           if (baseline[relative] == validated[relative] &&
               !plan.files.containsKey(relative)) {
             continue;
           }
-          if (validated[relative] == null) {
-            plan.delete(relative);
-          } else {
-            final bytes = File(p.join(stage.path, relative)).readAsBytesSync();
-            if (digestBytes(bytes) != validated[relative]!.digest) {
+          final explicit = explicitTargets.contains(relative);
+          List<int>? original;
+          int? originalMode;
+          if (!explicit) {
+            final file = File(project.file(relative));
+            final type = FileSystemEntity.typeSync(
+              file.path,
+              followLinks: false,
+            );
+            if (type != FileSystemEntityType.notFound &&
+                type != FileSystemEntityType.file) {
               throw GenerationException(
-                'Output changed while collecting: $relative. No changes were applied.',
+                'Output target is not a regular file: $relative',
               );
             }
-            plan.writeBytes(relative, bytes);
+            original = file.existsSync() ? file.readAsBytesSync() : null;
+            originalMode = file.existsSync()
+                ? file.statSync().mode & 0x1ff
+                : null;
+            final input = baseline[relative];
+            if (input == null && original != null) {
+              throw GenerationException(
+                'Unstaged output conflicts with an existing target: $relative. No changes were applied.',
+              );
+            }
+            if (input != null &&
+                (original == null ||
+                    digestBytes(original) != input.digest ||
+                    originalMode != (input.mode & 0x1ff))) {
+              throw GenerationException(
+                'Project input changed while collecting outputs: $relative. No changes were applied.',
+              );
+            }
+          }
+          final output = validated[relative];
+          final bytes = output == null
+              ? null
+              : File(p.join(stage.path, relative)).readAsBytesSync();
+          if (bytes != null && digestBytes(bytes) != output!.digest) {
+            throw GenerationException(
+              'Output changed while collecting: $relative. No changes were applied.',
+            );
+          }
+          if (explicit) {
+            if (bytes == null) {
+              plan.delete(relative);
+            } else {
+              plan.writeBytes(relative, bytes, mode: output!.mode & 0x1ff);
+            }
+          } else {
+            plan.files[relative] = PlannedFile(
+              original == null ? null : List.unmodifiable(original),
+              bytes == null ? null : List.unmodifiable(bytes),
+              beforeMode: originalMode,
+              afterMode: output == null ? null : output.mode & 0x1ff,
+            );
           }
         }
         _trackOutputs(plan);
@@ -345,12 +493,83 @@ class GenerationTransaction {
       _verify(plan);
       context.report('applying', detail: '${plan.files.length} files');
       await _commit(plan, beforeWrite);
+      committed = true;
       context.report('completed', completed: true);
+    } on Object catch (error, stack) {
+      if (error is OperationCancelled) Error.throwWithStackTrace(error, stack);
+      final recovery = Directory(project.file(journalPath)).existsSync();
+      Error.throwWithStackTrace(
+        OperationFailure(
+          '$error',
+          OperationResult(
+            recovery
+                ? OperationStatus.recoveryRequired
+                : OperationStatus.rolledBack,
+            context.warnings,
+          ),
+        ),
+        stack,
+      );
     } finally {
       try {
         if (workspace != null) await workspace.dispose();
-      } finally {
+      } on Object catch (error) {
+        context.warn('Staging cleanup failed: $error');
+      }
+      try {
         await lock.release();
+      } on Object catch (error) {
+        context.warn('Lock cleanup failed: $error');
+      }
+    }
+    return OperationResult(
+      committed && context.warnings.isEmpty
+          ? OperationStatus.applied
+          : OperationStatus.appliedWithWarnings,
+      context.warnings,
+    );
+  }
+
+  Future<void> _validateToolchain() async {
+    final flutter = await executeManagedCommand(
+      'flutter',
+      ['--version', '--machine'],
+      project.root,
+      context,
+    );
+    flutter.requireSuccess('flutter --version --machine');
+    final dart = await executeManagedCommand(
+      'dart',
+      ['--version'],
+      project.root,
+      context,
+    );
+    dart.requireSuccess('dart --version');
+    final metadata = jsonDecode(flutter.output) as Map;
+    final expected = RegExp(r'^[^ ]+')
+        .firstMatch(metadata['dartSdkVersion'] as String)
+        ?.group(0);
+    final actual = RegExp(r'Dart SDK version: ([^ ]+)')
+        .firstMatch('${dart.output} ${dart.error}')
+        ?.group(1);
+    if (actual == null || actual != expected) {
+      throw GenerationException(
+        'Flutter uses Dart $expected, but the selected dart command uses $actual. Put Flutter/bin first in PATH (or use one consistent SDK manager).',
+      );
+    }
+    final environment =
+        (loadYaml(project.read('pubspec.yaml')) as Map)['environment'] as Map?;
+    for (final item in {
+      'sdk': actual,
+      'flutter': metadata['frameworkVersion'] as String,
+    }.entries) {
+      final constraint = environment?[item.key];
+      if (constraint is String &&
+          !VersionConstraint.parse(constraint)
+              .allows(Version.parse(item.value))) {
+        throw GenerationException(
+          'The selected ${item.key} version ${item.value} does not satisfy $constraint.',
+        );
       }
     }
   }
@@ -419,6 +638,16 @@ class GenerationTransaction {
         target = (candidates.single['files'] as List)
             .cast<Map<String, dynamic>>();
       } else if (projectFiles.any((file) => file['path'] == entry.key) ||
+          (entry.key.replaceFirst(RegExp(r'\.(g|freezed)\.dart$'), '.dart') !=
+                  entry.key &&
+              projectFiles.any(
+                (file) =>
+                    file['path'] ==
+                    entry.key.replaceFirst(
+                      RegExp(r'\.(g|freezed)\.dart$'),
+                      '.dart',
+                    ),
+              )) ||
           entry.key.startsWith('lib/core/localization/generated/') ||
           plan.platformRoots.any((root) => p.posix.isWithin(root, entry.key))) {
         target = projectFiles;
@@ -453,7 +682,19 @@ class GenerationTransaction {
 
   void _verify(GenerationPlan plan) {
     for (final entry in plan.files.entries) {
-      if (!sameBytes(_bytes(entry.key), entry.value.before)) {
+      if (p.posix.normalize(entry.key) != entry.key) {
+        throw GenerationException('Noncanonical planned path: ${entry.key}');
+      }
+      final file = File(project.file(entry.key));
+      final type = FileSystemEntity.typeSync(file.path, followLinks: false);
+      if (type != FileSystemEntityType.notFound &&
+          type != FileSystemEntityType.file) {
+        throw GenerationException('Expected a regular file: ${entry.key}');
+      }
+      if (!sameBytes(_bytes(entry.key), entry.value.before) ||
+          (entry.value.beforeMode != null &&
+              file.existsSync() &&
+              (file.statSync().mode & 0x1ff) != entry.value.beforeMode)) {
         throw GenerationException('File changed since planning: ${entry.key}');
       }
     }
@@ -553,6 +794,7 @@ class GenerationTransaction {
         'before_mode': entry.value.before == null
             ? null
             : File(project.file(entry.key)).statSync().mode & 0x1ff,
+        'after_mode': entry.value.afterMode,
         'before_hash': entry.value.before == null
             ? null
             : digestBytes(entry.value.before!),
@@ -564,12 +806,12 @@ class GenerationTransaction {
       };
     }
     final manifest = <String, dynamic>{
-      'version': 2,
+      'version': 3,
       'files': records,
       'created_directories': createdDirectories.toList(),
       'removed_directories': plan.directoriesToRemove.toList(),
     };
-    _saveJournal(manifest);
+    _journal.create(manifest);
     try {
       for (final entry in plan.files.entries) {
         // Deliver signals between durable writes; recovery itself completes
@@ -577,21 +819,35 @@ class GenerationTransaction {
         await Future<void>.delayed(Duration.zero);
         context.cancellation.check();
         hook?.call(entry.key);
-        if (!sameBytes(_bytes(entry.key), entry.value.before)) {
+        final target = File(project.file(entry.key));
+        if (!sameBytes(_bytes(entry.key), entry.value.before) ||
+            (entry.value.beforeMode != null &&
+                target.existsSync() &&
+                (target.statSync().mode & 0x1ff) != entry.value.beforeMode)) {
           throw GenerationException('Concurrent edit detected: ${entry.key}');
         }
         if (entry.value.after == null) {
           File(project.file(entry.key)).deleteSync();
         } else {
-          _atomicWrite(entry.key, entry.value.after!);
+          _atomicWrite(
+            entry.key,
+            entry.value.after!,
+            mode: entry.value.afterMode,
+          );
         }
         (records[entry.key] as Map)['state'] = 'applied';
-        _saveJournal(manifest);
+        _journal.transition(entry.key, 'applied');
       }
       _prune(plan.directoriesToRemove);
       File(project.file('$journalPath/committed'))
           .writeAsStringSync('ok', flush: true);
-      directory.deleteSync(recursive: true);
+      try {
+        directory.deleteSync(recursive: true);
+      } on Object catch (error) {
+        context.warn(
+          'Committed successfully; recovery journal cleanup failed: $error',
+        );
+      }
     } catch (error) {
       final conflicts = _restore();
       if (conflicts.isNotEmpty) {
@@ -603,10 +859,7 @@ class GenerationTransaction {
     }
   }
 
-  void _saveJournal(Map<String, dynamic> manifest) => _atomicWrite(
-    '$journalPath/manifest.json',
-    utf8.encode(prettyJson(manifest)),
-  );
+  JournalStore get _journal => JournalStore(project, journalPath);
   void _atomicWrite(String relative, List<int> bytes, {int? mode}) {
     final file = File(project.file(relative));
     mode ??= file.existsSync() ? file.statSync().mode & 0x1ff : null;
@@ -615,17 +868,7 @@ class GenerationTransaction {
     temporary.createSync(exclusive: true);
     try {
       temporary.writeAsBytesSync(bytes, flush: true);
-      if (!Platform.isWindows && mode != null) {
-        final result = Process.runSync('chmod', [
-          mode.toRadixString(8),
-          temporary.path,
-        ]);
-        if (result.exitCode != 0) {
-          throw GenerationException(
-            'Cannot preserve permissions for $relative: ${result.stderr}',
-          );
-        }
-      }
+      setFileMode(temporary, mode);
       temporary.renameSync(file.path);
     } finally {
       if (temporary.existsSync()) temporary.deleteSync();
@@ -633,7 +876,8 @@ class GenerationTransaction {
   }
 
   /// Restores safe journal records and preserves conflicting user edits.
-  Future<void> recover() async {
+  Future<OperationResult> recover() async {
+    _recoveredCommitted = false;
     final lock = await ProjectLock.acquire(project);
     try {
       final conflicts = _restore();
@@ -642,33 +886,61 @@ class GenerationTransaction {
           'Safe files were restored; these user edits were preserved: ${conflicts.join(', ')}',
         );
       }
+    } on Object catch (error) {
+      throw OperationFailure(
+        '$error',
+        OperationResult(OperationStatus.recoveryRequired),
+      );
     } finally {
-      await lock.release();
+      try {
+        await lock.release();
+      } on Object catch (error) {
+        context.warn('Lock cleanup failed: $error');
+      }
     }
+    return OperationResult(
+      _recoveredCommitted
+          ? (context.warnings.isEmpty
+                ? OperationStatus.applied
+                : OperationStatus.appliedWithWarnings)
+          : OperationStatus.rolledBack,
+      context.warnings,
+    );
   }
 
   /// Recovery attempts every record, preserving only the conflicting files.
   List<String> _restore() {
     final directory = Directory(project.file(journalPath));
     if (!directory.existsSync()) return [];
+    final manifest = _journal.read();
     if (File(project.file('$journalPath/committed')).existsSync()) {
-      directory.deleteSync(recursive: true);
+      _recoveredCommitted = true;
+      try {
+        directory.deleteSync(recursive: true);
+      } on Object catch (error) {
+        context.warn(
+          'Application was committed; journal cleanup failed: $error',
+        );
+      }
       return [];
     }
     final file = File(project.file('$journalPath/manifest.json'));
-    if (!file.existsSync()) {
-      directory.deleteSync(recursive: true);
-      return [];
-    }
-    final manifest =
-        jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-    if (![1, 2].contains(manifest['version'])) {
-      throw const GenerationException(
-        'Unknown recovery journal version. Backups have been preserved.',
-      );
-    }
     final records = manifest['files'] as Map;
     final conflicts = <String>[];
+    final backupDirectory = Directory(project.file('$journalPath/backups'));
+    final declaredBackups = records.values
+        .whereType<Map>()
+        .map((record) => record['backup'])
+        .whereType<String>()
+        .toSet();
+    if (backupDirectory.existsSync()) {
+      for (final backup in backupDirectory.listSync(followLinks: false)) {
+        final relative = 'backups/${p.basename(backup.path)}';
+        if (!declaredBackups.contains(relative) && manifest['version'] != 1) {
+          conflicts.add('$relative (unreferenced backup preserved)');
+        }
+      }
+    }
     // A crash during a journal replacement can leave this owned temporary file.
     final journalTemporary = File('${file.path}.cleany-tmp');
     if (journalTemporary.existsSync()) journalTemporary.deleteSync();
@@ -679,11 +951,11 @@ class GenerationTransaction {
       }
       final path = entry.key as String;
       final record = entry.value as Map;
-      if (record['state'] == 'restored') continue;
+
       try {
         project.file(path);
         final backup = record['backup'];
-        if (manifest['version'] == 2 &&
+        if (manifest['version'] != 1 &&
             backup != null &&
             (backup is! String ||
                 !RegExp(r'^backups/[0-9]+$').hasMatch(backup))) {
@@ -698,7 +970,7 @@ class GenerationTransaction {
                   : File(project.file('$journalPath/${record['backup']}'))
                         .readAsBytesSync());
         final beforeHash = before == null ? null : digestBytes(before);
-        if (manifest['version'] == 2 && beforeHash != record['before_hash']) {
+        if (manifest['version'] != 1 && beforeHash != record['before_hash']) {
           throw const FormatException('Backup hash mismatch');
         }
         final afterHash = manifest['version'] == 1
@@ -708,14 +980,30 @@ class GenerationTransaction {
             : record['after_hash'];
         final current = _bytes(path);
         final currentHash = current == null ? null : digestBytes(current);
-        if (currentHash != beforeHash && currentHash != afterHash) {
+        final currentMode = current == null
+            ? null
+            : File(project.file(path)).statSync().mode & 0x1ff;
+        final matchesBefore =
+            currentHash == beforeHash &&
+            (record['before_mode'] == null ||
+                currentMode == record['before_mode']);
+        final matchesAfter =
+            currentHash == afterHash &&
+            (record['after_mode'] == null ||
+                currentMode == record['after_mode']);
+        if (!matchesBefore && !matchesAfter) {
           record['state'] = 'conflict';
           conflicts.add(path);
           continue;
         }
         final temporary = File(project.file('$path.cleany-tmp'));
         if (temporary.existsSync()) temporary.deleteSync();
-        if (currentHash != beforeHash) {
+        final targetMode = current == null
+            ? null
+            : File(project.file(path)).statSync().mode & 0x1ff;
+        if (currentHash != beforeHash ||
+            (record['before_mode'] != null &&
+                targetMode != record['before_mode'])) {
           if (before == null) {
             final target = File(project.file(path));
             if (target.existsSync()) target.deleteSync();
@@ -729,7 +1017,7 @@ class GenerationTransaction {
         conflicts.add(path);
       }
     }
-    _saveJournal(manifest);
+    _journal.create(manifest);
     if (conflicts.isEmpty) {
       _prune(
         (manifest['created_directories'] as List? ??

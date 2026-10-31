@@ -51,13 +51,20 @@ Future<CommandResult> executeCommand(
   OperationContext(),
 );
 
+/// Injectable OS process-tree command boundary for shutdown diagnostics.
+typedef ProcessTreeCommand = Future<ProcessResult> Function(
+  String executable,
+  List<String> arguments,
+);
+
 /// Bounded logs, a deadline, cancellation, and child-tree termination.
 Future<CommandResult> executeManagedCommand(
   String executable,
   List<String> arguments,
   String workingDirectory,
-  OperationContext context,
-) async {
+  OperationContext context, {
+  ProcessTreeCommand? processTreeCommand,
+}) async {
   context.cancellation.check();
   final label = '$executable ${arguments.join(' ')}';
   final clock = Stopwatch()..start();
@@ -88,19 +95,43 @@ Future<CommandResult> executeManagedCommand(
   var interrupted = false;
   Future<void> terminate() async {
     interrupted = true;
-    if (Platform.isWindows) {
-      await Process.run('taskkill', ['/PID', '${process.pid}', '/T', '/F']);
-    } else {
-      final children = await _descendants(process.pid);
+    var children = <int>[];
+    try {
+      if (Platform.isWindows) {
+        final result =
+            await (processTreeCommand ??
+                    ((exe, args) => Process.run(exe, args)))('taskkill', [
+                  '/PID',
+                  '${process.pid}',
+                  '/T',
+                  '/F',
+                ])
+                .timeout(const Duration(seconds: 2));
+        if (result.exitCode != 0) {
+          context.warn('taskkill failed; terminating the command directly.');
+        }
+      } else {
+        children = await _descendants(
+          process.pid,
+          processTreeCommand,
+        ).timeout(const Duration(seconds: 2));
+      }
+    } on Object catch (error) {
+      context.warn(
+        'Process tree inspection failed; terminating the command directly: $error',
+      );
+    } finally {
       for (final child in children.reversed) {
         Process.killPid(child, ProcessSignal.sigterm);
       }
-      process.kill(ProcessSignal.sigterm);
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      for (final child in children.reversed) {
-        Process.killPid(child, ProcessSignal.sigkill);
+      process.kill();
+      if (!Platform.isWindows) {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        for (final child in children.reversed) {
+          Process.killPid(child, ProcessSignal.sigkill);
+        }
+        process.kill(ProcessSignal.sigkill);
       }
-      process.kill(ProcessSignal.sigkill);
     }
   }
 
@@ -116,7 +147,10 @@ Future<CommandResult> executeManagedCommand(
   ]);
   try {
     if (reason != 'exit') await terminate();
-    final code = await process.exitCode;
+    final code = await process.exitCode.timeout(
+      const Duration(seconds: 5),
+      onTimeout: () => -1,
+    );
     await Future.wait([stdoutDone, stderrDone])
         .timeout(const Duration(seconds: 5), onTimeout: () => []);
     if (reason == 'cancel') throw const OperationCancelled();
@@ -164,8 +198,18 @@ Future<void> _capture(
   if (pending.isNotEmpty) append(pending);
 }
 
-Future<List<int>> _descendants(int parent) async {
-  final result = await Process.run('ps', ['-eo', 'pid=,ppid=']);
+Future<List<int>> _descendants(int parent, ProcessTreeCommand? command) async {
+  final result = await (command ?? ((exe, args) => Process.run(exe, args)))(
+    'ps',
+    ['-eo', 'pid=,ppid='],
+  );
+  result.exitCode == 0 ||
+      (throw ProcessException(
+        'ps',
+        const [],
+        '${result.stderr}',
+        result.exitCode,
+      ));
   final children = <int, List<int>>{};
   for (final line in '${result.stdout}'.split('\n')) {
     final parts = line.trim().split(RegExp(r'\s+'));

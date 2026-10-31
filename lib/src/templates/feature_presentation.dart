@@ -51,10 +51,15 @@ ${c.bloc ? "import '${n}_event.dart';" : ''}
 class ${c.controller} extends ${c.bloc ? 'Bloc<${t}Event, ${t}State>' : 'Cubit<${t}State>'} {
 ${c.full ? '  final Get$t _get$t;' : ''}
   ${c.controller}(${c.full ? 'this._get$t' : ''}) : super(const ${t}State.initial())${c.bloc ? ' {\n    on<${t}Requested>(_onRequested);\n  }' : ';'}
+${c.bloc && !c.full ? '''
+  // Component actions after disposal are ignored, matching Cubit.update.
+  @override
+  void add(${t}Event event) { if (!isClosed) super.add(event); }
+''' : ''}
 ${c.bloc
         ? '''
   Future<void> _onRequested(${t}Requested event, Emitter<${t}State> emit) async {
-${c.full ? result : '    emit(const ${t}State.updated(1));'}
+${c.full ? result : '    if (!emit.isDone) emit(const ${t}State.updated(1));'}
   }
 '''
         : c.full
@@ -63,7 +68,7 @@ ${c.full ? result : '    emit(const ${t}State.updated(1));'}
 $result
   }
 '''
-        : '  void update(int value) => emit(${t}State.updated(value));'}
+        : '  void update(int value) { if (!isClosed) emit(${t}State.updated(value)); }'}
 }
 ''');
   }
@@ -82,11 +87,10 @@ $result
         ${t}Updated(:final value) => Text('\$value'),
       }
 ''';
-  add(
-    '${c.full ? 'presentation/pages' : 'widgets'}/${n}_${c.full ? 'page' : 'widget'}.dart',
-    '''
+  add('${c.widgetLocation}${n}_${c.full ? 'page' : 'widget'}.dart', '''
+${!c.full && !c.legacyComponentWidgets ? '// Cleany component layout: flat. Widget lives at the component root.' : ''}
 import 'package:flutter/material.dart';
-${c.stateful ? "import 'package:flutter_bloc/flutter_bloc.dart';\nimport '../${c.mode}/${n}_${c.mode}.dart';\nimport '../${c.mode}/${n}_state.dart';" : ''}
+${c.stateful ? "import 'package:flutter_bloc/flutter_bloc.dart';\nimport '${c.widgetStatePrefix}${c.mode}/${n}_${c.mode}.dart';\nimport '${c.widgetStatePrefix}${c.mode}/${n}_state.dart';" : ''}
 class $t${c.full ? 'Page' : 'Widget'} extends StatelessWidget {
   const $t${c.full ? 'Page' : 'Widget'}({super.key});
   @override
@@ -95,7 +99,6 @@ ${c.stateful ? '    final _ = context.read<${c.controller}>();' : ''}
     return ${c.full ? "Scaffold(appBar: AppBar(title: const Text('$t')), body: " : ''}${c.stateful ? 'BlocBuilder<${c.controller}, ${t}State>(builder: (context, state) => $body)' : 'const SizedBox.shrink()'}${c.full ? ')' : ''};
   }
 }
-''',
-  );
+''');
   return files;
 }

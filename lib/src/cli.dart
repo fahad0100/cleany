@@ -6,7 +6,8 @@ import 'registry.dart';
 import 'project.dart';
 import 'transaction.dart';
 
-import 'dart:convert';
+import 'cli_executor.dart';
+import 'cli_menu.dart';
 
 import 'doctor.dart';
 import 'lifecycle.dart';
@@ -20,6 +21,17 @@ class _Terminal {
   final StringSink output;
   final String? Function() input;
   final bool color;
+  final _draft = <String, String>{};
+  bool _remember = false;
+
+  void beginForm({required bool retry}) {
+    if (!retry) _draft.clear();
+    _remember = true;
+  }
+
+  void endForm() {
+    _remember = false;
+  }
 
   String paint(String value, String code) =>
       color ? '\x1B[${code}m$value\x1B[0m' : value;
@@ -34,14 +46,35 @@ class _Terminal {
   }
 
   void item(int number, String label) =>
-      output.writeln('  ${paint('$number', '1;33')}  $label');
+      output.writeln('    ${paint('$number.'.padLeft(3), '1;33')} $label');
+  void section(String label) =>
+      output.writeln('\n  ${paint('[ $label ]', '1;35')}');
+
+  void explain(String description) {
+    var line = '  ';
+    for (final word in description.split(' ')) {
+      if (line.length + word.length > 74) {
+        output.writeln(paint(line.trimRight(), '2;37'));
+        line = '  ';
+      }
+      line += '$word ';
+    }
+    output.writeln(paint(line.trimRight(), '2;37'));
+    output.writeln();
+  }
+
   String? line(String label, {String? fallback}) {
+    if (_remember && !{'Continue', 'Recovery'}.contains(label)) {
+      fallback = _draft[label] ?? fallback;
+    }
     output.write(
       '${paint('›', '36')} $label${fallback == null ? '' : ' [$fallback]'}: ',
     );
     final value = input();
     if (value == null) return null;
-    return value.trim().isEmpty ? fallback ?? '' : value.trim();
+    final answer = value.trim().isEmpty ? fallback ?? '' : value.trim();
+    if (_remember) _draft[label] = answer;
+    return answer;
   }
 
   int? choose(String label, List<String> choices, {int? fallback}) {
@@ -92,78 +125,89 @@ Future<int> runCli(
     final project = Project(projectRoot ?? Directory.current.path);
     project.validate();
     final generator = Generator(project);
-    String? pendingAction = arguments.isEmpty ? null : '9';
+    final execution = CliExecutor(project, executor);
+    CliCommand? pendingAction = arguments.isEmpty
+        ? null
+        : CliCommand.maintenance;
     var lastActionFailed = false;
     while (true) {
+      terminal.endForm();
       terminal.title('CLEANY  ·  Flutter Architecture');
-      terminal.item(1, 'Create feature');
-      terminal.item(2, 'Create component');
-      terminal.item(3, 'List features');
-      terminal.item(4, 'List components');
-      terminal.item(5, 'Remove feature');
-      terminal.item(6, 'Remove component');
-      terminal.item(7, 'Initialize project');
-      terminal.item(8, 'Recover interrupted operation');
-      terminal.item(9, 'Cleany maintenance / reset');
-      terminal.item(10, 'Project doctor / repair');
-      terminal.item(11, 'Rename or move an entry');
-      terminal.item(12, 'Configure native flavors');
-      terminal.item(0, 'Exit');
+      String? lastSection;
+      for (final command in CliCommand.values) {
+        if (command == CliCommand.exit) {
+          output.writeln();
+        } else if (lastSection != command.section) {
+          terminal.section(command.section!);
+          lastSection = command.section;
+        }
+        terminal.item(command.number, command.label);
+      }
       if (!File(project.file(registryPath)).existsSync()) {
         output.writeln(
           terminal.paint(
-            '  New project: choose 7 to initialize it first.',
+            '  New project: choose 9 to initialize it first.',
             '33',
           ),
         );
       }
-      final actionInput = pendingAction ?? terminal.line('Choose a number');
-      final action = actionInput == null ? null : _asciiDigits(actionInput);
+      final retry = pendingAction != null;
+      final input = pendingAction == null
+          ? terminal.line('Choose a number')
+          : null;
+      if (pendingAction == null && input == null) {
+        return lastActionFailed ? 1 : 0;
+      }
+      final action =
+          pendingAction ?? CliCommand.fromNumber(_asciiDigits(input!));
       pendingAction = null;
-      if (action == null || action == '0') return lastActionFailed ? 1 : 0;
-      if (![
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        '10',
-        '11',
-        '12',
-      ].contains(action)) {
+      if (action == null) {
         output.writeln(terminal.paint('Choose a number from the menu.', '31'));
         continue;
       }
+      terminal.title(action.label);
+      terminal.explain(action.description);
+      if (action == CliCommand.exit) return lastActionFailed ? 1 : 0;
+      terminal.beginForm(retry: retry);
       try {
-        if (['1', '2', '3', '4', '5', '6'].contains(action) &&
+        if (action.requiresInitialization &&
             !File(project.file(registryPath)).existsSync()) {
           output.writeln(
             terminal.paint(
-              'Initialize this project using option 7 first.',
+              'Initialize this project using option 9 first.',
               '33',
             ),
           );
           continue;
         }
-        if (action == '8') {
+        if (action == CliCommand.recover) {
           final confirm = terminal.choose('Recovery', [
             'Restore interrupted operation',
             'Cancel',
           ], fallback: 2);
           if (confirm == 1) {
-            await GenerationTransaction(project, executor: executor).recover();
-            terminal.success('Recovery completed.');
+            final recovered = await execution.recover();
+            lastActionFailed = false;
+            for (final warning in recovered.warnings) {
+              output.writeln(
+                terminal.paint('Warning: ${_redact(warning)}', '33'),
+              );
+            }
+            terminal.success(
+              recovered.status == OperationStatus.rolledBack
+                  ? 'Recovery completed.'
+                  : 'Previously committed operation confirmed.',
+            );
           }
           continue;
         }
-        if (action == '3' || action == '4') {
+        if (action == CliCommand.listFeatures ||
+            action == CliCommand.listComponents) {
           _list(
             generator,
-            action == '3' ? GenerationKind.feature : GenerationKind.component,
+            action == CliCommand.listFeatures
+                ? GenerationKind.feature
+                : GenerationKind.component,
             terminal,
           );
           continue;
@@ -171,8 +215,7 @@ Future<int> runCli(
         late final GenerationPlan plan;
         var runChecks = true;
         var runBuild = true;
-        if (action == '9') {
-          terminal.title('Cleany maintenance');
+        if (action == CliCommand.maintenance) {
           final selected = terminal.choose('Action', [
             'Clean abandoned local cache',
             'Archive managed folders and reset Cleany',
@@ -189,7 +232,7 @@ Future<int> runCli(
               'Cancel',
             ], fallback: 2);
             if (confirmation == 1) {
-              final count = await ProjectMaintenance(project).cleanCache();
+              final count = await execution.cleanCache();
               terminal.success('Removed $count abandoned workspaces.');
               lastActionFailed = false;
             }
@@ -197,7 +240,9 @@ Future<int> runCli(
           }
           if (selected == 3) {
             final value = int.tryParse(
-              terminal.line('Timeout per command, seconds (5 to 3600)') ?? '',
+              _asciiDigits(
+                terminal.line('Timeout per command, seconds (5 to 3600)') ?? '',
+              ),
             );
             if (value == null || value < 5 || value > 3600) {
               throw const GenerationException(
@@ -216,20 +261,20 @@ Future<int> runCli(
             );
             plan = ProjectMaintenance(project).reset();
           }
-        } else if (action == '10') {
+        } else if (action == CliCommand.doctor) {
           final report = ProjectDoctor(project).inspect();
-          terminal.title('Project doctor');
           for (final issue in report.issues) {
             output.writeln(
               '  ${issue.repairable ? 'REPAIR' : 'NOTICE'}  ${issue.message}',
             );
           }
           if (report.plan.files.isEmpty) {
+            lastActionFailed = false;
             terminal.success('No repairable issues found.');
             continue;
           }
           plan = report.plan;
-        } else if (action == '11') {
+        } else if (action == CliCommand.renameMove) {
           final entries = (generator.readRegistry()['features'] as List)
               .cast<Map<String, dynamic>>();
           if (entries.isEmpty) {
@@ -261,7 +306,7 @@ Future<int> runCli(
             newName: name,
             destination: destination,
           );
-        } else if (action == '12') {
+        } else if (action == CliCommand.configureFlavors) {
           final available = ['android', 'ios', 'macos']
               .where(
                 (platform) => Directory(project.file(platform)).existsSync(),
@@ -286,8 +331,49 @@ Future<int> runCli(
           );
           plan = planPlatformFlavors(project, platforms);
           runBuild = false;
-        } else if (action == '7') {
-          terminal.title('Initialize project');
+        } else if (action == CliCommand.addUseCase) {
+          final features = _entries(generator, GenerationKind.feature);
+          if (features.isEmpty) {
+            output.writeln(
+              'No features yet. Create a feature using option 1 first.',
+            );
+            continue;
+          }
+          final selected = terminal.choose('Feature', [
+            for (final entry in features)
+              '${entry['name']}  (${entry['path']})',
+            'Cancel',
+          ]);
+          if (selected == null || selected > features.length) continue;
+          final feature = features[selected - 1];
+          final name = terminal.line('Use case name (snake_case)');
+          if (name == null || name.isEmpty) continue;
+          final result = terminal.choose('Return type', [
+            'void (completion only)',
+            '${pascalCase(feature['name'] as String)}Entity (existing feature entity)',
+          ]);
+          if (result == null) continue;
+          plan = generator.addUseCase(
+            feature: feature['name'] as String,
+            name: name,
+            returnType: result == 1
+                ? UseCaseReturnType.voidResult
+                : UseCaseReturnType.entity,
+          );
+          output.writeln(
+            'The Data connection point needs its backend contract; until connected, the operation returns Failure.',
+          );
+          output.writeln(
+            'The existing feature repository gains a method. Update other implementations and test fakes to match its expanded contract before validation.',
+          );
+          final method = camelCase(name);
+          final type = pascalCase(feature['name'] as String);
+          output.writeln(
+            feature['state'] == 'bloc'
+                ? 'Dispatch: ${type}Event.${method}Requested(). Observe state.${method}Status.'
+                : 'Call: ${type}Cubit.$method(). Observe state.${method}Status.',
+          );
+        } else if (action == CliCommand.initialize) {
           final ids = project.applicationIds();
           String? id;
           if (ids.length == 1) {
@@ -320,12 +406,12 @@ Future<int> runCli(
             appId: id,
             provider: provider == 1 ? ApiProvider.retrofit : ApiProvider.dio,
           );
-        } else if (action == '5' || action == '6') {
-          final kind = action == '5'
+        } else if (action == CliCommand.removeFeature ||
+            action == CliCommand.removeComponent) {
+          final kind = action == CliCommand.removeFeature
               ? GenerationKind.feature
               : GenerationKind.component;
           final entries = _entries(generator, kind);
-          terminal.title('Remove ${kind.name}');
           if (entries.isEmpty) continue;
           final selected = terminal.choose('Select ${kind.name} to remove', [
             for (final entry in entries) '${entry['name']}  (${entry['path']})',
@@ -338,10 +424,9 @@ Future<int> runCli(
           );
           plan = generator.remove(name: entry['name'] as String, kind: kind);
         } else {
-          final kind = action == '1'
+          final kind = action == CliCommand.createFeature
               ? GenerationKind.feature
               : GenerationKind.component;
-          terminal.title('Create ${kind.name}');
           final name = terminal.line('Name (snake_case)');
           if (name == null || name.isEmpty) continue;
           validateName(name);
@@ -388,6 +473,7 @@ Future<int> runCli(
                 : null,
           );
         }
+        terminal.endForm();
         terminal.title('Review changes');
         for (final entry in plan.files.entries) {
           final label = entry.value.after == null
@@ -404,38 +490,21 @@ Future<int> runCli(
           'Cancel',
         ], fallback: 2);
         if (review == 1) {
-          final logs = File(project.file('.cleany/logs/latest.jsonl'));
-          logs.parent.createSync(recursive: true);
-          logs.writeAsStringSync('');
-          final context = OperationContext(
-            timeout: ProjectMaintenance(project).commandTimeout(),
-            onProgress: (event) {
-              terminal.output.writeln(
-                '[${event.elapsed.inSeconds}s] ${event.command ?? event.stage}${event.detail == null ? '' : ' · ${event.detail}'}${event.completed ? ' ✓' : ''}',
-              );
-              logs.writeAsStringSync(
-                '${jsonEncode({'stage': event.stage, 'seconds': event.elapsed.inSeconds, 'command': event.command, 'detail': event.detail, 'completed': event.completed})}\n',
-                mode: FileMode.append,
-              );
-            },
-          );
           output.writeln(
             'Preparing operation. Ctrl+C cancels the active command and requests safe rollback.',
           );
-          final interrupts = context.watchInterrupts();
-          try {
-            await GenerationTransaction(
-              project,
-              executor: executor,
-              context: context,
-            ).apply(
-              plan,
-              install: runChecks,
-              build: runChecks && runBuild,
-              analyze: runChecks,
+          final result = await execution.apply(
+            plan,
+            checks: runChecks,
+            build: runBuild,
+            onProgress: (event) => output!.writeln(
+              '[${event.elapsed.inSeconds}s] ${event.command ?? event.stage}${event.detail == null ? '' : ' · ${event.detail}'}${event.completed ? ' ✓' : ''}',
+            ),
+          );
+          for (final warning in result.warnings) {
+            output.writeln(
+              terminal.paint('Warning: ${_redact(warning)}', '33'),
             );
-          } finally {
-            await interrupts?.cancel();
           }
           lastActionFailed = false;
           terminal.success(
@@ -447,12 +516,16 @@ Future<int> runCli(
           output.writeln('Cancelled. No files were changed.');
         }
       } on Object catch (exception) {
+        terminal.endForm();
         lastActionFailed = exception is! OperationCancelled;
         error.writeln(
           terminal.paint('Operation stopped: ${_redact('$exception')}', '31'),
         );
         output.writeln(
-          'Existing edits are preserved. Review recovery notices if a rollback conflict was reported.',
+          exception is OperationFailure &&
+                  exception.result.status == OperationStatus.recoveryRequired
+              ? 'Recovery is required. Safe files were restored; conflicting files and backups were preserved.'
+              : 'No generated changes remain applied. Existing edits are preserved.',
         );
         final next = terminal.choose('Next step', [
           'Retry this action',
@@ -476,7 +549,6 @@ List<Map<String, dynamic>> _list(
       .cast<Map<String, dynamic>>()
       .where((entry) => entry['kind'] == kind.name)
       .toList();
-  terminal.title(kind == GenerationKind.feature ? 'Features' : 'Components');
   if (entries.isEmpty) terminal.output.writeln('  No ${kind.name}s yet.');
   for (final entry in entries) {
     terminal.output.writeln(

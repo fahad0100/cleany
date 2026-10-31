@@ -1,6 +1,6 @@
 # CLEANY
 
-**Release 2.0.0** · Interactive architecture tooling for Flutter.
+**Release 2.0.2** · Interactive architecture tooling for Flutter.
 
 Cleany creates features and reusable components using one consistent **Feature-Based + Clean Architecture** template, with **Cubit or Bloc, Freezed, and multiple_result**. A numbered terminal menu guides each operation, validates the generated project in isolation, and applies changes with recoverable file updates.
 
@@ -16,6 +16,7 @@ Cleany creates features and reusable components using one consistent **Feature-B
 - Raw JSON datasources; repository-owned Model → Entity and exception → Failure conversion.
 - `Result<Entity, Failure>` from multiple_result; Domain stays independent of Dio, Retrofit, and GetIt.
 - Compact response fields: `fieldName:type:jsonKey`, followed by y/n nullability.
+- Add use cases to existing features, with typed operation progress, automatic Cubit/Bloc wiring, and central DI.
 - Official Flutter Arabic/English localization, ARB files, gen-l10n, and RTL support.
 - Dev/UAT/prod bootstrap and guided native Flavorizr setup.
 - Custom locations inside `lib`, nested features, ownership tracking, safe removal, and rename/move.
@@ -41,7 +42,7 @@ Cleany runs on the developer's computer. Its pub.dev platform declarations descr
 After this release is published to pub.dev:
 
 ```sh
-dart pub global activate cleany 2.0.0
+dart pub global activate cleany 2.0.2
 ```
 
 For the current checkout, activate the local source instead:
@@ -63,7 +64,7 @@ After updating a local installation, close any running Cleany session and start 
 
 1. Create or open a Flutter project and enter its root directory.
 2. Run `cleany`.
-3. Choose **7 — Initialize project**, select the production identity and API provider, then apply.
+3. Choose **9 — Initialize project**, select the production identity and API provider, then apply.
 4. Choose **1 — Create feature**, enter a name, select Cubit/Bloc, and choose a location.
 5. Select default response fields or define your own fields, then apply and validate.
 6. Configure the API base URL and run the chosen application entrypoint.
@@ -80,22 +81,34 @@ Cleany presents:
 ╭────────────────────────────────────────────╮
   CLEANY  ·  Flutter Architecture
 ╰────────────────────────────────────────────╯
-  1  Create feature
-  2  Create component
-  3  List features
-  4  List components
-  5  Remove feature
-  6  Remove component
-  7  Initialize project
-  8  Recover interrupted operation
-  9  Cleany maintenance / reset
-  10 Project doctor / repair
-  11 Rename or move an entry
-  12 Configure native flavors
-  0  Exit
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
 ```
 
-All normal actions use the menu. The direct shortcut `cleany maintenance` opens option 9. Feature/init flags and the old feature/component subcommands are not accepted.
+All normal actions use the menu. The direct shortcut `cleany maintenance` opens option 13. Feature/init flags and the old feature/component subcommands are not accepted.
 
 ## Generated architecture
 
@@ -160,7 +173,7 @@ my_flutter_app/
 │   │       └── widgets/
 │   ├── components/user_card/
 │   │   ├── cubit/
-│   │   └── widgets/user_card_widget.dart
+│   │   └── user_card_widget.dart
 │   ├── main_dev.dart
 │   ├── main_uat.dart
 │   └── main_prod.dart
@@ -173,7 +186,7 @@ my_flutter_app/
 └── pubspec.yaml
 ```
 
-This example selects Cubit and Retrofit. Bloc uses a `bloc/` folder with event/state files. Direct Dio omits the Retrofit client. Components without state management have only their widget scaffold. Native folders are supplied by Flutter, not recreated by Cleany initialization.
+This example selects Cubit and Retrofit. Bloc uses a `bloc/` folder with event/state files. Direct Dio omits the Retrofit client. Components place their widget directly in the component directory. Components without state management have only that widget scaffold. Native folders are supplied by Flutter, not recreated by Cleany initialization.
 
 ### Data flow and ownership
 
@@ -188,28 +201,9 @@ Application services/repositories use lazy singletons inside an application GetI
 
 ## Menu guide
 
+Selecting any command first displays a short explanation of its purpose and workflow. Commands are grouped into Generation, Cleanup, Inspection & Management, Core & Setup, and Maintenance & Recovery.
+
 Examples below show representative inputs; native identifiers, file lists, and diagnostic results depend on your project. Mutating source plans finish with **1 — Apply and validate** or **2 — Cancel**. Enter defaults to Cancel at review.
-
-### 7 — Initialize project
-
-Choose this first in an uninitialized Flutter project:
-
-```text
-Choose a number: 7
-Detected production app id: com.example.playground
-API provider: 1  # Retrofit over Dio; 2 selects direct Dio
-Continue [2]: 1
-```
-
-Cleany resolves supported static Gradle properties and Apple project/xcconfig identifiers. If there are multiple candidates, select the production id; if unresolved, enter it. No platform script is executed just to discover the identifier.
-
-| Environment | Application / bundle id |
-| --- | --- |
-| prod | com.example.playground |
-| dev | com.example.playground.dev |
-| uat | com.example.playground.uat |
-
-Initialization adds the fixed architecture, required dependencies, localization, and public flavor configuration. Existing dependencies, comments, assets, overrides, main entrypoint, and analysis rules are preserved where possible. Existing `lib/app` or `lib/core` directories are protected from initialization overwrite. Use Doctor for supported repairs; older unrelated architectures need an explicit migration.
 
 ### 1 — Create feature
 
@@ -254,46 +248,156 @@ Parent directory (example: lib/shared/components): lib/shared/components
 Continue [2]: 1
 ```
 
-Creates `lib/shared/components/user_card`. Components contain a widget and optional controller/state files. They do not add feature routes, data/domain layers, or response-field prompts.
+Creates `lib/shared/components/user_card`. Every new component puts its widget directly in its own folder. Choose the state-management option according to its needs:
 
-### 3 / 4 — List features / components
+```text
+# No state management
+lib/components/empty_state/
+└── empty_state_widget.dart
+
+# Cubit
+lib/components/user_card/
+├── user_card_widget.dart
+└── cubit/
+    ├── user_card_cubit.dart
+    └── user_card_state.dart
+
+# Bloc
+lib/components/status_badge/
+├── status_badge_widget.dart
+└── bloc/
+    ├── status_badge_bloc.dart
+    ├── status_badge_event.dart
+    └── status_badge_state.dart
+```
+
+Cubit/Bloc imports are relative to the component root, for example `import 'cubit/user_card_cubit.dart';`. Every component updates the central page factory and registry; stateful components also update central DI. Components add no feature routes, Data/Domain layers, or response-field prompts. Generated Freezed outputs appear beside their state/event sources after validation.
+
+Existing components with a `widgets/` subfolder retain their layout during Doctor repair, registry recovery, rename/move, and removal. Cleany records the layout per component instead of creating a second widget in another location.
+
+### 3 — Add use case
 
 ```text
 Choose a number: 3
-home  ·  cubit  ·  lib/features/home
-
-Choose a number: 4
-user_card  ·  cubit  ·  lib/shared/components/user_card
+Feature: 1                         # Select home from registered features
+Use case name (snake_case): refresh_home
+Return type: 2                     # 1 = void; 2 = existing HomeEntity
+Continue [2]: 1
 ```
 
-Lists the matching registered entry kind, its state-management style, and location. Missing/corrupt metadata can be inspected through Doctor.
+Cleany adds `domain/usecases/refresh_home.dart` and extends the existing `HomeRepository` and `HomeRepositoryImpl` with `refreshHome()`. Both GetHome and RefreshHome use the same feature repository instance. No per-operation repository files or repository DI registrations are generated. Entity, Model, page, and routes are preserved. An entity result reuses `HomeModel.fromJson` and maps its fields into `HomeEntity`; a void result reports successful completion without parsing an Entity. No new Entity or Model is created.
 
-### 5 / 6 — Remove feature / component
+The existing datasource receives a documented connection method. **No endpoint or HTTP method is guessed. Until you implement that connection, the repository returns `UnexpectedFailure`.** Connect the method to your backend, returning raw JSON for an entity operation or completing after a successful void operation. Exceptions are converted to `Failure` once, in the Data repository.
+
+Central DI registers the new use case against the existing feature repository and supplies the existing controller. Custom implementations and test fakes that implement the repository must implement the added method too; staged analysis catches incomplete contracts before application. Older separately generated operation repositories remain supported and are never silently merged or deleted. For Cubit, call `context.read<HomeCubit>().refreshHome()`. For Bloc, dispatch `context.read<HomeBloc>().add(const HomeEvent.refreshHomeRequested())`. Each action exposes independent progress through `state.refreshHomeStatus`:
+
+```dart
+switch (state.refreshHomeStatus) {
+  case UseCaseInitial<HomeEntity>():
+    return const SizedBox.shrink();
+  case UseCaseLoading<HomeEntity>():
+    return const CircularProgressIndicator();
+  case UseCaseSuccess<HomeEntity>(:final value):
+    return Text(value.id);
+  case UseCaseFailure<HomeEntity>(:final failure):
+    return Text(failure.message);
+}
+```
+
+Import `core/state/use_case_state.dart` and the feature Entity in that widget. Use `void` instead of `HomeEntity` for completion actions and ignore the success value. Existing feature state variants and page switches remain valid; primary loads preserve action statuses, and duplicate in-flight calls are ignored. Existing manual controller constructors remain compatible through optional named dependencies; provide the new dependency when using its action outside central DI. Doctor, rename/move, removal, and recovery include the added operation records and files. Explicit use case names stay unchanged when their feature is renamed.
+
+### 4 / 5 — Remove feature / component
 
 ```text
-Choose a number: 5  # 6 selects component removal
+Choose a number: 4  # 5 selects component removal
 Select feature to remove: 1  # Select from the displayed entries
 Continue [2]: 1
 ```
 
 Review every planned removal. Removing a parent removes its registered descendants and the contents of its folder, **including user edits inside that folder**. External files require recorded ownership; matching names alone do not authorize deletion. Cleany updates DI, page factories, routes, owned API outputs, and the registry together. Remaining unrelated references cause staged analysis to fail before application.
 
-### 8 — Recover interrupted operation
+### 6 / 7 — List features / components
+
+```text
+Choose a number: 6
+home  ·  cubit  ·  lib/features/home
+
+Choose a number: 7
+user_card  ·  cubit  ·  lib/shared/components/user_card
+```
+
+Lists the matching registered entry kind, its state-management style, and location. Missing/corrupt metadata can be inspected through Doctor.
+
+### 8 — Rename or move an entry
 
 ```text
 Choose a number: 8
+Entry: 1
+New name [home]: dashboard
+Parent directory [lib/features]: lib/modules
+Continue [2]: 1
+```
+
+Moves the entry to `lib/modules/dashboard`, updating known generated symbols, owned filenames, imports/exports/parts, DI, routes, child metadata, and registry paths. Backend API endpoint strings remain unchanged. References outside supported source roots or dynamic string references need manual review.
+
+### 9 — Initialize project
+
+Choose this first in an uninitialized Flutter project:
+
+```text
+Choose a number: 9
+Detected production app id: com.example.playground
+API provider: 1  # Retrofit over Dio; 2 selects direct Dio
+Continue [2]: 1
+```
+
+Cleany resolves supported static Gradle properties and Apple project/xcconfig identifiers. If there are multiple candidates, select the production id; if unresolved, enter it. No platform script is executed just to discover the identifier.
+
+| Environment | Application / bundle id |
+| --- | --- |
+| prod | com.example.playground |
+| dev | com.example.playground.dev |
+| uat | com.example.playground.uat |
+
+Initialization adds the fixed architecture, required dependencies, localization, and public flavor configuration. Existing dependencies, comments, assets, overrides, custom entrypoints, and analysis rules are preserved where possible. Recognizable Flutter scaffold main functions are connected to dev after archiving their exact original bytes; widget declarations remain available to existing tests. Existing `lib/app` or `lib/core` directories are protected from initialization overwrite. Use Doctor for supported repairs; older unrelated architectures need an explicit migration.
+
+### 10 — Configure native flavors
+
+```text
+Choose a number: 10
+Platforms: 1  # Select an existing platform, or All available
+Continue [2]: 1
+```
+
+Stages only selected Android/iOS/macOS folders and runs the configured Flavorizr platform processors in isolation. Native files participate in validation, ownership, and recovery. Your platform SDKs, Ruby/Xcode dependencies, signing, icons, and device QA remain application-specific work.
+
+### 11 — Project Doctor / repair
+
+```text
+Choose a number: 11
+REPAIR  ...missing registry, source, dependency, or binding...
+NOTICE  ...preserved edit or unsupported custom structure...
+Continue [2]: 1
+```
+
+Doctor compares folders, the ownership registry, required dependency constraints, DI, page factories, and routes. It proposes specific supported repairs, archives corrupt registry contents, and can infer supported field contracts when rebuilding metadata. Edited files are preserved. Unsupported composition structures require manual resolution rather than guessed edits. All proposed repairs pass the same validation transaction.
+
+### 12 — Recover interrupted operation
+
+```text
+Choose a number: 12
 Recovery [2]: 1
 ```
 
 Attempts restoration from the durable journal. Kernel locks are released when their process dies, and dead legacy PID locks are reclaimed automatically. Safe files are restored even if another file conflicts. Conflicting edits and backups are retained for resolution and a later recovery attempt; first save edits you want to keep before resolving them.
 
-### 9 — Maintenance / reset
+### 13 — Maintenance / reset
 
 ```sh
 cleany maintenance
 ```
 
-Or choose **9** from the main menu:
+Or choose **13** from the main menu:
 
 | Subchoice | Example | Behavior |
 | --- | --- | --- |
@@ -303,39 +407,6 @@ Or choose **9** from the main menu:
 | 4 — Cancel | Action `4` | Returns to the main menu |
 
 Reset archives app/core, registered folders, and managed configuration, including their edits. Unrelated source/dependencies and native projects remain. Unrelated imports of removed entries can prevent validation; the original project is then preserved. Default command timeout is 300 seconds; accepted values are 5–3600.
-
-### 10 — Project Doctor / repair
-
-```text
-Choose a number: 10
-REPAIR  ...missing registry, source, dependency, or binding...
-NOTICE  ...preserved edit or unsupported custom structure...
-Continue [2]: 1
-```
-
-Doctor compares folders, the ownership registry, required dependency constraints, DI, page factories, and routes. It proposes specific supported repairs, archives corrupt registry contents, and can infer supported field contracts when rebuilding metadata. Edited files are preserved. Unsupported composition structures require manual resolution rather than guessed edits. All proposed repairs pass the same validation transaction.
-
-### 11 — Rename or move an entry
-
-```text
-Choose a number: 11
-Entry: 1
-New name [home]: dashboard
-Parent directory [lib/features]: lib/modules
-Continue [2]: 1
-```
-
-Moves the entry to `lib/modules/dashboard`, updating known generated symbols, owned filenames, imports/exports/parts, DI, routes, child metadata, and registry paths. Backend API endpoint strings remain unchanged. References outside supported source roots or dynamic string references need manual review.
-
-### 12 — Configure native flavors
-
-```text
-Choose a number: 12
-Platforms: 1  # Select an existing platform, or All available
-Continue [2]: 1
-```
-
-Stages only selected Android/iOS/macOS folders and runs the configured Flavorizr platform processors in isolation. Native files participate in validation, ownership, and recovery. Your platform SDKs, Ruby/Xcode dependencies, signing, icons, and device QA remain application-specific work.
 
 ### 0 — Exit
 
@@ -352,7 +423,9 @@ flutter run --target lib/main_dev.dart --dart-define=API_BASE_URL=https://api.ex
 
 Use `main_uat.dart` or `main_prod.dart` for those environments. UAT and production require HTTPS. YAML assets and dart-define values are extractable public configuration; keep privileged credentials on the backend. Dio can fetch session tokens at request time via `TokenProvider` and attaches them only to the trusted origin.
 
-The generated main entrypoints are separate from an existing `main.dart`; choose the desired target explicitly. The initial UI is a scaffold: connect routes, forms, business rules, and backend contracts for your application.
+Initialization supplies `.vscode/launch.json` and `CLEANY_RUN.md`. Choose **Cleany DEV**, **Cleany UAT**, or **Cleany PROD** in VS Code; each profile targets the matching `main_<environment>.dart` and prompts for the public API base URL. An empty answer uses the flavor YAML value; UAT/prod require HTTPS. Profiles marked **(native flavor)** additionally select `--flavor` and require menu 10 first. The plain environment profiles work before native flavor setup. Existing JSONC comments, custom profiles, and input definitions are preserved.
+
+A missing or recognizable Flutter scaffold `main.dart` launches dev. Scaffold widget classes remain available to old tests, and the original main file is archived under `.cleany/backups/entrypoints/`. Custom startup code is preserved; use a named environment profile or migrate it explicitly. Doctor repairs missing profiles and supported scaffold entrypoints, and reset preserves custom launch settings. The initial UI is a scaffold: connect routes, forms, business rules, and backend contracts for your application.
 
 ## Localization
 
@@ -364,13 +437,13 @@ Edit `assets/translations/app_en.arb` and `app_ar.arb`. The official Flutter SDK
 2. Acquire a project lock and create a selective staging workspace.
 3. Resolve packages, run gen-l10n and builders, and analyze the result.
 4. Check original inputs and validated output fingerprints for changes.
-5. Apply the collected files with atomic replacement per file and a durable recovery journal.
+5. Reject existing output targets absent from both the original staged inputs and the explicit plan, then apply the collected files with atomic replacement per file and a durable recovery journal.
 
-The multi-file application is recoverable, not one indivisible filesystem operation. External observers can see intermediate states during application. Recovery preserves conflicting user edits and continues restoring safe records, including when another backup is damaged. Ctrl+C requests controlled cancellation; active commands have deadlines and command-tree termination.
+The multi-file application is recoverable, not one indivisible filesystem operation. External observers can see intermediate states during application. Recovery preserves conflicting user edits and continues restoring safe records, including when another backup is damaged. Independent checksummed journal snapshots tolerate a missing or corrupt primary manifest; unknown transaction data and unreferenced backups are retained for inspection. File-state transitions are appended instead of rewriting the full manifest after each file. Ctrl+C requests controlled cancellation; active commands have deadlines and command-tree termination.
 
 Relevant source/configuration, declared assets/fonts, and selected native folders are copied using filesystem operations and streaming hashes. Build caches, Pods, unselected native folders, and unrelated root binaries are excluded. Abandoned marked staging folders are cleaned automatically. Unexpected output locations and changes during/after analysis fail explicitly rather than silently discarding generated files.
 
-Commit `.cleany/features.json`; it records schema/template versions, contracts, paths, types, ownership, and hashes. Generated ignore entries exclude runtime cache/journal/backup files. Do not remove `.cleany/operation.lock` to bypass a live operation. Progress is shown in the terminal and recorded in `.cleany/logs/latest.jsonl`.
+Commit `.cleany/features.json`; it records schema/template versions, contracts, paths, types, file ownership, integration-node ownership, and hashes. Doctor adds missing integrations and preserves existing custom DI, factories, and route paths. Generated ignore entries exclude runtime cache/journal/backup files. Do not remove `.cleany/operation.lock` to bypass a live operation. Progress observers and log failures become warnings after successful application. The library returns an `OperationResult`; `OperationFailure.result` distinguishes completed rollback from required recovery. Progress is shown in the terminal and recorded in `.cleany/logs/operation_<id>.jsonl`.
 
 ## Limits and migration
 
@@ -378,8 +451,8 @@ Commit `.cleany/features.json`; it records schema/template versions, contracts, 
 - Pub workspaces and symlinked source paths are unsupported.
 - AST edits support the fixed composition contracts and several function/list forms; arbitrary conditional DI or renamed composition entrypoints need manual integration.
 - Native id discovery is static and conservative; dynamic scripts may require manual input.
-- CLI field input supports flat response fields. Nested DTOs, envelopes, multipart, pagination, multiple operations, and path parameters require application code.
-- Rename/move handles known symbols and URI directives in lib/test/integration_test/tool; runtime strings and external references need review.
+- CLI field input supports flat response fields. Additional no-argument operations can be generated through option 3; their backend connections require application code. Nested DTOs, envelopes, multipart, pagination, request parameters, and custom Entity/Model conversions also require application code.
+- Rename/move preserves unchanged files byte for byte and scopes known symbol edits to moved libraries and their imports, including aliases and conditional URI alternatives. Mixed owned/external conditional symbols and ambiguous references require manual review; runtime strings and dynamic references are not rewritten.
 - Memory holds changed file contents and fingerprint metadata. Very large resets/moves still need performance evaluation for the particular repository.
 
 See [CHANGELOG](CHANGELOG.md) for the release summary and [the usage guide](doc/USAGE_AR.md) for a guided walkthrough.
@@ -400,7 +473,7 @@ For real applications, leave package installation, builders, and analysis enable
 dart pub get
 dart format --output=none --set-exit-if-changed lib bin test example
 dart analyze --fatal-infos
-dart test test/generator_test.dart test/advanced_test.dart
+dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart
 dart run example/cleany_example.dart
 dart doc
 dart pub outdated
@@ -418,7 +491,7 @@ On Linux, set `CLEANY_FLUTTER_INTEGRATION=true` and select `--name 'generated di
 
 ## Local release audit
 
-The 2.0.0 local pana audit achieved **160/160**, with **100% public API documentation**, clean analysis, and current dependency support. See the [dated report and verification details](doc/PUBDEV_REPORT.md). pub.dev determines the final published score after upload.
+The previous 2.0.0 local pana audit achieved **160/160**, with **100% public API documentation**, clean analysis, and current dependency support. See the [dated report and verification details](doc/PUBDEV_REPORT.md). pub.dev determines the final published score after upload.
 
 ## License and support
 

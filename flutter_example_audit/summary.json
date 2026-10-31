@@ -1,0 +1,832 @@
+{
+  "project": "test_cleany_project",
+  "path": "/Users/fahad/Documents/cleany/cleany/flutter_example",
+  "cleany_version": "2.0.0",
+  "cleany_source": "/Users/fahad/Documents/cleany/cleany",
+  "flutter": "3.47.7",
+  "dart": "3.13.5",
+  "xcode": "26.5 (17F42)",
+  "device": {
+    "name": "iPhone 17 Pro",
+    "id": "189091C8-6638-4DAD-94BA-0C39D8BB606C",
+    "runtime": "iOS 26.5"
+  },
+  "cli_attempts": 60,
+  "matching_expected_outcome": 59,
+  "retried_input_drift_case": "43_reset_archive_restore_pubspec_settings",
+  "creation_seconds": {
+    "min": 28.27,
+    "median": 29.134999999999998,
+    "max": 31.35
+  },
+  "generated_dart_files": 84,
+  "features": [
+    {
+      "name": "home",
+      "path": "lib/features/home",
+      "kind": "feature",
+      "state": "cubit",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          },
+          {
+            "name": "title",
+            "type": "String?",
+            "json_key": "title"
+          },
+          {
+            "name": "visits",
+            "type": "int",
+            "json_key": "visits"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.HomeApi",
+          "owner": "home",
+          "sha256": "3c6f67903c481e8c718de40d2211bef3d4f4dcd1836f98b363ae02313f8d0dae"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.HomeRemoteDataSource",
+          "owner": "home",
+          "sha256": "4f8b81cb7cf2a3f956bb2ba5014c3113184e3d5ec48b525bdeb72f31d7be660b"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.HomeRepository",
+          "owner": "home",
+          "sha256": "8b27c067119e703fb519a8e8c857a9daef6681515e49f56be837f92e1507b478"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.GetHome",
+          "owner": "home",
+          "sha256": "a2fbc06912adcaf0b9c8178610681afddd3d7bd9f9c0039d9ce6e56f576bb751"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.HomeCubit",
+          "owner": "home",
+          "sha256": "1275b1257fcc8b7556ca5760d75f084b1d88b78d195f8378a88a4070c61e3ffe"
+        },
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.home",
+          "owner": "home",
+          "sha256": "7b91075fe39708fc4aa53087582caa43f0f37b4d3f35ec1e943249d963a70584"
+        },
+        {
+          "path": "lib/app/router/route_names.dart",
+          "node": "RouteNames.home",
+          "owner": "home",
+          "sha256": "bf8240167c522219decabe8b1b7b24861a56281076c7130c0c44583bff8a11e9"
+        },
+        {
+          "path": "lib/app/router/app_router.dart",
+          "node": "Router.home",
+          "owner": "home",
+          "sha256": "91c5babe13d826c686ae53ddd08a15a9e11b77f22a8b6466f49b212fea8a7505"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/features/home/domain/entities/home_entity.dart",
+          "owner": "home",
+          "kind": "entity",
+          "sha256": "b71801f38b65b465f2c962bf3a49290e3ba33ef75d74eb62f4f3549cfde7a5df",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/domain/repositories/home_repository.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "26bef02a1482ceb502eaa777d276f795b31d82cbc426a27e898546f0c65dc117",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/domain/usecases/get_home.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "ef27d493122899d4977e9c921284471a14c56fe9c3e2c2a8e160322bc0b585cb",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/data/models/home_model.dart",
+          "owner": "home",
+          "kind": "model",
+          "sha256": "af68aac33693f5104efde8025dece563ef3174544e6aef7e485c66d44662dfd2",
+          "origin": "template"
+        },
+        {
+          "path": "lib/core/network/retrofit/home_api.dart",
+          "owner": "home",
+          "kind": "api",
+          "sha256": "26075dbf4a8ae37881321add1eea603426c5b89488db3f2941312d5220a3d7d4",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/data/datasources/home_remote_data_source.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "1fc5dd5b55dce42e73088b6a720db15721afbf015c01bb8adb92b37c6f913be2",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/data/repositories/home_repository_impl.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "591087a0bcb1b0a795257b0ef24f9e76d73db90d80346c37a5e107e9c854766e",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/presentation/widgets/.gitkeep",
+          "owner": "home",
+          "kind": "configuration",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/presentation/cubit/home_state.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "75f44a5071e432053c5b0f17cc2d126f1a38290cb5b51686216e6d3b98b32f56",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/presentation/cubit/home_cubit.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "1801567cb2cf68eb1d6f00d5a318f045a6fe328eea377fa1962b4c7902a1a3e8",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/home/presentation/pages/home_page.dart",
+          "owner": "home",
+          "kind": "source",
+          "sha256": "0cb44729a3c73a3b094b27518a6c71a156d389c47eb23e2ae420b61951d876e8",
+          "origin": "template"
+        },
+        {
+          "path": "lib/core/network/retrofit/home_api.g.dart",
+          "owner": "home",
+          "kind": "generated",
+          "sha256": "d1fbb41b89e6d4ee8e91068a17541af3d3bb594a85ff68d9a108f130cb3adf2d",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/home/data/models/home_model.freezed.dart",
+          "owner": "home",
+          "kind": "generated",
+          "sha256": "85da5ddce7cf929aa6e68b6ff13920657f4bc9599c30a2ddb3c0530dfdf78d46",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/home/data/models/home_model.g.dart",
+          "owner": "home",
+          "kind": "generated",
+          "sha256": "19333cb129ce1f2c9ebe76e91ad1db58517c82229965595b08e8e936319e649a",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/home/domain/entities/home_entity.freezed.dart",
+          "owner": "home",
+          "kind": "generated",
+          "sha256": "b64cb7b510473a2d7db3bdd0cf8ae25404cd150931ebe11ad861bed53a1de7df",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/home/presentation/cubit/home_state.freezed.dart",
+          "owner": "home",
+          "kind": "generated",
+          "sha256": "2920fb8e35d5a68b4d1003527f286ce9070c42ae799297f61572872348bf34bd",
+          "origin": "builder"
+        }
+      ]
+    },
+    {
+      "name": "catalog",
+      "path": "lib/modules/shop/catalog",
+      "kind": "feature",
+      "state": "bloc",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.CatalogApi",
+          "owner": "catalog",
+          "sha256": "136ca4207903360df935b4a1505857e47f7a5c7a8536f9efe7a7e8948b171df1"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.CatalogRemoteDataSource",
+          "owner": "catalog",
+          "sha256": "2c7a3fc9f188f649b6566a2bb2aa0da10a1b896069038b32e372ab8f971bf50c"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.CatalogRepository",
+          "owner": "catalog",
+          "sha256": "458540e2029c680cec4eb87aecf27302a7106271855a21cf4f1c8412707e7773"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.GetCatalog",
+          "owner": "catalog",
+          "sha256": "5f4f8cea2c19f778a8bd8e69c7ad80b6fe575b4d0b4ce3717dcf086cd3f15dfb"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.CatalogBloc",
+          "owner": "catalog",
+          "sha256": "5276c07d6a72365c9cbec9b4ccbb86a1f199cc5160dd4230339483cacec8a6cc"
+        },
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.catalog",
+          "owner": "catalog",
+          "sha256": "0366c7e6a7daf0a0845c0971cbc8fce0eb54e19c88c8f95654dc77988950115c"
+        },
+        {
+          "path": "lib/app/router/route_names.dart",
+          "node": "RouteNames.catalog",
+          "owner": "catalog",
+          "sha256": "1580c6371af5a31a6e9df2fec61f5a0e243777d80003bda00beb69616c313458"
+        },
+        {
+          "path": "lib/app/router/app_router.dart",
+          "node": "Router.catalog",
+          "owner": "catalog",
+          "sha256": "84138408f966ad6bd135dd79227cb99c9bc8cbb9da797ebc4c61285c24ec8535"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/modules/shop/catalog/domain/entities/catalog_entity.dart",
+          "owner": "catalog",
+          "kind": "entity",
+          "sha256": "30e896ff6d72e582fb93db918b7722ce90d49fd121edc011bb85102598a5e529",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/domain/repositories/catalog_repository.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "6ff043c1f3b9fe02ee7246c7217801f4d6743bc57628e59fa65221c92ca9b18a",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/domain/usecases/get_catalog.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "9c5fa62262e51e7f57dc8b29db36d2b9311482a0ed2d65f3e049f78f2a42497b",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/data/models/catalog_model.dart",
+          "owner": "catalog",
+          "kind": "model",
+          "sha256": "00f575f294722422374986091d32fbff0996d367fb0913875413f4be54283d2f",
+          "origin": "template"
+        },
+        {
+          "path": "lib/core/network/retrofit/catalog_api.dart",
+          "owner": "catalog",
+          "kind": "api",
+          "sha256": "373cad622f5b2ea475a3053c5a72f4a122ce113682b72a119bec2943409201c4",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/data/datasources/catalog_remote_data_source.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "0b1393e013e0114aa566052cebc875e7b21bddc2ea0a33a6f669e2773d96b215",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/data/repositories/catalog_repository_impl.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "9a7fd255fcd9043ca1a269290d441b1d1a85c78cc65de672438ca577b967c266",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/widgets/.gitkeep",
+          "owner": "catalog",
+          "kind": "configuration",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/bloc/catalog_state.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "1f878988197fecc02a188419768e6004d9c8a0517e867b1d468923cfaabb8b44",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/bloc/catalog_event.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "88d9acb0a39aafc732bdc9b9b60cd36f7fb56cd4452d4dee6e7bcf8197975e73",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/bloc/catalog_bloc.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "1768dc0ade16ecf5bfdea56021e6b4ec6e9ba427e061ad182cc12b1b6737fc81",
+          "origin": "template"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/pages/catalog_page.dart",
+          "owner": "catalog",
+          "kind": "source",
+          "sha256": "dc1e9ecb3b96a5cebb7e523bdb79c94c02a1fbf03b8371a9afd1b95778685992",
+          "origin": "template"
+        },
+        {
+          "path": "lib/core/network/retrofit/catalog_api.g.dart",
+          "owner": "catalog",
+          "kind": "generated",
+          "sha256": "aad4b6214d1f8aa987e499135eb39364391e870856cc225fa52b38a08c9b57c8",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/modules/shop/catalog/data/models/catalog_model.g.dart",
+          "owner": "catalog",
+          "kind": "generated",
+          "sha256": "22559b8463e41d71dd1b74a6dd6495b12b6789a3fce6b1018a253632175a0353",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/modules/shop/catalog/data/models/catalog_model.freezed.dart",
+          "owner": "catalog",
+          "kind": "generated",
+          "sha256": "2ffd21fe14f300acc22719ae0ca47218b656ba583538c528d71e366559baf956",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/modules/shop/catalog/domain/entities/catalog_entity.freezed.dart",
+          "owner": "catalog",
+          "kind": "generated",
+          "sha256": "bfbdf37b75bfe1c87c9fef84626cc3d2b29adf54d17169f3fde5d229ffebedad",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/bloc/catalog_event.freezed.dart",
+          "owner": "catalog",
+          "kind": "generated",
+          "sha256": "d799de5cacaee0a6d493f2fbf0e01c002524c89fba8b777f80de35e39e0bb435",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/modules/shop/catalog/presentation/bloc/catalog_state.freezed.dart",
+          "owner": "catalog",
+          "kind": "generated",
+          "sha256": "299c3f276bd44967f4fb58d128857f68ff6aca3832c98854a28e8000e781ef82",
+          "origin": "builder"
+        }
+      ]
+    },
+    {
+      "name": "user_card",
+      "path": "lib/components/user_card",
+      "kind": "component",
+      "state": "cubit",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.UserCardCubit",
+          "owner": "user_card",
+          "sha256": "649af4420fb852efee996240c6ccb6cfe82ef54df04bbdc06d1332c43fca725e"
+        },
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.userCard",
+          "owner": "user_card",
+          "sha256": "a2363818e3d00dd3c2d1d2dcfbf69e50b20f2b2b41c9461a2ed38aca772e4278"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/components/user_card/cubit/user_card_state.dart",
+          "owner": "user_card",
+          "kind": "source",
+          "sha256": "d606e3fe65b04b55c460525f0ce53533a7dda6d1b6516c677c9a8503b7a27860",
+          "origin": "template"
+        },
+        {
+          "path": "lib/components/user_card/cubit/user_card_cubit.dart",
+          "owner": "user_card",
+          "kind": "source",
+          "sha256": "61d5073d78eaeb14814bf2c947988a157a445f88aa6c0ed56d3c5dd128d2feb4",
+          "origin": "template"
+        },
+        {
+          "path": "lib/components/user_card/widgets/user_card_widget.dart",
+          "owner": "user_card",
+          "kind": "source",
+          "sha256": "fa5ceecc7b5df75528fc78da78a5b89731faea35a1a39e34ec0058fe7de7514b",
+          "origin": "template"
+        },
+        {
+          "path": "lib/components/user_card/cubit/user_card_state.freezed.dart",
+          "owner": "user_card",
+          "kind": "generated",
+          "sha256": "26c1da2a29278d62e7aadc944c38ffe313907b2c42dcbbccdd6579a63bb3d508",
+          "origin": "builder"
+        }
+      ]
+    },
+    {
+      "name": "status_badge",
+      "path": "lib/shared/components/status_badge",
+      "kind": "component",
+      "state": "bloc",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.StatusBadgeBloc",
+          "owner": "status_badge",
+          "sha256": "96934236bfb3d604cd7dc4e2ced38713c1d9bf18b8f44a7ee67c2a72ee83ff17"
+        },
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.statusBadge",
+          "owner": "status_badge",
+          "sha256": "8937f35a233c5ae64970b7d860def90a22f1420328cfcf04c93522abf871399a"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/shared/components/status_badge/bloc/status_badge_state.dart",
+          "owner": "status_badge",
+          "kind": "source",
+          "sha256": "2e203c3e06119dd927b911d2ef6181924d9b924bc9b05c919fdc9cd0a17399bd",
+          "origin": "template"
+        },
+        {
+          "path": "lib/shared/components/status_badge/bloc/status_badge_event.dart",
+          "owner": "status_badge",
+          "kind": "source",
+          "sha256": "6bd35e357c3574dc0934aeb3e24ca434d0f3b198c52bd0cc6c5b0bc191ac6f2e",
+          "origin": "template"
+        },
+        {
+          "path": "lib/shared/components/status_badge/bloc/status_badge_bloc.dart",
+          "owner": "status_badge",
+          "kind": "source",
+          "sha256": "a8d1613563d9f08dfa1e9feb73638d934858262b29f0ae2a47a59d291791ed6e",
+          "origin": "template"
+        },
+        {
+          "path": "lib/shared/components/status_badge/widgets/status_badge_widget.dart",
+          "owner": "status_badge",
+          "kind": "source",
+          "sha256": "e774b889c31d5722feb4cfc0e748f29b76a81bf6593060f6a71f039010aeafef",
+          "origin": "template"
+        },
+        {
+          "path": "lib/shared/components/status_badge/bloc/status_badge_state.freezed.dart",
+          "owner": "status_badge",
+          "kind": "generated",
+          "sha256": "64f2d20a7ef4d32e9549e57fdd7bbd7721a141fa57d7aaa96b339d011695e1de",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/shared/components/status_badge/bloc/status_badge_event.freezed.dart",
+          "owner": "status_badge",
+          "kind": "generated",
+          "sha256": "20e42bed13a1ba722bc1d780d8e5c0a3c6416aa201f8f8baa7bb120b95d3773d",
+          "origin": "builder"
+        }
+      ]
+    },
+    {
+      "name": "empty_state",
+      "path": "lib/features/home/subfeatures/empty_state",
+      "kind": "component",
+      "state": "none",
+      "parent": "home",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.emptyState",
+          "owner": "empty_state",
+          "sha256": "ac9d907895f6af942bf6320fea62cea41dc9060dc2a2d719484ece3b971971b2"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/features/home/subfeatures/empty_state/widgets/empty_state_widget.dart",
+          "owner": "empty_state",
+          "kind": "source",
+          "sha256": "7a32d02f686e18fcf6552997a4003b1c39cdcfc5e3bf57d6d88436d4186d8065",
+          "origin": "template"
+        }
+      ]
+    },
+    {
+      "name": "typed_fields",
+      "path": "lib/features/typed_fields",
+      "kind": "feature",
+      "state": "bloc",
+      "template_version": "2.0.0",
+      "specification": {
+        "fields": [
+          {
+            "name": "id",
+            "type": "String",
+            "json_key": "id"
+          },
+          {
+            "name": "price",
+            "type": "double",
+            "json_key": "price"
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "json_key": "enabled"
+          },
+          {
+            "name": "createdAt",
+            "type": "DateTime",
+            "json_key": "created_at"
+          },
+          {
+            "name": "tags",
+            "type": "List<String>?",
+            "json_key": "tags"
+          },
+          {
+            "name": "counts",
+            "type": "List<int>?",
+            "json_key": "counts"
+          },
+          {
+            "name": "quantity",
+            "type": "int",
+            "json_key": "quantity"
+          }
+        ],
+        "method": "GET",
+        "endpoint": null,
+        "request_fields": [],
+        "request_encoding": "query"
+      },
+      "integrations": [
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.TypedFieldsApi",
+          "owner": "typed_fields",
+          "sha256": "3ecc34f6062343edba0d9f32c21f70f6dda2c4f60b67ee6e8ffd7d1c99a34d58"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.TypedFieldsRemoteDataSource",
+          "owner": "typed_fields",
+          "sha256": "5aebe70a8d0cfc4798baa2963e4cfd6bfc9dc577214b1633c935e02c3ecf5db8"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.TypedFieldsRepository",
+          "owner": "typed_fields",
+          "sha256": "4b0db249b4785d9668dc22e2f55387045d8fa54ca2d14728feaf442e9965292f"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.GetTypedFields",
+          "owner": "typed_fields",
+          "sha256": "a3d8bc08bd032548f7c291283ed27af1498a7f0fee48639c8a3a895ebe731886"
+        },
+        {
+          "path": "lib/app/di/injection.dart",
+          "node": "DI.TypedFieldsBloc",
+          "owner": "typed_fields",
+          "sha256": "81306f673aa25a5d2c1a48b2ea38e7787f214247b8fd8c4c2efd3c017611becd"
+        },
+        {
+          "path": "lib/app/composition/feature_pages.dart",
+          "node": "FeaturePages.typedFields",
+          "owner": "typed_fields",
+          "sha256": "9c5c632a3c26b4dbf71421da90a50ecf26b925b13b4801af33169bbc238700bc"
+        },
+        {
+          "path": "lib/app/router/route_names.dart",
+          "node": "RouteNames.typedFields",
+          "owner": "typed_fields",
+          "sha256": "ba1e21eb82bcc681ba47ec82e9fad1117a817a8b7786e87fbb7997c6559b14c5"
+        },
+        {
+          "path": "lib/app/router/app_router.dart",
+          "node": "Router.typedFields",
+          "owner": "typed_fields",
+          "sha256": "adcf22b686c66773161aa8253f275953ba4dc684d1125e1b7ed467a8d30e1656"
+        }
+      ],
+      "files": [
+        {
+          "path": "lib/features/typed_fields/domain/entities/typed_fields_entity.dart",
+          "owner": "typed_fields",
+          "kind": "entity",
+          "sha256": "e2effd2d277c669a724938a4521bb91676fc5adbcffd9983c510316895ab85eb",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/domain/repositories/typed_fields_repository.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "ca362b82979f21f636ee8fe9a77ac4847bcc676c72ac9457bb27512a0bab36ef",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/domain/usecases/get_typed_fields.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "9143545cd7603df42f3e0c972f3e6839237074787da4b389fd530873d314a433",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/data/models/typed_fields_model.dart",
+          "owner": "typed_fields",
+          "kind": "model",
+          "sha256": "27398cb282da0de08ef54ecaebac9a7e1cba5fd4d9a5ac613de3358157a42910",
+          "origin": "template"
+        },
+        {
+          "path": "lib/core/network/retrofit/typed_fields_api.dart",
+          "owner": "typed_fields",
+          "kind": "api",
+          "sha256": "d754852c3173c1c6a4d5f0f03c42881576f94b35b08e0efe6120dedb93fb1c0f",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/data/datasources/typed_fields_remote_data_source.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "c8479e123ca998d991f92ccc721f3313b31248afb7413312f96a9eeffeb5c07f",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/data/repositories/typed_fields_repository_impl.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "c2f5b05e6521cda2d10d9059bdcb240ca44065a2689c4ff57e8cc0560f5be728",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/widgets/.gitkeep",
+          "owner": "typed_fields",
+          "kind": "configuration",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/bloc/typed_fields_state.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "a817cfb089764a48c1c338b9831397c0b9d37049559feec17650718d74d30445",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/bloc/typed_fields_event.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "758111cddbd729fa68dfe1a032962fc4875a925f02cc21f6cf10303a96d875cc",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/bloc/typed_fields_bloc.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "5f937d443c94c107cfe079f6fd1b0ea26b47de8feab8f5c76ade1d8d16bc631a",
+          "origin": "template"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/pages/typed_fields_page.dart",
+          "owner": "typed_fields",
+          "kind": "source",
+          "sha256": "68df10d85bb6a4e18e8002327c2131e3d3386b7dc7e2f20ec9f76faa4e5862c9",
+          "origin": "template"
+        },
+        {
+          "path": "lib/core/network/retrofit/typed_fields_api.g.dart",
+          "owner": "typed_fields",
+          "kind": "generated",
+          "sha256": "c7ffb32ed64ad74204f05122c7116982431614fe7588415d86690521aeaccbc2",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/typed_fields/data/models/typed_fields_model.g.dart",
+          "owner": "typed_fields",
+          "kind": "generated",
+          "sha256": "2cf596a8506fb66846628d27a6151a4bdb38b1e20fb8720db35d58c15302941c",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/typed_fields/data/models/typed_fields_model.freezed.dart",
+          "owner": "typed_fields",
+          "kind": "generated",
+          "sha256": "83524bdabdd900bba7ca3354ab98b2b303c48e948bf32a302dbf2f6d7a61e80f",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/typed_fields/domain/entities/typed_fields_entity.freezed.dart",
+          "owner": "typed_fields",
+          "kind": "generated",
+          "sha256": "b66a5b7216396cc3dd51f7d5b081dbb300c2b90583bda1bcddabce758e45fd83",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/bloc/typed_fields_event.freezed.dart",
+          "owner": "typed_fields",
+          "kind": "generated",
+          "sha256": "9726b54b3194d626c28bbda668729536b2be24fe58ef5dd4543e14d7fbb40d98",
+          "origin": "builder"
+        },
+        {
+          "path": "lib/features/typed_fields/presentation/bloc/typed_fields_state.freezed.dart",
+          "owner": "typed_fields",
+          "kind": "generated",
+          "sha256": "378e4d6ac382099804075bd6e155c3fb8547394dc53f395a183327930b25d6d6",
+          "origin": "builder"
+        }
+      ]
+    }
+  ],
+  "known_issues": [
+    "Missing generated iOS flavor AppIcon catalogs; example-only PBX workaround applied.",
+    "Throwing repository ErrorReporter escapes the Result contract."
+  ],
+  "unit_tests": 19,
+  "ios_integration_tests": 2,
+  "library_unit_tests": 121
+}

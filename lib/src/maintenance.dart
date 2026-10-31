@@ -7,9 +7,11 @@ import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
 
 import 'dependencies.dart';
+import 'environment_config.dart';
 import 'project.dart';
 import 'project_lock.dart';
 import 'registry.dart';
+import 'run_configuration.dart';
 import 'specification.dart';
 import 'templates/core_templates.dart';
 import 'templates/documentation.dart';
@@ -99,29 +101,30 @@ class ProjectMaintenance {
     for (final path in paths) {
       final file = File(project.file(path));
       if (!file.existsSync()) continue;
-      plan.writeBytes(
-        '$backup/$path',
-        file.readAsBytesSync(),
-        createOnly: true,
-      );
       // Existing manifest/analysis/entrypoint modifications remain user-owned.
-      if (StagedWorkspace.nativePlatforms.contains(p.posix.split(path).first) ||
+      final preserve =
+          StagedWorkspace.nativePlatforms.contains(p.posix.split(path).first) ||
           path == 'pubspec.yaml' ||
           path == 'analysis_options.yaml' ||
           path == 'lib/main.dart' ||
-          path == '.gitignore') {
-        continue;
-      }
-      plan.delete(path);
+          path == launchConfigurationPath ||
+          path == runningGuidePath ||
+          path == '.gitignore';
+      plan.archive(path, '$backup/$path', remove: !preserve);
     }
     final formatter = DartFormatter(
       languageVersion: DartFormatter.latestLanguageVersion,
     );
-    final owned = <Object>[
+    final owned = <Map<String, dynamic>>[
       for (final record in projectFiles)
         if (StagedWorkspace.nativePlatforms.contains(
-          p.posix.split(record['path'] as String).first,
-        ))
+              p.posix.split(record['path'] as String).first,
+            ) ||
+            {
+              launchConfigurationPath,
+              runningGuidePath,
+              'lib/main.dart',
+            }.contains(record['path']))
           record,
     ];
     for (final entry in fresh.entries) {
@@ -129,24 +132,19 @@ class ProjectMaintenance {
           ? formatter.format(documentGeneratedDart(entry.key, entry.value))
           : entry.value;
       plan.write(entry.key, content);
-      owned.add(artifactRecord(entry.key, utf8.encode(content), '@project'));
+      owned.add(
+        Map<String, dynamic>.from(
+          artifactRecord(entry.key, utf8.encode(content), '@project'),
+        ),
+      );
     }
+    planRunConfiguration(project, plan);
+    recordRunConfigurationOwnership(plan, owned);
     // Preserve dependencies added by the user; add only missing template needs.
-    final original = loadYaml(project.read('pubspec.yaml')) as YamlMap;
-    final editor = YamlEditor(project.read('pubspec.yaml'));
-    for (final group in packageRequirements(provider).entries) {
-      if (original[group.key] == null) {
-        editor.update([group.key], <String, Object>{});
-      }
-      for (final dependency in group.value.entries) {
-        if (original[group.key] is Map &&
-            original[group.key][dependency.key] != null) {
-          continue;
-        }
-        editor.update([group.key, dependency.key], dependency.value);
-      }
-    }
-    plan.write('pubspec.yaml', editor.toString());
+    plan.write(
+      'pubspec.yaml',
+      configurePubspec(project.read('pubspec.yaml'), provider),
+    );
     plan.write(
       registryPath,
       prettyJson({
@@ -202,6 +200,39 @@ GenerationPlan planPlatformFlavors(Project project, Set<String> platforms) {
     }
   }
   final yaml = loadYaml(file.readAsStringSync()) as YamlMap;
+  if (yaml['instructions'] is! List || yaml['flavors'] is! Map) {
+    throw const GenerationException(
+      'flavorizr.yaml requires instructions and flavors mappings.',
+    );
+  }
+  for (final environment in ['dev', 'uat', 'prod']) {
+    final flavor = (yaml['flavors'] as Map)[environment];
+    if (flavor is! Map ||
+        flavor['app'] is! Map ||
+        (flavor['app'] as Map)['name'] is! String) {
+      throw GenerationException(
+        'Complete the $environment app name in flavorizr.yaml before configuring platforms.',
+      );
+    }
+    for (final platform in platforms) {
+      final settings = flavor[platform];
+      final id = settings is Map
+          ? settings[platform == 'android' ? 'applicationId' : 'bundleId']
+          : null;
+      if (id is! String || !isValidAppId(id)) {
+        throw GenerationException(
+          'Complete the $environment/$platform application identifier in flavorizr.yaml.',
+        );
+      }
+    }
+    final configPath = 'config/flavors/$environment.yaml';
+    if (!File(project.file(configPath)).existsSync()) {
+      throw GenerationException(
+        'Missing $configPath. Run Project doctor first.',
+      );
+    }
+    validatePublicFlavor(project.read(configPath), environment, configPath);
+  }
   final editor = YamlEditor(file.readAsStringSync());
   final instructions = (yaml['instructions'] as List)
       .cast<String>()

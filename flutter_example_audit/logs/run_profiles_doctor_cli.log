@@ -1,0 +1,78 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Project doctor
+╰────────────────────────────────────────────╯
+  REPAIR  Configure environment entrypoints and run profiles: .vscode/launch.json.
+  REPAIR  Configure environment entrypoints and run profiles: CLEANY_RUN.md.
+  REPAIR  Configure environment entrypoints and run profiles: lib/main.dart.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  .vscode/launch.json
+  CREATE  CLEANY_RUN.md
+  CREATE  .cleany/backups/entrypoints/main_e76a6730108daf90993958ce69898c366b4c606babd8d1f9d7ee1fea4b43a5db.dart
+  UPDATE  lib/main.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 403ms ✓
+[0s] dart --version
+[0s] dart --version · 68ms ✓
+[0s] staging
+[0s] staging · 127 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 2216ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 770ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[25s] dart run build_runner build --delete-conflicting-outputs · 22274ms ✓
+[25s] flutter analyze --no-pub
+[29s] flutter analyze --no-pub · 3462ms ✓
+[29s] collecting · 129 validated outputs
+[29s] applying · 5 files
+[29s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 

@@ -1,0 +1,13 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart
+Running Xcode build...                                          
+Xcode build done.                                           18.8s
+00:00 +0: /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart: generated app: real HTTP, loading, success, failures, retry, Bloc and AR/RTL
+00:02 +1: /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart: generated components: Cubit, Bloc, no state and disposal
+00:03 +2: /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart: (tearDownAll)
+00:03 +2: loading /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/use_case_flow_test.dart
+Running Xcode build...                                          
+Xcode build done.                                           15.5s
+00:24 +2: /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/use_case_flow_test.dart: iPhone: four added actions show loading, Entity/void success, Failure and retry
+00:26 +3: /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/use_case_flow_test.dart: iPhone: original unconnected Data hooks return Failure for all added actions
+00:26 +4: /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/use_case_flow_test.dart: (tearDownAll)
+00:26 +4: All tests passed!

@@ -1,0 +1,42 @@
+# Only platform processors: preserve Cleany's app and entrypoints.
+instructions:
+  - android:flavorizrGradle
+  - android:buildGradle
+  - android:androidManifest
+  - ios:xcconfig
+  - ios:buildTargets
+  - ios:schema
+  - ios:plist
+  - macos:xcconfig
+  - macos:configs
+  - macos:buildTargets
+  - macos:schema
+  - macos:plist
+flavors:
+  dev:
+    app:
+      name: "test_cleany_dio Dev"
+    android:
+      applicationId: "com.example.testCleanyDio.dev"
+    ios:
+      bundleId: "com.example.testCleanyDio.dev"
+    macos:
+      bundleId: "com.example.testCleanyDio.dev"
+  uat:
+    app:
+      name: "test_cleany_dio UAT"
+    android:
+      applicationId: "com.example.testCleanyDio.uat"
+    ios:
+      bundleId: "com.example.testCleanyDio.uat"
+    macos:
+      bundleId: "com.example.testCleanyDio.uat"
+  prod:
+    app:
+      name: "test_cleany_dio"
+    android:
+      applicationId: "com.example.testCleanyDio"
+    ios:
+      bundleId: "com.example.testCleanyDio"
+    macos:
+      bundleId: "com.example.testCleanyDio"

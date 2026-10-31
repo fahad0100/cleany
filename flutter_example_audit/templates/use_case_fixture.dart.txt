@@ -1,0 +1,210 @@
+// Test-only data adapters. Production backend connection points stay untouched.
+import 'dart:async';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:test_cleany_project/app/config/app_config.dart';
+import 'package:test_cleany_project/app/config/app_environment.dart';
+import 'package:test_cleany_project/app/di/injection.dart';
+import 'package:test_cleany_project/core/network/retrofit/home_api.dart';
+import 'package:test_cleany_project/core/network/retrofit/catalog_api.dart';
+import 'package:test_cleany_project/core/state/use_case_state.dart';
+import 'package:test_cleany_project/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:test_cleany_project/features/home/domain/entities/home_entity.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_cubit.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_state.dart';
+import 'package:test_cleany_project/modules/shop/catalog/data/datasources/catalog_remote_data_source.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/entities/catalog_entity.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_event.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_state.dart';
+
+class ControlledHomeSource extends HomeRemoteDataSource {
+  ControlledHomeSource() : super(HomeApi(Dio()));
+  Map<String, dynamic> json = {
+    'id': 'HOME_ACTION_OK',
+    'title': 'Existing model',
+    'visits': 9,
+  };
+  Object? error;
+  Completer<Map<String, dynamic>>? refreshPending;
+  Completer<void>? clearPending;
+  int refreshCalls = 0;
+  int clearCalls = 0;
+
+  @override
+  Future<Map<String, dynamic>> fetch() async => json;
+
+  @override
+  Future<Map<String, dynamic>> refreshHome() async {
+    refreshCalls++;
+    final failure = error;
+    if (failure != null) throw failure;
+    return refreshPending == null ? json : await refreshPending!.future;
+  }
+
+  @override
+  Future<void> clearHome() async {
+    clearCalls++;
+    final failure = error;
+    if (failure != null) throw failure;
+    if (clearPending != null) await clearPending!.future;
+  }
+}
+
+class ControlledCatalogSource extends CatalogRemoteDataSource {
+  ControlledCatalogSource() : super(CatalogApi(Dio()));
+  Map<String, dynamic> json = {'id': 'CATALOG_ACTION_OK'};
+  Object? error;
+  Completer<Map<String, dynamic>>? refreshPending;
+  int refreshCalls = 0;
+  int clearCalls = 0;
+
+  @override
+  Future<Map<String, dynamic>> fetch() async => json;
+
+  @override
+  Future<Map<String, dynamic>> refreshCatalog() async {
+    refreshCalls++;
+    final failure = error;
+    if (failure != null) throw failure;
+    return refreshPending == null ? json : await refreshPending!.future;
+  }
+
+  @override
+  Future<void> clearCatalog() async {
+    clearCalls++;
+    final failure = error;
+    if (failure != null) throw failure;
+  }
+}
+
+/// Replaces only datasources after real composition; action DI stays generated.
+class UseCaseFixture {
+  final container = GetIt.asNewInstance();
+  final homeSource = ControlledHomeSource();
+  final catalogSource = ControlledCatalogSource();
+  late final HomeCubit home;
+  late final CatalogBloc catalog;
+
+  Future<void> open() async {
+    await configureDependencies(
+      container,
+      const AppConfig(
+        environment: AppEnvironment.dev,
+        apiBaseUrl: 'https://example.invalid',
+      ),
+    );
+    await container.unregister<HomeRemoteDataSource>();
+    await container.unregister<CatalogRemoteDataSource>();
+    container.registerSingleton<HomeRemoteDataSource>(homeSource);
+    container.registerSingleton<CatalogRemoteDataSource>(catalogSource);
+    home = container<HomeCubit>();
+    catalog = container<CatalogBloc>();
+  }
+
+  Future<void> send(
+    CatalogEvent event,
+    bool Function(CatalogState) predicate,
+  ) async {
+    final next = catalog.stream
+        .firstWhere(predicate)
+        .timeout(const Duration(seconds: 5));
+    catalog.add(event);
+    await next;
+  }
+
+  Future<void> dispose() async {
+    if (!home.isClosed) await home.close();
+    if (!catalog.isClosed) await catalog.close();
+    await disposeDependencies(container);
+  }
+}
+
+/// A test UI for observing added actions without editing the generated pages.
+class UseCaseHarness extends StatelessWidget {
+  const UseCaseHarness(this.fixture, {super.key});
+  final UseCaseFixture fixture;
+
+  static String label(Object status) => switch (status) {
+    UseCaseInitial() => 'initial',
+    UseCaseLoading() => 'loading',
+    UseCaseSuccess<HomeEntity>(:final value) => value.id,
+    UseCaseSuccess<CatalogEntity>(:final value) => value.id,
+    UseCaseSuccess<void>() => 'done',
+    UseCaseFailure(:final failure) => failure.message,
+    _ => throw StateError('Unsupported action status'),
+  };
+
+  @override
+  Widget build(BuildContext context) => MultiBlocProvider(
+    providers: [
+      BlocProvider<HomeCubit>.value(value: fixture.home),
+      BlocProvider<CatalogBloc>.value(value: fixture.catalog),
+    ],
+    child: MaterialApp(
+      home: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) => Column(
+                  children: [
+                    ElevatedButton(
+                      key: const Key('refresh-home'),
+                      onPressed: context.read<HomeCubit>().refreshHome,
+                      child: const Text('Refresh home'),
+                    ),
+                    Text(
+                      label(state.refreshHomeStatus),
+                      key: const Key('home-entity-state'),
+                    ),
+                    ElevatedButton(
+                      key: const Key('clear-home'),
+                      onPressed: context.read<HomeCubit>().clearHome,
+                      child: const Text('Clear home'),
+                    ),
+                    Text(
+                      label(state.clearHomeStatus),
+                      key: const Key('home-void-state'),
+                    ),
+                  ],
+                ),
+              ),
+              BlocBuilder<CatalogBloc, CatalogState>(
+                builder: (context, state) => Column(
+                  children: [
+                    ElevatedButton(
+                      key: const Key('refresh-catalog'),
+                      onPressed: () => context.read<CatalogBloc>().add(
+                        const CatalogEvent.refreshCatalogRequested(),
+                      ),
+                      child: const Text('Refresh catalog'),
+                    ),
+                    Text(
+                      label(state.refreshCatalogStatus),
+                      key: const Key('catalog-entity-state'),
+                    ),
+                    ElevatedButton(
+                      key: const Key('clear-catalog'),
+                      onPressed: () => context.read<CatalogBloc>().add(
+                        const CatalogEvent.clearCatalogRequested(),
+                      ),
+                      child: const Text('Clear catalog'),
+                    ),
+                    Text(
+                      label(state.clearCatalogStatus),
+                      key: const Key('catalog-void-state'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}

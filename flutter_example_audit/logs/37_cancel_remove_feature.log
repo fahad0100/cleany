@@ -1,0 +1,89 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Remove feature
+╰────────────────────────────────────────────╯
+  1  dashboard  (lib/modules/dashboard)
+  2  catalog  (lib/features/catalog)
+  3  details  (lib/modules/dashboard/subfeatures/details)
+  4  Cancel
+› Select feature to remove: The directory, its files, and any nested entries will be removed: lib/modules/dashboard
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  REMOVE  lib/core/network/retrofit/dashboard_api.g.dart
+  REMOVE  lib/core/network/retrofit/dashboard_api.dart
+  REMOVE  lib/core/network/retrofit/details_api.dart
+  REMOVE  lib/core/network/retrofit/details_api.g.dart
+  REMOVE  lib/modules/dashboard/subfeatures/empty_state/widgets/empty_state_widget.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/datasources/details_remote_data_source.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/repositories/details_repository_impl.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/models/details_model.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/models/details_model.freezed.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/data/models/details_model.g.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/repositories/details_repository.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/usecases/get_details.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/domain/entities/details_entity.freezed.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_state.freezed.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/cubit/details_cubit.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/pages/details_page.dart
+  REMOVE  lib/modules/dashboard/subfeatures/details/presentation/widgets/.gitkeep
+  REMOVE  lib/modules/dashboard/data/datasources/dashboard_remote_data_source.dart
+  REMOVE  lib/modules/dashboard/data/repositories/dashboard_repository_impl.dart
+  REMOVE  lib/modules/dashboard/data/models/dashboard_model.g.dart
+  REMOVE  lib/modules/dashboard/data/models/dashboard_model.freezed.dart
+  REMOVE  lib/modules/dashboard/data/models/dashboard_model.dart
+  REMOVE  lib/modules/dashboard/domain/repositories/dashboard_repository.dart
+  REMOVE  lib/modules/dashboard/domain/usecases/get_dashboard.dart
+  REMOVE  lib/modules/dashboard/domain/entities/dashboard_entity.freezed.dart
+  REMOVE  lib/modules/dashboard/domain/entities/dashboard_entity.dart
+  REMOVE  lib/modules/dashboard/presentation/cubit/dashboard_cubit.dart
+  REMOVE  lib/modules/dashboard/presentation/cubit/dashboard_state.dart
+  REMOVE  lib/modules/dashboard/presentation/cubit/dashboard_state.freezed.dart
+  REMOVE  lib/modules/dashboard/presentation/pages/dashboard_page.dart
+  REMOVE  lib/modules/dashboard/presentation/widgets/.gitkeep
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Cancelled. No files were changed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

@@ -4,6 +4,7 @@ import 'feature_context.dart';
 import 'feature_data.dart';
 import 'feature_domain.dart';
 import 'feature_presentation.dart';
+import 'use_case_templates.dart';
 
 /// One fixed architecture; modules separate rendering responsibilities by layer.
 Map<String, String> featureTemplates({
@@ -14,6 +15,8 @@ Map<String, String> featureTemplates({
   required StateManagement state,
   required ApiProvider provider,
   FeatureSpec? specification,
+  List<UseCaseSpec> useCases = const [],
+  bool legacyComponentWidgets = false,
 }) {
   final context = FeatureTemplateContext(
     name: name,
@@ -23,10 +26,17 @@ Map<String, String> featureTemplates({
     state: state,
     provider: provider,
     specification: specification,
+    legacyComponentWidgets: legacyComponentWidgets,
   );
-  return {
+  final files = {
     ...featureDomainFiles(context),
     ...featureDataFiles(context),
     ...featurePresentationFiles(context),
   };
+  final applied = <UseCaseSpec>[];
+  for (final operation in useCases) {
+    applied.add(operation);
+    files.addAll(addUseCaseToFeature(context, operation, applied, files));
+  }
+  return files;
 }

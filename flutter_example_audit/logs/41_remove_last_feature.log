@@ -1,0 +1,94 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Remove feature
+╰────────────────────────────────────────────╯
+  1  catalog  (lib/features/catalog)
+  2  Cancel
+› Select feature to remove: The directory, its files, and any nested entries will be removed: lib/features/catalog
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  REMOVE  lib/core/network/retrofit/catalog_api.dart
+  REMOVE  lib/core/network/retrofit/catalog_api.g.dart
+  REMOVE  lib/features/catalog/data/datasources/catalog_remote_data_source.dart
+  REMOVE  lib/features/catalog/data/repositories/catalog_repository_impl.dart
+  REMOVE  lib/features/catalog/data/models/catalog_model.g.dart
+  REMOVE  lib/features/catalog/data/models/catalog_model.dart
+  REMOVE  lib/features/catalog/data/models/catalog_model.freezed.dart
+  REMOVE  lib/features/catalog/domain/repositories/catalog_repository.dart
+  REMOVE  lib/features/catalog/domain/usecases/get_catalog.dart
+  REMOVE  lib/features/catalog/domain/entities/catalog_entity.dart
+  REMOVE  lib/features/catalog/domain/entities/catalog_entity.freezed.dart
+  REMOVE  lib/features/catalog/presentation/pages/catalog_page.dart
+  REMOVE  lib/features/catalog/presentation/widgets/.gitkeep
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_event.freezed.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_state.freezed.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_state.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_event.dart
+  REMOVE  lib/features/catalog/presentation/bloc/catalog_bloc.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 377ms ✓
+[0s] dart --version
+[0s] dart --version · 59ms ✓
+[0s] staging
+[0s] staging · 63 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1683ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 803ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20782ms ✓
+[23s] flutter analyze --no-pub
+[27s] flutter analyze --no-pub · 3247ms ✓
+[27s] collecting · 45 validated outputs
+[27s] applying · 23 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

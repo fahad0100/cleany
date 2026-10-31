@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import 'project.dart' show isValidAppId;
+
 typedef ProjectPath = String Function(String relative);
 
 /// Resolves common Gradle properties/variables and xcconfig references as data.
@@ -21,10 +23,10 @@ class NativeIdentity {
     }
     final result = <String>{};
     for (final relative in [
-      'android/app/build.gradle.kts',
-      'android/app/build.gradle',
       'android/build.gradle.kts',
       'android/build.gradle',
+      'android/app/build.gradle.kts',
+      'android/app/build.gradle',
     ]) {
       final file = File(path(relative));
       if (!file.existsSync()) continue;
@@ -43,8 +45,10 @@ class NativeIdentity {
       }
     }
     for (final platform in ['ios', 'macos']) {
+      variables.clear();
       final directory = Directory(path(platform));
       if (!directory.existsSync()) continue;
+      final configurations = <String, Map<String, Set<String>>>{};
       void visit(Directory directory) {
         for (final entity in directory.listSync(followLinks: false)) {
           if (entity is Directory &&
@@ -57,31 +61,67 @@ class NativeIdentity {
             visit(entity);
           }
           if (entity is File && entity.path.endsWith('.xcconfig')) {
-            _properties(_withoutComments(entity.readAsStringSync()));
+            variables.clear();
+            _readXcconfig(entity, {});
+            configurations[p.basenameWithoutExtension(entity.path)] = {
+              for (final entry in variables.entries)
+                entry.key: {...entry.value},
+            };
           }
         }
       }
 
       visit(directory);
+      variables.clear();
       final file = File(path('$platform/Runner.xcodeproj/project.pbxproj'));
       if (!file.existsSync()) continue;
       final source = _withoutComments(file.readAsStringSync());
+      final blocks = <String>[];
       for (final match in RegExp(
-        r'\b([A-Z][A-Z0-9_]*)\s*=\s*([^;\n]+)',
+        r'\bbuildSettings\s*=\s*\{',
       ).allMatches(source)) {
-        _add(match[1]!, match[2]!);
+        final block = _block(
+          source.substring(match.start),
+          'buildSettings',
+          assignment: true,
+        );
+        if (block != null) blocks.add(block);
       }
-      for (final match in RegExp(
-        r'PRODUCT_BUNDLE_IDENTIFIER\s*=\s*([^;\n]+)',
-      ).allMatches(source)) {
-        result.addAll(_resolve(match[1]!));
+      // Small fixture and legacy projects may store settings without blocks.
+      if (blocks.isEmpty) blocks.add(source);
+      for (final block in blocks) {
+        variables.clear();
+        for (final match in RegExp(
+          r'\b([A-Z][A-Z0-9_]*)\s*=\s*([^;\n]+)',
+        ).allMatches(block)) {
+          _add(match[1]!, match[2]!);
+        }
+        final local = {
+          for (final entry in variables.entries) entry.key: {...entry.value},
+        };
+        for (final match in RegExp(
+          r'PRODUCT_BUNDLE_IDENTIFIER\s*=\s*([^;\n]+)',
+        ).allMatches(block)) {
+          final expression = match[1]!;
+          // Resolve each configuration independently; never combine a dev value
+          // from one file with a production value from another configuration.
+          for (final configuration in [
+            <String, Set<String>>{},
+            ...configurations.values,
+          ]) {
+            variables
+              ..clear()
+              ..addAll(configuration)
+              ..addAll(local);
+            result.addAll(_resolve(expression));
+          }
+        }
       }
     }
     return result
         .where(
           (id) =>
-              RegExp(r'^[A-Za-z][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+)+$')
-                  .hasMatch(id) &&
+              isValidAppId(id) &&
               !RegExp(
                 r'\.(RunnerTests|RunnerUITests|UITests|Tests)$',
                 caseSensitive: false,
@@ -90,17 +130,37 @@ class NativeIdentity {
         .toList();
   }
 
+  void _readXcconfig(File file, Set<String> visited) {
+    if (!visited.add(file.path)) return;
+    final source = file.readAsStringSync();
+    for (final match in RegExp(
+      r'^\s*#include\??\s+"([^"\n]+)"',
+      multiLine: true,
+    ).allMatches(source)) {
+      final included = File(p.normalize(p.join(file.parent.path, match[1]!)));
+      // Resolve through the project path guard; external references are not read.
+      final relative = p.relative(
+        included.path,
+        from: p.dirname(path('pubspec.yaml')),
+      );
+      final guarded = File(path(relative));
+      if (guarded.existsSync()) _readXcconfig(guarded, visited);
+    }
+    _properties(_withoutComments(source));
+  }
+
   void _properties(String source) {
     for (final match in RegExp(
       r'^\s*([A-Za-z_][\w.]*)\s*=\s*(.*?)\s*$',
       multiLine: true,
     ).allMatches(source)) {
-      _add(match[1]!, match[2]!);
+      variables[match[1]!] = {match[2]!.trim()};
     }
   }
 
-  void _add(String key, String expression) =>
-      variables.putIfAbsent(key, () => {}).add(expression.trim());
+  void _add(String key, String expression) {
+    variables[key] = {expression.trim()};
+  }
 
   Set<String> _resolve(String expression, [Set<String> seen = const {}]) {
     var value = expression.trim();
@@ -138,8 +198,9 @@ class NativeIdentity {
     };
   }
 
-  String? _block(String source, String name) {
-    final match = RegExp('\\b$name\\s*\\{').firstMatch(source);
+  String? _block(String source, String name, {bool assignment = false}) {
+    final match = RegExp('\\b$name\\s*${assignment ? '=\\s*' : ''}\\{')
+        .firstMatch(source);
     if (match == null) return null;
     var index = match.end;
     var depth = 1;

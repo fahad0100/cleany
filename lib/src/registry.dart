@@ -79,6 +79,11 @@ class FeatureRegistry {
             'Missing entry directory: $path. Use Project doctor to repair the registry.',
           );
         }
+        if (record.containsKey('component_layout') &&
+            (record['kind'] != 'component' ||
+                !{'flat', 'widgets'}.contains(record['component_layout']))) {
+          throw const FormatException('Invalid component layout.');
+        }
         final owned = record['files'] as List? ?? [];
         for (final file in owned) {
           final target = file['path'] as String;
@@ -96,6 +101,47 @@ class FeatureRegistry {
               }.contains(target);
           if (!p.posix.isWithin(path, target) && !allowedApi) {
             throw const FormatException();
+          }
+        }
+        final operations = entryUseCases(record);
+        final operationNames = <String>{};
+        if (record['kind'] != 'feature' && operations.isNotEmpty) {
+          throw const FormatException(
+            'Components cannot own feature use cases.',
+          );
+        }
+        for (final operation in operations) {
+          if (!operationNames.add(operation.type)) {
+            throw const FormatException('Duplicate use case.');
+          }
+        }
+        final member = camelCase(record['name'] as String);
+        final type = pascalCase(record['name'] as String);
+        final integrationPaths = {
+          'lib/app/di/injection.dart': {
+            'DI.${type}Api',
+            'DI.${type}RemoteDataSource',
+            'DI.${type}Repository',
+            'DI.Get$type',
+            'DI.${type}Cubit',
+            'DI.${type}Bloc',
+            for (final operation in operations) ...[
+              'DI.${operation.type}',
+              if (!operation.usesFeatureRepository)
+                'DI.${operation.repository}',
+            ],
+          },
+          'lib/app/composition/feature_pages.dart': {'FeaturePages.$member'},
+          'lib/app/router/route_names.dart': {'RouteNames.$member'},
+          'lib/app/router/app_router.dart': {'Router.$member'},
+        };
+        for (final raw in record['integrations'] as List? ?? []) {
+          final node = raw as Map;
+          if (node['owner'] != record['name'] ||
+              integrationPaths[node['path']]?.contains(node['node']) != true ||
+              node['sha256'] is! String ||
+              !RegExp(r'^[a-f0-9]{64}$').hasMatch(node['sha256'] as String)) {
+            throw const FormatException('Invalid integration ownership');
           }
         }
         record['files'] ??= <Object>[];
@@ -123,6 +169,8 @@ class FeatureRegistry {
               'web',
             }.any((root) => p.posix.isWithin(root, path)) ||
             {
+              '.vscode/launch.json',
+              'CLEANY_RUN.md',
               'lib/main.dart',
               'lib/main_dev.dart',
               'lib/main_uat.dart',

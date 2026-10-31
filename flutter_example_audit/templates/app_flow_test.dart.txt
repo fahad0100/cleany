@@ -1,0 +1,86 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:test_cleany_project/app/app.dart';
+import 'package:test_cleany_project/app/bootstrap.dart';
+import 'package:test_cleany_project/app/composition/feature_pages.dart';
+import 'package:test_cleany_project/app/config/app_config.dart';
+import 'package:test_cleany_project/app/config/app_environment.dart';
+import 'package:test_cleany_project/app/di/injection.dart';
+import 'package:test_cleany_project/app/router/route_names.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_cubit.dart';
+import 'package:test_cleany_project/features/home/presentation/pages/home_page.dart';
+import 'package:test_cleany_project/components/user_card/cubit/user_card_cubit.dart';
+import 'package:test_cleany_project/components/user_card/widgets/user_card_widget.dart';
+import 'package:test_cleany_project/shared/components/status_badge/bloc/status_badge_bloc.dart';
+import 'package:test_cleany_project/shared/components/status_badge/bloc/status_badge_event.dart';
+import 'package:test_cleany_project/shared/components/status_badge/widgets/status_badge_widget.dart';
+import 'package:test_cleany_project/features/home/subfeatures/empty_state/widgets/empty_state_widget.dart';
+
+const apiUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://127.0.0.1:8787');
+
+Future<void> mode(String value) async {
+  final dio = Dio();
+  try { await dio.get<dynamic>('$apiUrl/__audit/mode', queryParameters: {'value': value}); }
+  finally { dio.close(force: true); }
+}
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('generated app: real HTTP, loading, success, failures, retry, Bloc and AR/RTL', (tester) async {
+    await mode('slow_success');
+    await bootstrap(AppEnvironment.dev);
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('CLEANY_LOCAL_OK'), findsOneWidget);
+    final home = tester.element(find.byType(HomePage)).read<HomeCubit>();
+    for (final example in {
+      'unauthorized': 'Please sign in again.',
+      'invalid_response': 'Invalid server response.',
+      'server_failure': 'The service is unavailable.',
+      'success': 'CLEANY_LOCAL_OK',
+    }.entries) {
+      await mode(example.key);
+      await home.load(); await tester.pumpAndSettle();
+      expect(find.text(example.value), findsOneWidget);
+    }
+    final app = tester.widget<App>(find.byType(App));
+    app.router.go(RouteNames.catalog); await tester.pumpAndSettle();
+    expect(find.text('CATALOG_LOCAL_OK'), findsOneWidget);
+    app.router.go(RouteNames.root); await tester.pumpAndSettle();
+    tester.binding.platformDispatcher.localesTestValue = const [Locale('ar')];
+    await tester.pumpAndSettle();
+    expect(find.text('مرحبًا'), findsOneWidget);
+    expect(Directionality.of(tester.element(find.text('مرحبًا'))), TextDirection.rtl);
+    tester.binding.platformDispatcher.localesTestValue = const [Locale('en')];
+    await tester.pumpAndSettle();
+    expect(find.text('Welcome'), findsOneWidget);
+    tester.binding.platformDispatcher.clearLocalesTestValue();
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('generated components: Cubit, Bloc, no state and disposal', (tester) async {
+    final container = GetIt.asNewInstance();
+    await configureDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: apiUrl));
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.userCard(container)));
+    final cubit = tester.element(find.byType(UserCardWidget)).read<UserCardCubit>();
+    cubit.update(7); await tester.pumpAndSettle();
+    expect(find.text('7'), findsOneWidget);
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.statusBadge(container)));
+    expect(cubit.isClosed, isTrue); cubit.update(8);
+    final bloc = tester.element(find.byType(StatusBadgeWidget)).read<StatusBadgeBloc>();
+    bloc.add(const StatusBadgeEvent.requested()); await tester.pumpAndSettle();
+    expect(find.text('1'), findsOneWidget);
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.emptyState(container)));
+    expect(find.byType(EmptyStateWidget), findsOneWidget);
+    expect(bloc.isClosed, isTrue); bloc.add(const StatusBadgeEvent.requested());
+    await tester.pumpWidget(const SizedBox.shrink());
+    await container.reset(dispose: true);
+  });
+}

@@ -1,0 +1,67 @@
+[
+  {
+    "path": "/home",
+    "mode": "slow_success",
+    "time": 1793460172.848237
+  },
+  {
+    "path": "/home",
+    "mode": "unauthorized",
+    "time": 1793460173.904922
+  },
+  {
+    "path": "/home",
+    "mode": "invalid_response",
+    "time": 1793460174.026751
+  },
+  {
+    "path": "/home",
+    "mode": "server_failure",
+    "time": 1793460174.138127
+  },
+  {
+    "path": "/home",
+    "mode": "success",
+    "time": 1793460174.257164
+  },
+  {
+    "path": "/catalog",
+    "mode": "success",
+    "time": 1793460174.518188
+  },
+  {
+    "path": "/home",
+    "mode": "slow_success",
+    "time": 1793460322.53199
+  },
+  {
+    "path": "/home",
+    "mode": "unauthorized",
+    "time": 1793460323.590989
+  },
+  {
+    "path": "/home",
+    "mode": "invalid_response",
+    "time": 1793460323.707668
+  },
+  {
+    "path": "/home",
+    "mode": "server_failure",
+    "time": 1793460323.819655
+  },
+  {
+    "path": "/home",
+    "mode": "success",
+    "time": 1793460323.938702
+  },
+  {
+    "path": "/catalog",
+    "mode": "success",
+    "time": 1793460324.2050219
+  },
+  {
+    "path": "/home",
+    "mode": "success",
+    "time": 1793460702.432468
+  }
+]

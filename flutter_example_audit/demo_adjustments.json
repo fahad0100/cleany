@@ -1,0 +1,10 @@
+{
+  "generated_source_snapshot": "snapshots/final_generated_before_demo.zip",
+  "app_edits": {
+    "lib/app/router/app_router.dart": "Set the generated home route as the initial page for the simulator demonstration.",
+    "pubspec.yaml": "Add Flutter SDK integration_test as a development dependency.",
+    "test/generated_architecture_test.dart": "Add behavior tests against generated code.",
+    "integration_test/app_flow_test.dart": "Add real iOS simulator flows using a local HTTP fixture.",
+    "ios/Runner.xcodeproj/project.pbxproj": "Example-only workaround: reuse existing AppIcon because generated AppIcon-dev/uat/prod catalogs are missing."
+  }
+}

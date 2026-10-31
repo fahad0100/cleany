@@ -1,0 +1,7 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/integration_test/app_flow_test.dart
+Running Xcode build...                                          
+Xcode build done.                                           18.2s
+00:00 +0: generated app: real HTTP, loading, success, failures, retry, Bloc and AR/RTL
+00:02 +1: generated components: Cubit, Bloc, no state and disposal
+00:03 +2: (tearDownAll)
+00:03 +2: All tests passed!

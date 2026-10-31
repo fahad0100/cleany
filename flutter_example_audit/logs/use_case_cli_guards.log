@@ -1,0 +1,96 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  1  home  (lib/features/home)
+  2  catalog  (lib/modules/shop/catalog)
+  3  typed_fields  (lib/features/typed_fields)
+  4  Cancel
+› Feature: › Use case name (snake_case):   1  void (completion only)
+  2  HomeEntity (existing feature entity)
+› Return type: The Data connection point needs its backend contract; until connected, the operation returns Failure.
+Call: HomeCubit.cancelledAction(). Observe state.cancelledActionStatus.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/home/domain/repositories/cancelled_action_repository.dart
+  CREATE  lib/features/home/domain/usecases/cancelled_action.dart
+  CREATE  lib/features/home/data/repositories/cancelled_action_repository_impl.dart
+  UPDATE  lib/features/home/presentation/cubit/home_state.dart
+  UPDATE  lib/features/home/presentation/cubit/home_cubit.dart
+  UPDATE  lib/features/home/data/datasources/home_remote_data_source.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Cancelled. No files were changed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  1  home  (lib/features/home)
+  2  catalog  (lib/modules/shop/catalog)
+  3  typed_fields  (lib/features/typed_fields)
+  4  Cancel
+› Feature: › Use case name (snake_case):   1  void (completion only)
+  2  HomeEntity (existing feature entity)
+› Return type: Operation stopped: Use case already registered: refresh_home
+No generated changes remain applied. Existing edits are preserved.
+  1  Retry this action
+  2  Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 

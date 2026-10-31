@@ -1,0 +1,33 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart
+00:00 +0: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: Entity use cases reuse the current Home and Catalog models and entities
+00:00 +1: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: Entity use cases reuse the current Home and Catalog models and entities
+00:00 +2: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: Entity use cases reuse the current Home and Catalog models and entities
+00:00 +3: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: HTTP 401 maps once at the repository boundary
+00:00 +4: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: void operations complete without decoding the feature Model
+00:00 +5: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: HTTP 403 maps once at the repository boundary
+00:00 +6: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: new repositories preserve business Failure identity and map technical errors once
+00:00 +7: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: new repositories preserve business Failure identity and map technical errors once
+00:00 +8: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: new repositories preserve business Failure identity and map technical errors once
+00:00 +9: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: new repositories preserve business Failure identity and map technical errors once
+00:00 +10: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: new repositories preserve business Failure identity and map technical errors once
+00:00 +11: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: new repositories preserve business Failure identity and map technical errors once
+00:00 +12: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: audit limitation: a throwing reporter escapes the Result contract
+00:00 +13: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: a failing diagnostic reporter cannot escape the new Result contract
+00:00 +14: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: Cubit emits loading, entity success and typed failure
+00:00 +15: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: Cubit emits loading and Entity success through its generated DI action
+00:00 +16: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: Cubit suppresses duplicate requests and late emissions after close
+00:00 +17: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: Cubit preserves independent actions through primary loads and blocks duplicate calls
+00:00 +18: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: Bloc emits entity success and failure
+00:00 +19: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: Bloc emits entity success and failure
+00:00 +20: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: Cubit ignores late completions and new calls after disposal
+00:00 +21: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: DI uses app services, singleton repositories and factory controllers
+00:00 +22: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: DI uses app services, singleton repositories and factory controllers
+00:00 +23: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: DI uses app services, singleton repositories and factory controllers
+00:00 +24: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: unconnected production hooks return Failure for all four actions without making HTTP requests
+00:00 +25: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: unconnected production hooks return Failure for all four actions without making HTTP requests
+00:00 +26: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: unconnected production hooks return Failure for all four actions without making HTTP requests
+00:00 +27: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: generated HomePage renders loading, entity success and failure
+00:00 +28: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: test UI exposes Entity and void success and retryable errors for Cubit and Bloc
+00:00 +29: /Users/fahad/Documents/cleany/cleany/flutter_example/test/add_use_case_test.dart: test UI exposes Entity and void success and retryable errors for Cubit and Bloc
+00:00 +30: /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: generated App supports English, Arabic and RTL
+00:00 +31: All tests passed!

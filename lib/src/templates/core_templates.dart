@@ -2,16 +2,19 @@ import '../project.dart';
 import 'app_templates.dart';
 import 'network_templates.dart';
 import 'localization_templates.dart';
+import 'use_case_templates.dart';
 
 Map<String, String> coreTemplates(
   String package,
   ApiProvider provider,
-  String appId,
-) {
+  String appId, {
+  bool includeUseCaseState = false,
+}) {
   final files = <String, String>{
     ...appTemplates(),
     ...networkTemplates(),
     ...localizationTemplates(),
+    if (includeUseCaseState) useCaseStatePath: useCaseStateTemplate(),
     'lib/app/config/flavor_config.dart': r'''
 import 'package:flutter/services.dart';
 import 'package:yaml/yaml.dart';

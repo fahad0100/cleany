@@ -1,0 +1,123 @@
+00:00 +0: loading test/generator_test.dart
+00:00 +0: test/generator_test.dart: validates Flutter SDK rather than mobile platform directories
+00:00 +1: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +2: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +3: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +4: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +5: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +6: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +7: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +8: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +9: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +10: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +11: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +12: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +13: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +14: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +15: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +16: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +17: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +18: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +19: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +20: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:00 +21: test/generator_test.dart: custom path, subfeatures, components and central DI
+00:00 +22: test/generator_test.dart: custom path, subfeatures, components and central DI
+00:00 +23: test/advanced_test.dart: builder ownership derives from a recorded template source
+00:00 +24: test/safety_regression_test.dart: doctor repairs one missing DI binding and preserves custom integrations
+00:01 +25: test/safety_regression_test.dart: doctor repairs one missing DI binding and preserves custom integrations
+00:01 +26: test/generator_test.dart: all component state options use small templates
+00:01 +27: test/generator_test.dart: all component state options use small templates
+00:01 +28: test/generator_test.dart: all component state options use small templates
+00:01 +29: test/generator_test.dart: all component state options use small templates
+00:01 +30: test/generator_test.dart: all component state options use small templates
+00:01 +31: test/generator_test.dart: all component state options use small templates
+00:01 +32: test/generator_test.dart: all component state options use small templates
+00:01 +33: test/advanced_test.dart: validated test and asset outputs are applied, not silently ignored
+00:01 +34: test/safety_regression_test.dart: rename preserves unrelated bytes and foreign symbols with identical names
+00:01 +35: test/safety_regression_test.dart: rename preserves unrelated bytes and foreign symbols with identical names
+00:01 +36: test/safety_regression_test.dart: rename preserves unrelated bytes and foreign symbols with identical names
+00:01 +37: test/safety_regression_test.dart: rename preserves unrelated bytes and foreign symbols with identical names
+00:01 +38: test/safety_regression_test.dart: rename preserves unrelated bytes and foreign symbols with identical names
+00:01 +39: test/generator_test.dart: Dio provider omits Retrofit packages and generated APIs
+00:01 +40: test/generator_test.dart: Dio provider omits Retrofit packages and generated APIs
+00:01 +41: test/safety_regression_test.dart: conditional URI alternatives move without rewriting foreign symbols
+00:01 +42: test/safety_regression_test.dart: conditional URI alternatives move without rewriting foreign symbols
+00:01 +43: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:01 +44: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:01 +45: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:01 +46: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:01 +47: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:02 +48: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:02 +49: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:02 +50: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:02 +51: test/generator_test.dart: compact response fields create a feature using state 1 without transport prompts
+00:02 +52: test/generator_test.dart: compact response fields create a feature using state 1 without transport prompts
+00:02 +53: test/advanced_test.dart: doctor rebuilds missing registry and missing DI/route registrations
+00:02 +54: test/safety_regression_test.dart: CLI retries retain inputs, require approval again and log each operation separately
+00:02 +55: test/safety_regression_test.dart: CLI retries retain inputs, require approval again and log each operation separately
+00:02 +56: test/generator_test.dart: compact response fields create a feature using state 2 without transport prompts
+00:02 +57: test/generator_test.dart: compact response fields create a feature using state 2 without transport prompts
+00:02 +58: test/generator_test.dart: compact response fields create a feature using state 2 without transport prompts
+00:02 +59: test/generator_test.dart: compact response fields create a feature using state 2 without transport prompts
+00:03 +60: test/generator_test.dart: compact response fields create a feature using state 2 without transport prompts
+00:03 +61: test/safety_regression_test.dart: renamed ownership protects a customized binding during stale cleanup
+00:03 +62: test/safety_regression_test.dart: renamed ownership protects a customized binding during stale cleanup
+00:03 +63: test/generator_test.dart: compact field validation retries the current prompt and preserves earlier fields
+00:03 +64: test/generator_test.dart: compact field validation retries the current prompt and preserves earlier fields
+00:03 +65: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +66: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +67: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +68: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +69: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +70: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +71: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +72: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +73: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +74: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:03 +75: test/generator_test.dart: staged outputs are included and checked before commit
+00:03 +76: test/generator_test.dart: staged outputs are included and checked before commit
+00:03 +77: test/generator_test.dart: staged outputs are included and checked before commit
+00:03 +78: test/generator_test.dart: staged outputs are included and checked before commit
+00:03 +79: test/generator_test.dart: staged outputs are included and checked before commit
+00:04 +80: test/generator_test.dart: staged outputs are included and checked before commit
+00:04 +81: test/safety_regression_test.dart: Freezed public variants and aliased route owners rename together
+00:04 +82: test/safety_regression_test.dart: Freezed public variants and aliased route owners rename together
+00:04 +83: test/safety_regression_test.dart: Freezed public variants and aliased route owners rename together
+00:04 +84: test/safety_regression_test.dart: Freezed public variants and aliased route owners rename together
+00:04 +85: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +86: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +87: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +88: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +89: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +90: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +91: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +92: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +93: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +94: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +95: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +96: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +97: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +98: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +99: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +100: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +101: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:04 +102: test/generator_test.dart: feature and stateful component builds read their controller explicitly
+00:04 +103: test/advanced_test.dart: failed commands never emit a successful progress marker
+00:05 +104: test/generator_test.dart: removal updates registry, DI, factories, routes and nested entries
+00:05 +105: test/generator_test.dart: removal updates registry, DI, factories, routes and nested entries
+00:05 +106: test/generator_test.dart: removal updates registry, DI, factories, routes and nested entries
+00:05 +107: test/generator_test.dart: removal updates registry, DI, factories, routes and nested entries
+00:05 +108: test/generator_test.dart: removal updates registry, DI, factories, routes and nested entries
+00:05 +109: test/advanced_test.dart: doctor reconstructs custom fields and contracts from source when registry is lost
+00:05 +110: test/advanced_test.dart: doctor reconstructs custom fields and contracts from source when registry is lost
+00:05 +111: test/generator_test.dart: failed deletion restores files and registry byte for byte
+00:05 +112: test/generator_test.dart: failed deletion restores files and registry byte for byte
+00:05 +113: test/advanced_test.dart: kernel lock is released automatically when its owner process dies
+00:05 +114: test/advanced_test.dart: kernel lock is released automatically when its owner process dies
+00:05 +115: test/advanced_test.dart: kernel lock is released automatically when its owner process dies
+00:06 +116: test/advanced_test.dart: kernel lock is released automatically when its owner process dies
+00:06 +117: test/advanced_test.dart: kernel lock is released automatically when its owner process dies
+00:09 +118: test/advanced_test.dart: corrupt backup does not block restoring other journal records
+00:09 +119: test/advanced_test.dart: registry cannot claim unrelated files as project-owned
+00:09 +120: test/advanced_test.dart: macOS flavor plan isolates processors and keeps production identity
+00:09 +121: All tests passed!

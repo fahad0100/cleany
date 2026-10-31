@@ -1,0 +1,139 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Cleany maintenance
+╰────────────────────────────────────────────╯
+  1  Clean abandoned local cache
+  2  Archive managed folders and reset Cleany
+  3  Set command timeout
+  4  Cancel
+› Action: Current lib/app, lib/core, registered entry folders, and managed configuration are archived before replacing the architecture. Unrelated code, dependencies, and native projects are preserved.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  .cleany/backups/reset_1793459330755689/.cleany/features.json
+  UPDATE  .cleany/features.json
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/app.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/bootstrap.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/config/app_environment.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/config/app_config.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/errors/error_reporter.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/errors/failure.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/network/failure_mapper.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/network/dio/dio_client.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/network/dio/interceptors/auth_interceptor.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/network/api_endpoints.dart
+  CREATE  .cleany/backups/reset_1793459330755689/l10n.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/assets/translations/app_en.arb
+  CREATE  .cleany/backups/reset_1793459330755689/assets/translations/app_ar.arb
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/config/flavor_config.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/theme/app_theme.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/widgets/loading_widget.dart
+  CREATE  .cleany/backups/reset_1793459330755689/assets/images/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/assets/icons/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/test/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/integration_test/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/storage/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/localization/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/constants/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/utils/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/network/retrofit/.gitkeep
+  CREATE  .cleany/backups/reset_1793459330755689/lib/main_dev.dart
+  CREATE  .cleany/backups/reset_1793459330755689/config/flavors/dev.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/lib/main_uat.dart
+  CREATE  .cleany/backups/reset_1793459330755689/config/flavors/uat.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/lib/main_prod.dart
+  CREATE  .cleany/backups/reset_1793459330755689/config/flavors/prod.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/flavorizr.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/pubspec.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/localization/generated/app_localizations.dart
+  REMOVE  lib/core/localization/generated/app_localizations.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/localization/generated/app_localizations_ar.dart
+  REMOVE  lib/core/localization/generated/app_localizations_ar.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/localization/generated/app_localizations_en.dart
+  REMOVE  lib/core/localization/generated/app_localizations_en.dart
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Runner/Info.plist
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Runner.xcodeproj/project.pbxproj
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Runner.xcodeproj/xcshareddata/xcschemes/uat.xcscheme
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Runner.xcodeproj/xcshareddata/xcschemes/dev.xcscheme
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Runner.xcodeproj/xcshareddata/xcschemes/prod.xcscheme
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/devDebug.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/uatDebug.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/prodDebug.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/prodProfile.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/prodRelease.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/devProfile.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/uatRelease.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/devRelease.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/ios/Flutter/uatProfile.xcconfig
+  CREATE  .cleany/backups/reset_1793459330755689/android/app/build.gradle.kts
+  CREATE  .cleany/backups/reset_1793459330755689/android/app/src/main/AndroidManifest.xml
+  CREATE  .cleany/backups/reset_1793459330755689/android/app/flavorizr.gradle.kts
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/di/injection.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/composition/feature_pages.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/router/route_names.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/app/router/app_router.dart
+  CREATE  .cleany/backups/reset_1793459330755689/lib/core/utils/user_owned_note.dart
+  REMOVE  lib/core/utils/user_owned_note.dart
+  UPDATE  pubspec.yaml
+  CREATE  .cleany/backups/reset_1793459330755689/README.txt
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 384ms ✓
+[0s] dart --version
+[0s] dart --version · 73ms ✓
+[0s] staging
+[0s] staging · 46 inputs copied
+[0s] flutter pub get
+[3s] flutter pub get · 3225ms ✓
+[3s] flutter gen-l10n
+[5s] flutter gen-l10n · 1301ms ✓
+[5s] dart run build_runner build --delete-conflicting-outputs
+[10s] dart run build_runner build --delete-conflicting-outputs · 5s
+[15s] dart run build_runner build --delete-conflicting-outputs · 10s
+[20s] dart run build_runner build --delete-conflicting-outputs · 15s
+[25s] dart run build_runner build --delete-conflicting-outputs · 20s
+[26s] dart run build_runner build --delete-conflicting-outputs · 20925ms ✓
+[26s] flutter analyze --no-pub
+[29s] flutter analyze --no-pub · 3379ms ✓
+[29s] collecting · 45 validated outputs
+[29s] applying · 65 files
+[29s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

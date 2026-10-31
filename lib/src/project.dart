@@ -56,6 +56,15 @@ class Project {
     return target;
   }
 
+  /// Canonical identity for package and relative Dart import comparisons.
+  String dartUri(String from, String uri) {
+    if (uri.contains(':')) return uri;
+    final target = p.posix.normalize(p.posix.join(p.posix.dirname(from), uri));
+    file(target);
+    if (!p.posix.isWithin('lib', target)) return target;
+    return 'package:${validate()}/${target.substring(4)}';
+  }
+
   /// Reads a UTF-8 text file after validating its project-relative path.
   String read(String relative) => File(file(relative)).readAsStringSync();
 
@@ -217,4 +226,35 @@ String pascalCase(String value) => value
 String camelCase(String value) {
   final result = pascalCase(value);
   return '${result[0].toLowerCase()}${result.substring(1)}';
+}
+
+/// Shared production identity policy for discovery and explicit input.
+bool isValidAppId(String value) =>
+    RegExp(r'^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*){2,}$')
+        .hasMatch(value);
+
+/// Rejects an identity that cannot be shared across supported native platforms.
+void validateAppId(String value) {
+  if (!isValidAppId(value)) {
+    throw const GenerationException(
+      'Use an application id such as com.company.product.',
+    );
+  }
+}
+
+/// Shared destination policy for generation, discovery, and refactoring.
+void validateEntryDirectory(String path) {
+  if (p.posix.normalize(path) != path ||
+      !p.posix.isWithin('lib', path) ||
+      path
+          .split('/')
+          .any((part) => !RegExp(r'^[a-z][a-z0-9_]*$').hasMatch(part)) ||
+      path == 'lib/app' ||
+      path == 'lib/core' ||
+      p.posix.isWithin('lib/app', path) ||
+      p.posix.isWithin('lib/core', path)) {
+    throw const GenerationException(
+      'Choose a snake_case directory inside lib, outside app and core.',
+    );
+  }
 }

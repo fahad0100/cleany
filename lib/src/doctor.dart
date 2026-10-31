@@ -6,19 +6,20 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
-import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
-import 'package:yaml_edit/yaml_edit.dart';
 
 import 'dependencies.dart';
+import 'component_layout.dart';
 import 'generator.dart';
 import 'project.dart';
 import 'registry.dart';
+import 'run_configuration.dart';
 import 'specification.dart';
 import 'templates/core_templates.dart';
 import 'templates/documentation.dart';
 import 'templates/feature_templates.dart';
 import 'transaction.dart';
+import 'use_case_support.dart';
 
 /// One project inconsistency or a notice about preserved custom code.
 class DiagnosticIssue {
@@ -157,6 +158,8 @@ class ProjectDoctor {
         kind: GenerationKind.values.byName(entry['kind'] as String),
         state: StateManagement.values.byName(entry['state'] as String),
         provider: provider,
+        useCases: entryUseCases(entry),
+        legacyComponentWidgets: usesLegacyComponentWidgets(entry),
         specification: FeatureSpec.fromJson(
           Map<String, dynamic>.from(entry['specification'] as Map? ?? {}),
         ),
@@ -258,6 +261,9 @@ class ProjectDoctor {
       package,
       provider,
       applicationId ?? 'com.example.diagnostic',
+      includeUseCaseState: active.any(
+        (entry) => entryUseCases(entry).isNotEmpty,
+      ),
     );
     final projectFiles = (registry['project_files'] as List? ?? [])
         .cast<Map<String, dynamic>>();
@@ -306,6 +312,25 @@ class ProjectDoctor {
         ),
       );
       issues.add(DiagnosticIssue('missing_core', 'Restore ${entry.key}.'));
+    }
+    final previousRunFiles = plan.files.keys.toSet();
+    planRunConfiguration(project, plan);
+    recordRunConfigurationOwnership(plan, projectFiles);
+    for (final path in plan.files.keys.where(
+      (path) =>
+          !previousRunFiles.contains(path) &&
+          {
+            launchConfigurationPath,
+            runningGuidePath,
+            'lib/main.dart',
+          }.contains(path),
+    )) {
+      issues.add(
+        DiagnosticIssue(
+          'run_configuration',
+          'Configure environment entrypoints and run profiles: $path.',
+        ),
+      );
     }
     registry['project_files'] = projectFiles;
     if (applicationId != null) registry['app_id'] = applicationId;
@@ -363,12 +388,27 @@ class ProjectDoctor {
         name = basename.replaceFirst('_remote_data_source.dart', '');
         path = p.posix.dirname(p.posix.dirname(p.posix.dirname(relative)));
         kind = GenerationKind.feature;
-      } else if (relative.contains('/widgets/') &&
-          basename.endsWith('_widget.dart') &&
+      } else if (basename.endsWith('_widget.dart') &&
           !relative.contains('/presentation/')) {
         name = basename.replaceFirst('_widget.dart', '');
-        path = p.posix.dirname(p.posix.dirname(relative));
+        final folder = p.posix.dirname(relative);
+        final legacyRoot = p.posix.dirname(folder);
+        final isLegacy =
+            p.posix.basename(folder) == 'widgets' &&
+            p.posix.basename(legacyRoot) == name &&
+            !file.readAsStringSync().contains(
+              '// Cleany component layout: flat.',
+            );
+        path = isLegacy ? legacyRoot : folder;
         kind = GenerationKind.component;
+        // A feature-owned helper widget is not a separate component entry.
+        if (File(
+          project.file(
+            '$path/data/datasources/${name}_remote_data_source.dart',
+          ),
+        ).existsSync()) {
+          continue;
+        }
       }
       if (name == null ||
           path == null ||
@@ -396,8 +436,18 @@ class ProjectDoctor {
         'path': path,
         'kind': kind.name,
         'state': state,
+        if (kind == GenerationKind.component)
+          'component_layout': p.posix.dirname(relative) == path
+              ? 'flat'
+              : 'widgets',
         'template_version': 'discovered',
         'specification': _inferSpec(path, name).toJson(),
+        if (kind == GenerationKind.feature)
+          'use_cases': discoverUseCases(
+            project,
+            path,
+            name,
+          ).map((operation) => operation.toJson()).toList(),
         'files': <Object>[],
       };
     }
@@ -541,57 +591,16 @@ class ProjectDoctor {
     ApiProvider provider,
     List<DiagnosticIssue> issues,
   ) {
-    final original = loadYaml(plan.read('pubspec.yaml')) as YamlMap;
-    final editor = YamlEditor(plan.read('pubspec.yaml'));
-    for (final section in packageRequirements(provider).entries) {
-      if (original[section.key] == null) {
-        editor.update([section.key], <String, Object>{});
-      }
-      for (final dependency in section.value.entries) {
-        final current = original[section.key] is Map
-            ? original[section.key][dependency.key]
-            : null;
-        var replace = current == null;
-        Object replacement = dependency.value;
-        if (dependency.value is Map &&
-            (dependency.value as Map)['sdk'] != null) {
-          replace =
-              current is! Map ||
-              current['sdk'] != (dependency.value as Map)['sdk'];
-        }
-        if (current is String && dependency.value is String) {
-          try {
-            final declared = VersionConstraint.parse(current);
-            final supported = declared.intersect(
-              VersionConstraint.parse(dependency.value as String),
-            );
-            replace = supported.isEmpty || supported != declared;
-            if (!supported.isEmpty) replacement = supported.toString();
-          } on FormatException {
-            issues.add(
-              DiagnosticIssue(
-                'dependency',
-                'Cannot parse ${dependency.key}: $current',
-                repairable: false,
-              ),
-            );
-          }
-        }
-        if (replace) {
-          editor.update([section.key, dependency.key], replacement);
-          issues.add(
-            DiagnosticIssue(
-              'dependency',
-              'Set ${dependency.key} to the supported constraint $replacement.',
-            ),
-          );
-        }
-      }
-    }
-    if (original['flutter'] is Map && original['flutter']['generate'] != true) {
-      editor.update(['flutter', 'generate'], true);
-    }
-    plan.write('pubspec.yaml', editor.toString());
+    plan.write(
+      'pubspec.yaml',
+      configurePubspec(
+        plan.read('pubspec.yaml'),
+        provider,
+        repairConstraints: true,
+        onRepair: (message) =>
+            issues.add(DiagnosticIssue('dependency', message)),
+      ),
+    );
   }
 }
 

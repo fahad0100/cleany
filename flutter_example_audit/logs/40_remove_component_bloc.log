@@ -1,0 +1,80 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Remove component
+╰────────────────────────────────────────────╯
+  1  status_badge  (lib/shared/components/status_badge)
+  2  Cancel
+› Select component to remove: The directory, its files, and any nested entries will be removed: lib/shared/components/status_badge
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  REMOVE  lib/shared/components/status_badge/widgets/status_badge_widget.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_bloc.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_state.freezed.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_event.freezed.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_state.dart
+  REMOVE  lib/shared/components/status_badge/bloc/status_badge_event.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 375ms ✓
+[0s] dart --version
+[0s] dart --version · 58ms ✓
+[0s] staging
+[0s] staging · 69 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1868ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 926ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[24s] dart run build_runner build --delete-conflicting-outputs · 20772ms ✓
+[24s] flutter analyze --no-pub
+[27s] flutter analyze --no-pub · 3143ms ✓
+[27s] collecting · 63 validated outputs
+[27s] applying · 9 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

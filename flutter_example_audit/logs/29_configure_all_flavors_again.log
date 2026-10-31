@@ -1,0 +1,65 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number:   1  android
+  2  ios
+  3  All available
+  4  Cancel
+› Platforms: Configure android, ios through Flavorizr in isolation, then validate and apply native project changes.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 372ms ✓
+[0s] dart --version
+[0s] dart --version · 79ms ✓
+[0s] staging
+[0s] staging · 188 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 2029ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 857ms ✓
+[3s] dart run flutter_flavorizr --force
+[6s] dart run flutter_flavorizr --force · 2935ms ✓
+[6s] flutter analyze --no-pub
+[9s] flutter analyze --no-pub · 3290ms ✓
+[9s] collecting · 188 validated outputs
+[9s] applying · 0 files
+[9s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 

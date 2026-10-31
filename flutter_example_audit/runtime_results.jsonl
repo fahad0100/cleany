@@ -1,0 +1,2 @@
+{"case": "ios_simulator_build_uat", "exit_code": 0, "duration_seconds": 35.01, "passed": true, "example_icon_workaround": true}
+{"case": "ios_simulator_build_prod", "exit_code": 0, "duration_seconds": 33.13, "passed": true, "example_icon_workaround": true}

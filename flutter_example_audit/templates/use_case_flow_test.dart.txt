@@ -1,0 +1,130 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:test_cleany_project/app/config/app_config.dart';
+import 'package:test_cleany_project/app/config/app_environment.dart';
+import 'package:test_cleany_project/app/di/injection.dart';
+import 'package:test_cleany_project/core/errors/failure.dart';
+import 'package:test_cleany_project/core/state/use_case_state.dart';
+import 'package:test_cleany_project/features/home/domain/entities/home_entity.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_cubit.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/entities/catalog_entity.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_event.dart';
+
+import '../test/support/use_case_fixture.dart';
+
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets(
+    'iPhone: four added actions show loading, Entity/void success, Failure and retry',
+    (tester) async {
+      final fixture = UseCaseFixture();
+      await fixture.open();
+      addTearDown(fixture.dispose);
+      fixture.homeSource.refreshPending = Completer<Map<String, dynamic>>();
+      fixture.catalogSource.refreshPending = Completer<Map<String, dynamic>>();
+      await tester.pumpWidget(UseCaseHarness(fixture));
+      var catalogChanged = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseLoading<CatalogEntity>,
+      );
+      await tester.tap(find.byKey(const Key('refresh-home')));
+      await tester.tap(find.byKey(const Key('refresh-catalog')));
+      await catalogChanged;
+      await tester.pump();
+      expect(find.text('loading'), findsNWidgets(2));
+      catalogChanged = fixture.catalog.stream.firstWhere(
+        (s) => s.clearCatalogStatus is UseCaseSuccess<void>,
+      );
+      await tester.tap(find.byKey(const Key('clear-home')));
+      await tester.tap(find.byKey(const Key('clear-catalog')));
+      await catalogChanged;
+      await tester.pumpAndSettle();
+      expect(find.text('done'), findsNWidgets(2));
+      expect(find.text('loading'), findsNWidgets(2));
+      await fixture.home.load();
+      expect(
+        fixture.home.state.refreshHomeStatus,
+        isA<UseCaseLoading<HomeEntity>>(),
+      );
+      catalogChanged = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>,
+      );
+      fixture.homeSource.refreshPending!.complete(fixture.homeSource.json);
+      fixture.catalogSource.refreshPending!.complete(
+        fixture.catalogSource.json,
+      );
+      await catalogChanged;
+      await tester.pumpAndSettle();
+      expect(find.text('HOME_ACTION_OK'), findsOneWidget);
+      expect(find.text('CATALOG_ACTION_OK'), findsOneWidget);
+      fixture.homeSource.error = const BusinessFailure('Home action denied.');
+      fixture.catalogSource.error = const BusinessFailure(
+        'Catalog action denied.',
+      );
+      catalogChanged = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseFailure<CatalogEntity>,
+      );
+      await tester.tap(find.byKey(const Key('refresh-home')));
+      await tester.tap(find.byKey(const Key('refresh-catalog')));
+      await catalogChanged;
+      await tester.pumpAndSettle();
+      expect(find.text('Home action denied.'), findsOneWidget);
+      expect(find.text('Catalog action denied.'), findsOneWidget);
+      fixture.homeSource.error = null;
+      fixture.catalogSource.error = null;
+      catalogChanged = fixture.catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>,
+      );
+      await tester.tap(find.byKey(const Key('refresh-home')));
+      await tester.tap(find.byKey(const Key('refresh-catalog')));
+      await catalogChanged;
+      await tester.pumpAndSettle();
+      expect(find.text('HOME_ACTION_OK'), findsOneWidget);
+      expect(find.text('CATALOG_ACTION_OK'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets(
+    'iPhone: original unconnected Data hooks return Failure for all added actions',
+    (tester) async {
+      final container = GetIt.asNewInstance();
+      await configureDependencies(
+        container,
+        const AppConfig(
+          environment: AppEnvironment.dev,
+          apiBaseUrl: 'http://127.0.0.1:8787',
+        ),
+      );
+      final home = container<HomeCubit>();
+      final catalog = container<CatalogBloc>();
+      addTearDown(() async {
+        await home.close();
+        await catalog.close();
+        await disposeDependencies(container);
+      });
+      await home.refreshHome();
+      await home.clearHome();
+      expect(
+        (home.state.refreshHomeStatus as UseCaseFailure<HomeEntity>).failure,
+        isA<UnexpectedFailure>(),
+      );
+      expect(home.state.clearHomeStatus, isA<UseCaseFailure<void>>());
+      final entityFailure = catalog.stream.firstWhere(
+        (s) => s.refreshCatalogStatus is UseCaseFailure<CatalogEntity>,
+      );
+      catalog.add(const CatalogEvent.refreshCatalogRequested());
+      await entityFailure;
+      final voidFailure = catalog.stream.firstWhere(
+        (s) => s.clearCatalogStatus is UseCaseFailure<void>,
+      );
+      catalog.add(const CatalogEvent.clearCatalogRequested());
+      await voidFailure;
+    },
+  );
+}

@@ -1,0 +1,290 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  1  home  (lib/features/home)
+  2  catalog  (lib/modules/shop/catalog)
+  3  typed_fields  (lib/features/typed_fields)
+  4  Cancel
+› Feature: › Use case name (snake_case):   1  void (completion only)
+  2  HomeEntity (existing feature entity)
+› Return type: The Data connection point needs its backend contract; until connected, the operation returns Failure.
+Call: HomeCubit.refreshHome(). Observe state.refreshHomeStatus.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/home/domain/repositories/refresh_home_repository.dart
+  CREATE  lib/features/home/domain/usecases/refresh_home.dart
+  CREATE  lib/features/home/data/repositories/refresh_home_repository_impl.dart
+  UPDATE  lib/features/home/presentation/cubit/home_state.dart
+  UPDATE  lib/features/home/presentation/cubit/home_cubit.dart
+  UPDATE  lib/features/home/data/datasources/home_remote_data_source.dart
+  CREATE  lib/core/state/use_case_state.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 384ms ✓
+[0s] dart --version
+[0s] dart --version · 62ms ✓
+[0s] staging
+[0s] staging · 110 inputs copied
+[0s] flutter pub get
+[3s] flutter pub get · 3186ms ✓
+[3s] flutter gen-l10n
+[4s] flutter gen-l10n · 766ms ✓
+[4s] dart run build_runner build --delete-conflicting-outputs
+[9s] dart run build_runner build --delete-conflicting-outputs · 5s
+[14s] dart run build_runner build --delete-conflicting-outputs · 10s
+[19s] dart run build_runner build --delete-conflicting-outputs · 15s
+[24s] dart run build_runner build --delete-conflicting-outputs · 20s
+[25s] dart run build_runner build --delete-conflicting-outputs · 20742ms ✓
+[25s] flutter analyze --no-pub
+[28s] flutter analyze --no-pub · 3465ms ✓
+[28s] collecting · 115 validated outputs
+[28s] applying · 14 files
+[28s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  1  home  (lib/features/home)
+  2  catalog  (lib/modules/shop/catalog)
+  3  typed_fields  (lib/features/typed_fields)
+  4  Cancel
+› Feature: › Use case name (snake_case):   1  void (completion only)
+  2  HomeEntity (existing feature entity)
+› Return type: The Data connection point needs its backend contract; until connected, the operation returns Failure.
+Call: HomeCubit.clearHome(). Observe state.clearHomeStatus.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/home/domain/repositories/clear_home_repository.dart
+  CREATE  lib/features/home/domain/usecases/clear_home.dart
+  CREATE  lib/features/home/data/repositories/clear_home_repository_impl.dart
+  UPDATE  lib/features/home/presentation/cubit/home_state.dart
+  UPDATE  lib/features/home/presentation/cubit/home_cubit.dart
+  UPDATE  lib/features/home/data/datasources/home_remote_data_source.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 373ms ✓
+[0s] dart --version
+[0s] dart --version · 70ms ✓
+[0s] staging
+[0s] staging · 115 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1663ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 956ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20580ms ✓
+[23s] flutter analyze --no-pub
+[27s] flutter analyze --no-pub · 3255ms ✓
+[27s] collecting · 118 validated outputs
+[27s] applying · 9 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  1  home  (lib/features/home)
+  2  catalog  (lib/modules/shop/catalog)
+  3  typed_fields  (lib/features/typed_fields)
+  4  Cancel
+› Feature: › Use case name (snake_case):   1  void (completion only)
+  2  CatalogEntity (existing feature entity)
+› Return type: The Data connection point needs its backend contract; until connected, the operation returns Failure.
+Dispatch: CatalogEvent.refreshCatalogRequested(). Observe state.refreshCatalogStatus.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/modules/shop/catalog/domain/repositories/refresh_catalog_repository.dart
+  CREATE  lib/modules/shop/catalog/domain/usecases/refresh_catalog.dart
+  CREATE  lib/modules/shop/catalog/data/repositories/refresh_catalog_repository_impl.dart
+  UPDATE  lib/modules/shop/catalog/presentation/bloc/catalog_state.dart
+  UPDATE  lib/modules/shop/catalog/presentation/bloc/catalog_event.dart
+  UPDATE  lib/modules/shop/catalog/presentation/bloc/catalog_bloc.dart
+  UPDATE  lib/modules/shop/catalog/data/datasources/catalog_remote_data_source.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 374ms ✓
+[0s] dart --version
+[0s] dart --version · 69ms ✓
+[0s] staging
+[0s] staging · 118 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1744ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 767ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20525ms ✓
+[23s] flutter analyze --no-pub
+[26s] flutter analyze --no-pub · 3283ms ✓
+[26s] collecting · 121 validated outputs
+[26s] applying · 11 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  1  home  (lib/features/home)
+  2  catalog  (lib/modules/shop/catalog)
+  3  typed_fields  (lib/features/typed_fields)
+  4  Cancel
+› Feature: › Use case name (snake_case):   1  void (completion only)
+  2  CatalogEntity (existing feature entity)
+› Return type: The Data connection point needs its backend contract; until connected, the operation returns Failure.
+Dispatch: CatalogEvent.clearCatalogRequested(). Observe state.clearCatalogStatus.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/modules/shop/catalog/domain/repositories/clear_catalog_repository.dart
+  CREATE  lib/modules/shop/catalog/domain/usecases/clear_catalog.dart
+  CREATE  lib/modules/shop/catalog/data/repositories/clear_catalog_repository_impl.dart
+  UPDATE  lib/modules/shop/catalog/presentation/bloc/catalog_state.dart
+  UPDATE  lib/modules/shop/catalog/presentation/bloc/catalog_event.dart
+  UPDATE  lib/modules/shop/catalog/presentation/bloc/catalog_bloc.dart
+  UPDATE  lib/modules/shop/catalog/data/datasources/catalog_remote_data_source.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  .cleany/features.json
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 378ms ✓
+[0s] dart --version
+[0s] dart --version · 80ms ✓
+[0s] staging
+[0s] staging · 121 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1710ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 831ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[24s] dart run build_runner build --delete-conflicting-outputs · 21631ms ✓
+[24s] flutter analyze --no-pub
+[29s] flutter analyze --no-pub · 4405ms ✓
+[29s] collecting · 124 validated outputs
+[29s] applying · 11 files
+[29s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  13  Add use case
+  0  Exit
+› Choose a number: 

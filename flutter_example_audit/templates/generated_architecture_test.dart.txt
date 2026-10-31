@@ -1,0 +1,250 @@
+import 'dart:async';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:multiple_result/multiple_result.dart';
+import 'package:test_cleany_project/app/app.dart';
+import 'package:test_cleany_project/app/composition/feature_pages.dart';
+import 'package:test_cleany_project/app/config/app_config.dart';
+import 'package:test_cleany_project/app/config/app_environment.dart';
+import 'package:test_cleany_project/app/di/injection.dart';
+import 'package:test_cleany_project/app/router/app_router.dart';
+import 'package:test_cleany_project/core/errors/failure.dart';
+import 'package:test_cleany_project/core/network/retrofit/home_api.dart';
+import 'package:test_cleany_project/core/network/retrofit/typed_fields_api.dart';
+import 'package:test_cleany_project/features/typed_fields/data/models/typed_fields_model.dart';
+import 'package:test_cleany_project/features/typed_fields/data/datasources/typed_fields_remote_data_source.dart';
+import 'package:test_cleany_project/features/typed_fields/data/repositories/typed_fields_repository_impl.dart';
+import 'package:test_cleany_project/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:test_cleany_project/features/home/data/models/home_model.dart';
+import 'package:test_cleany_project/features/home/data/repositories/home_repository_impl.dart';
+import 'package:test_cleany_project/features/home/domain/entities/home_entity.dart';
+import 'package:test_cleany_project/features/home/domain/repositories/home_repository.dart';
+import 'package:test_cleany_project/features/home/domain/usecases/get_home.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_cubit.dart';
+import 'package:test_cleany_project/features/home/presentation/cubit/home_state.dart';
+import 'package:test_cleany_project/features/home/presentation/pages/home_page.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/entities/catalog_entity.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/repositories/catalog_repository.dart';
+import 'package:test_cleany_project/modules/shop/catalog/domain/usecases/get_catalog.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_event.dart';
+import 'package:test_cleany_project/modules/shop/catalog/presentation/bloc/catalog_state.dart';
+import 'package:test_cleany_project/components/user_card/cubit/user_card_cubit.dart';
+import 'package:test_cleany_project/components/user_card/widgets/user_card_widget.dart';
+import 'package:test_cleany_project/shared/components/status_badge/bloc/status_badge_bloc.dart';
+import 'package:test_cleany_project/shared/components/status_badge/bloc/status_badge_event.dart';
+import 'package:test_cleany_project/shared/components/status_badge/widgets/status_badge_widget.dart';
+import 'package:test_cleany_project/features/home/subfeatures/empty_state/widgets/empty_state_widget.dart';
+
+class FakeRemote extends HomeRemoteDataSource {
+  FakeRemote() : super(HomeApi(Dio()));
+  Map<String, dynamic> json = {'id': '42', 'title': 'Local', 'visits': 3};
+  Object? error;
+  @override
+  Future<Map<String, dynamic>> fetch() async {
+    final exception = error;
+    if (exception != null) throw exception;
+    return json;
+  }
+}
+
+class FakeTypedRemote extends TypedFieldsRemoteDataSource {
+  FakeTypedRemote() : super(TypedFieldsApi(Dio()));
+  @override
+  Future<Map<String, dynamic>> fetch() async => {
+    'id': 'typed-42', 'price': 19.5, 'enabled': true,
+    'created_at': '2026-10-31T12:00:00.000Z',
+    'tags': ['a', 'b'], 'counts': [1, 2], 'quantity': 3,
+  };
+}
+
+class FakeHomeRepository implements HomeRepository {
+  Result<HomeEntity, Failure> result = const Success(HomeEntity(id: '42', visits: 3));
+  Completer<Result<HomeEntity, Failure>>? pending;
+  int calls = 0;
+  @override
+  Future<Result<HomeEntity, Failure>> fetch() async {
+    calls++;
+    return pending == null ? result : await pending!.future;
+  }
+}
+
+class FakeCatalogRepository implements CatalogRepository {
+  Result<CatalogEntity, Failure> result = const Success(CatalogEntity(id: 'catalog-42'));
+  @override
+  Future<Result<CatalogEntity, Failure>> fetch() async => result;
+}
+
+void main() {
+  test('all seven CLI field types deserialize and map to Domain correctly', () async {
+    final remote = FakeTypedRemote();
+    final json = await remote.fetch();
+    final model = TypedFieldsModel.fromJson(json);
+    expect(model.toJson(), json);
+    final entity = (await TypedFieldsRepositoryImpl(remote).fetch()).tryGetSuccess()!;
+    expect(entity.id, 'typed-42'); expect(entity.price, 19.5);
+    expect(entity.enabled, isTrue); expect(entity.createdAt, DateTime.utc(2026, 10, 31, 12));
+    expect(entity.tags, ['a','b']); expect(entity.counts, [1,2]); expect(entity.quantity, 3);
+    expect(TypedFieldsModel.fromJson({...json, 'tags': null, 'counts': null}).tags, isNull);
+  });
+
+  test('Freezed model parses JSON; repository maps data to an immutable Entity', () async {
+    final remote = FakeRemote();
+    final result = await HomeRepositoryImpl(remote).fetch();
+    expect(result.tryGetSuccess(), const HomeEntity(id: '42', title: 'Local', visits: 3));
+    expect(HomeModel.fromJson(remote.json).toJson(), remote.json);
+    expect(const HomeEntity(id: '42', visits: 3).copyWith(visits: 4).visits, 4);
+  });
+
+  for (final code in [401, 403, 422, 409, 503]) {
+    test('HTTP $code maps once at the repository boundary', () async {
+      final options = RequestOptions(path: '/home');
+      final remote = FakeRemote()..error = DioException(
+        requestOptions: options, type: DioExceptionType.badResponse,
+        response: Response<dynamic>(requestOptions: options, statusCode: code),
+      );
+      var reports = 0;
+      final failure = (await HomeRepositoryImpl(remote, reportError: (_, _) => reports++).fetch()).tryGetError();
+      expect(failure, switch (code) {
+        401 || 403 => isA<UnauthorizedFailure>(),
+        422 => isA<ValidationFailure>(),
+        409 => isA<BusinessFailure>(),
+        _ => isA<ServerFailure>(),
+      });
+      expect(reports, 0);
+    });
+  }
+
+  test('invalid JSON produces a Failure and does not leak a TypeError', () async {
+    final remote = FakeRemote()..json = {'id': false, 'visits': 'wrong'};
+    expect((await HomeRepositoryImpl(remote).fetch()).tryGetError(), isA<ValidationFailure>());
+  });
+
+  test('unexpected errors are reported exactly once and returned as Failure', () async {
+    var reports = 0;
+    final remote = FakeRemote()..error = StateError('technical error');
+    expect((await HomeRepositoryImpl(remote, reportError: (_, _) => reports++).fetch()).tryGetError(), isA<UnexpectedFailure>());
+    expect(reports, 1);
+  });
+
+  test('audit limitation: a throwing reporter escapes the Result contract', () async {
+    final remote = FakeRemote()..error = StateError('technical error');
+    await expectLater(HomeRepositoryImpl(remote, reportError: (_, _) => throw StateError('reporter failed')).fetch(), throwsA(isA<StateError>()));
+  });
+
+  test('Cubit emits loading, entity success and typed failure', () async {
+    final repository = FakeHomeRepository();
+    final cubit = HomeCubit(GetHome(repository));
+    final states = <HomeState>[];
+    final subscription = cubit.stream.listen(states.add);
+    await cubit.load();
+    repository.result = const Error(NetworkFailure());
+    await cubit.load();
+    await Future<void>.delayed(Duration.zero);
+    expect(states, [const HomeState.loading(), const HomeState.success(HomeEntity(id: '42', visits: 3)), const HomeState.loading(), const HomeState.failure(NetworkFailure())]);
+    await subscription.cancel();
+    await cubit.close();
+  });
+
+  test('Cubit suppresses duplicate requests and late emissions after close', () async {
+    final repository = FakeHomeRepository()..pending = Completer<Result<HomeEntity, Failure>>();
+    final cubit = HomeCubit(GetHome(repository));
+    final load = cubit.load();
+    await cubit.load();
+    expect(repository.calls, 1);
+    await cubit.close();
+    repository.pending!.complete(const Success(HomeEntity(id: 'late', visits: 1)));
+    await load;
+    await cubit.load();
+    expect(repository.calls, 1);
+  });
+
+  test('Bloc emits entity success and failure', () async {
+    final repository = FakeCatalogRepository();
+    final bloc = CatalogBloc(GetCatalog(repository));
+    final success = bloc.stream.firstWhere((state) => state is CatalogSuccess);
+    bloc.add(const CatalogEvent.requested());
+    expect(await success, const CatalogState.success(CatalogEntity(id: 'catalog-42')));
+    repository.result = const Error(UnauthorizedFailure());
+    final failure = bloc.stream.firstWhere((state) => state is CatalogFailure);
+    bloc.add(const CatalogEvent.requested());
+    expect(await failure, isA<CatalogFailure>());
+    await bloc.close();
+  });
+
+  test('DI uses app services, singleton repositories and factory controllers', () async {
+    final container = GetIt.asNewInstance();
+    await configureDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'http://127.0.0.1:8787'));
+    expect(identical(container<HomeRepository>(), container<HomeRepository>()), isTrue);
+    final first = container<HomeCubit>(); final second = container<HomeCubit>();
+    expect(identical(first, second), isFalse);
+    await first.close(); await second.close();
+    await disposeDependencies(container);
+    expect(container.isRegistered<Dio>(), isFalse);
+  });
+
+  for (final environment in [AppEnvironment.uat, AppEnvironment.prod]) {
+    test('$environment requires HTTPS configuration', () {
+      expect(() => AppConfig.fromEnvironment(environment, fallbackBaseUrl: 'http://example.test'), throwsStateError);
+      expect(AppConfig.fromEnvironment(environment, fallbackBaseUrl: 'https://example.test').environment, environment);
+    });
+  }
+
+  testWidgets('generated HomePage renders loading, entity success and failure', (tester) async {
+    final repository = FakeHomeRepository()..pending = Completer<Result<HomeEntity, Failure>>();
+    final container = GetIt.asNewInstance()..registerFactory<HomeCubit>(() => HomeCubit(GetHome(repository)));
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.home(container)));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    repository.pending!.complete(const Success(HomeEntity(id: 'widget-42', visits: 1)));
+    await tester.pumpAndSettle();
+    expect(find.text('widget-42'), findsOneWidget);
+    final cubit = tester.element(find.byType(HomePage)).read<HomeCubit>();
+    repository.pending = null; repository.result = const Error(NetworkFailure());
+    await cubit.load(); await tester.pumpAndSettle();
+    expect(find.text('Check your connection.'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(cubit.isClosed, isTrue);
+    await container.reset();
+  });
+
+  testWidgets('components own controllers and ignore actions after disposal', (tester) async {
+    final container = GetIt.asNewInstance()
+      ..registerFactory<UserCardCubit>(UserCardCubit.new)
+      ..registerFactory<StatusBadgeBloc>(StatusBadgeBloc.new);
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.userCard(container)));
+    final cubit = tester.element(find.byType(UserCardWidget)).read<UserCardCubit>();
+    cubit.update(7); await tester.pumpAndSettle();
+    expect(find.text('7'), findsOneWidget);
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.statusBadge(container)));
+    expect(cubit.isClosed, isTrue); cubit.update(8);
+    final bloc = tester.element(find.byType(StatusBadgeWidget)).read<StatusBadgeBloc>();
+    bloc.add(const StatusBadgeEvent.requested()); await tester.pumpAndSettle();
+    expect(find.text('1'), findsOneWidget);
+    await tester.pumpWidget(const MaterialApp(home: EmptyStateWidget()));
+    await tester.pumpAndSettle();
+    expect(find.byType(EmptyStateWidget), findsOneWidget);
+    expect(bloc.isClosed, isTrue); bloc.add(const StatusBadgeEvent.requested());
+    await tester.pumpWidget(const SizedBox.shrink());
+    await container.reset();
+  }, timeout: const Timeout(Duration(seconds: 30)));
+
+  testWidgets('generated App supports English, Arabic and RTL', (tester) async {
+    final container = GetIt.asNewInstance();
+    final router = GoRouter(initialLocation: '/', routes: buildRoutes(container));
+    tester.binding.platformDispatcher.localesTestValue = const [Locale('en')];
+    await tester.pumpWidget(App(router: router)); await tester.pumpAndSettle();
+    expect(find.text('Welcome'), findsOneWidget);
+    tester.binding.platformDispatcher.localesTestValue = const [Locale('ar')];
+    await tester.pumpAndSettle();
+    expect(find.text('مرحبًا'), findsOneWidget);
+    expect(Directionality.of(tester.element(find.text('مرحبًا'))), TextDirection.rtl);
+    tester.binding.platformDispatcher.clearLocalesTestValue();
+    await tester.pumpWidget(const SizedBox.shrink()); router.dispose();
+    await container.reset();
+  });
+}

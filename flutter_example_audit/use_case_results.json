@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-31",
+  "project": "/Users/fahad/Documents/cleany/cleany/flutter_example",
+  "local_package": "cleany: path: ..",
+  "simulator": "iPhone 17 Pro / iOS 26.5",
+  "device_id": "189091C8-6638-4DAD-94BA-0C39D8BB606C",
+  "cli_completed_operations": 4,
+  "cli_durations_seconds": [
+    28,
+    27,
+    27,
+    29
+  ],
+  "unit_widget_tests_passed": 31,
+  "new_unit_widget_tests": 12,
+  "ios_integration_tests_passed": 4,
+  "new_ios_tests": 2,
+  "analysis": "no issues",
+  "doctor": "No repairable issues found.",
+  "protected_files_unchanged": 28,
+  "cancel_duplicate_preserved_sources": 99,
+  "operations": {
+    "home": [
+      {
+        "name": "refresh_home",
+        "return_type": "entity",
+        "entity_fields": [
+          "id",
+          "title",
+          "visits"
+        ]
+      },
+      {
+        "name": "clear_home",
+        "return_type": "void"
+      }
+    ],
+    "catalog": [
+      {
+        "name": "refresh_catalog",
+        "return_type": "entity",
+        "entity_fields": [
+          "id"
+        ]
+      },
+      {
+        "name": "clear_catalog",
+        "return_type": "void"
+      }
+    ]
+  },
+  "normal_app_relaunched": true,
+  "screenshot": "use_case_app.png"
+}

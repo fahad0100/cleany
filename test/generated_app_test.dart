@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:cleany/cleany.dart';
 import 'package:cleany/src/ast_editor.dart';
 import 'package:cleany/src/cli.dart';
+import 'package:cleany/src/registry.dart';
+import 'package:cleany/src/templates/feature_templates.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -70,7 +73,14 @@ flutter:
             );
           }
           final generator = Generator(project);
-          final transaction = GenerationTransaction(project);
+          final transaction = GenerationTransaction(
+            project,
+            context: OperationContext(
+              onProgress: (event) => print(
+                '[${provider.name}] ${event.stage}: ${event.command ?? event.detail ?? ''}',
+              ),
+            ),
+          );
           Future<void> sourceOnly(GenerationPlan plan) => transaction.apply(
             plan,
             install: false,
@@ -110,6 +120,49 @@ flutter:
               ),
             );
           }
+          // Keep one previous-release layout in the same real Flutter fixture.
+          await sourceOnly(
+            generator.generate(
+              name: 'legacy_badge',
+              kind: GenerationKind.component,
+              state: StateManagement.cubit,
+            ),
+          );
+          final legacyRegistry = generator.readRegistry();
+          final legacyEntry = (legacyRegistry['features'] as List).firstWhere(
+            (entry) => entry['name'] == 'legacy_badge',
+          );
+          final legacyFiles = featureTemplates(
+            name: 'legacy_badge',
+            path: 'lib/components/legacy_badge',
+            package: 'generated_app',
+            kind: GenerationKind.component,
+            state: StateManagement.cubit,
+            provider: provider,
+            legacyComponentWidgets: true,
+          );
+          final legacyPlan = GenerationPlan(project)
+            ..delete('lib/components/legacy_badge/legacy_badge_widget.dart');
+          for (final file in legacyFiles.entries) {
+            legacyPlan.write(file.key, file.value);
+          }
+          legacyEntry.remove('component_layout');
+          legacyEntry['template_version'] = '2.0.0';
+          legacyEntry['files'] = [
+            for (final file in legacyFiles.entries)
+              artifactRecord(file.key, utf8.encode(file.value), 'legacy_badge'),
+          ];
+          legacyPlan.write(
+            'lib/app/composition/feature_pages.dart',
+            project
+                .read('lib/app/composition/feature_pages.dart')
+                .replaceAll(
+                  '/legacy_badge/legacy_badge_widget.dart',
+                  '/legacy_badge/widgets/legacy_badge_widget.dart',
+                ),
+          );
+          legacyPlan.write(registryPath, prettyJson(legacyRegistry));
+          await sourceOnly(legacyPlan);
           await sourceOnly(
             generator.generate(
               name: 'orders',
@@ -146,6 +199,30 @@ flutter:
               ),
             ),
           );
+          // Add operations to shared feature repositories; fakes below implement
+          // the expanded contracts as production implementations must do.
+          for (final action in [
+            ('auth', 'clear_auth', UseCaseReturnType.voidResult),
+            ('catalog', 'refresh_catalog', UseCaseReturnType.entity),
+            if (provider == ApiProvider.retrofit)
+              ('catalog', 'clear_catalog', UseCaseReturnType.voidResult)
+            else
+              ('auth', 'refresh_auth', UseCaseReturnType.entity),
+          ]) {
+            await sourceOnly(
+              generator.addUseCase(
+                feature: action.$1,
+                name: action.$2,
+                returnType: action.$3,
+              ),
+            );
+          }
+          expect(project.read('lib/main.dart'), contains('cleany_dev.main()'));
+          expect(
+            project.read('.vscode/launch.json'),
+            contains('lib/main_prod.dart'),
+          );
+          expect(project.read('CLEANY_RUN.md'), contains('native flavor'));
           // The interactive transaction validates templates and collects builder outputs.
           final answers = [
             '1',
@@ -160,6 +237,11 @@ flutter:
             'y',
             'age:int:age',
             'y',
+            '1',
+            '3',
+            provider == ApiProvider.retrofit ? '1' : '2',
+            provider == ApiProvider.retrofit ? 'refresh_auth' : 'clear_catalog',
+            provider == ApiProvider.retrofit ? '2' : '1',
             '1',
             '0',
           ].iterator;
@@ -177,6 +259,22 @@ flutter:
           expect(cliOutput.toString(), isNot(contains('HTTP method')));
           expect(cliOutput.toString(), isNot(contains('API endpoint')));
           expect(cliOutput.toString(), isNot(contains('Request data')));
+          expect(cliOutput.toString(), contains('Observe state.'));
+          expect(
+            cliOutput.toString(),
+            contains('until connected, the operation returns Failure.'),
+          );
+          final projectFiles =
+              generator.readRegistry()['project_files'] as List;
+          expect(
+            projectFiles.any(
+              (record) =>
+                  record['path'] ==
+                      'lib/core/state/use_case_state.freezed.dart' &&
+                  record['owner'] == '@project',
+            ),
+            isTrue,
+          );
           File(project.file('test/generated_behavior_test.dart'))
               .writeAsStringSync(_runtimeTests(provider));
           File(project.file('test/contract_test.dart'))
@@ -308,6 +406,7 @@ String _runtimeTests(ApiProvider provider) =>
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -316,6 +415,14 @@ import 'package:generated_app/app/config/app_config.dart';
 import 'package:generated_app/app/config/app_environment.dart';
 import 'package:generated_app/app/config/flavor_config.dart';
 import 'package:generated_app/app/di/injection.dart';
+import 'package:generated_app/app/composition/feature_pages.dart';
+import 'package:generated_app/components/legacy_badge/cubit/legacy_badge_cubit.dart';
+import 'package:generated_app/components/legacy_badge/widgets/legacy_badge_widget.dart';
+import 'package:generated_app/core/state/use_case_state.dart';
+import 'package:generated_app/features/auth/domain/usecases/refresh_auth.dart';
+import 'package:generated_app/features/auth/domain/usecases/clear_auth.dart';
+import 'package:generated_app/modules/shop/catalog/domain/usecases/refresh_catalog.dart';
+import 'package:generated_app/modules/shop/catalog/domain/usecases/clear_catalog.dart';
 import 'package:generated_app/core/errors/failure.dart';
 import 'package:generated_app/core/network/failure_mapper.dart';
 import 'package:generated_app/core/network/dio/dio_client.dart';
@@ -336,12 +443,22 @@ import 'package:generated_app/modules/shop/catalog/domain/usecases/get_catalog.d
 import 'package:generated_app/modules/shop/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:generated_app/modules/shop/catalog/presentation/bloc/catalog_event.dart';
 import 'package:generated_app/modules/shop/catalog/presentation/bloc/catalog_state.dart';
-import 'package:generated_app/modules/shop/catalog/subfeatures/card_none/widgets/card_none_widget.dart';
+import 'package:generated_app/modules/shop/catalog/subfeatures/card_cubit/cubit/card_cubit_cubit.dart';
+import 'package:generated_app/modules/shop/catalog/subfeatures/card_bloc/bloc/card_bloc_bloc.dart';
+import 'package:generated_app/modules/shop/catalog/subfeatures/card_bloc/bloc/card_bloc_event.dart';
+import 'package:generated_app/modules/shop/catalog/subfeatures/card_none/card_none_widget.dart';
 
 class FakeRemote extends AuthRemoteDataSource {
   FakeRemote() : super(${provider == ApiProvider.retrofit ? 'AuthApi(Dio())' : 'Dio()'});
   Map<String, dynamic> json = {'id': '42'};
   Object? error;
+  @override
+  Future<Map<String, dynamic>> refreshAuth() async => fetch();
+  @override
+  Future<void> clearAuth() async {
+    final exception = error;
+    if (exception != null) throw exception;
+  }
   @override
   Future<Map<String, dynamic>> fetch() async {
     final exception = error;
@@ -350,17 +467,55 @@ class FakeRemote extends AuthRemoteDataSource {
   }
 }
 
+class FakeRefreshAuthRepository extends FakeAuthRepository {
+  FakeRefreshAuthRepository() { result = const Success(AuthEntity(id: 'refreshed')); }
+  int calls = 0;
+  @override
+  Future<Result<AuthEntity, Failure>> refreshAuth() async {
+    calls++;
+    return pending == null ? result : await pending!.future;
+  }
+}
+
+class FakeClearAuthRepository extends FakeAuthRepository {
+  @override
+  Future<Result<void, Failure>> clearAuth() async => const Success<void, Failure>(null);
+}
+
+class FakeRefreshCatalogRepository extends FakeCatalogRepository {
+  Completer<Result<CatalogEntity, Failure>>? pending;
+  int calls = 0;
+  @override
+  Future<Result<CatalogEntity, Failure>> refreshCatalog() async {
+    calls++;
+    return pending == null ? const Success(CatalogEntity(id: 'updated')) : await pending!.future;
+  }
+}
+
+class FakeClearCatalogRepository extends FakeCatalogRepository {
+  @override
+  Future<Result<void, Failure>> clearCatalog() async => const Success<void, Failure>(null);
+}
+
 class FakeAuthRepository implements AuthRepository {
   Result<AuthEntity, Failure> result = const Success(AuthEntity(id: '42'));
   Completer<Result<AuthEntity, Failure>>? pending;
   @override
   Future<Result<AuthEntity, Failure>> fetch() async => pending?.future ?? result;
+  @override
+  Future<Result<AuthEntity, Failure>> refreshAuth() async => const Error(UnexpectedFailure('Not configured.'));
+  @override
+  Future<Result<void, Failure>> clearAuth() async => const Error(UnexpectedFailure('Not configured.'));
 }
 
 class FakeCatalogRepository implements CatalogRepository {
   Result<CatalogEntity, Failure> result = const Success(CatalogEntity(id: '99'));
   @override
   Future<Result<CatalogEntity, Failure>> fetch() async => result;
+  @override
+  Future<Result<CatalogEntity, Failure>> refreshCatalog() async => const Error(UnexpectedFailure('Not configured.'));
+  @override
+  Future<Result<void, Failure>> clearCatalog() async => const Error(UnexpectedFailure('Not configured.'));
 }
 
 class StubAdapter implements HttpClientAdapter {
@@ -508,6 +663,133 @@ void main() {
     await second.close();
     await disposeDependencies(container);
     expect(container.isRegistered<Dio>(), isFalse);
+  });
+
+  test('additional repositories reuse Model/Entity and preserve Result when reporting fails', () async {
+    final remote = FakeRemote();
+    var reports = 0;
+    final repository = AuthRepositoryImpl(remote, reportError: (_, _) {
+      reports++;
+      throw StateError('reporter unavailable');
+    });
+    expect((await repository.refreshAuth()).tryGetSuccess(), const AuthEntity(id: '42'));
+    const business = BusinessFailure('Operation rejected.');
+    remote.error = business;
+    expect(identical((await repository.refreshAuth()).tryGetError(), business), isTrue);
+    expect(reports, 0);
+    remote.error = StateError('technical failure');
+    expect((await repository.refreshAuth()).tryGetError(), isA<UnexpectedFailure>());
+    expect(reports, 1);
+    remote.error = null;
+    remote.json = {'id': 42};
+    expect((await repository.refreshAuth()).tryGetError(), isA<ValidationFailure>());
+    // Completion actions do not try to parse an Entity from an ignored body.
+    expect((await AuthRepositoryImpl(remote).clearAuth()).isSuccess(), isTrue);
+  });
+
+  test('Cubit actions have typed independent progress, preserve main loads and close safely', () async {
+    final refresh = FakeRefreshAuthRepository()
+      ..pending = Completer<Result<AuthEntity, Failure>>();
+    final cubit = AuthCubit(GetAuth(FakeAuthRepository()),
+      refreshAuthUseCase: RefreshAuth(refresh), clearAuthUseCase: ClearAuth(FakeClearAuthRepository()));
+    final running = cubit.refreshAuth();
+    expect(cubit.state.refreshAuthStatus, isA<UseCaseLoading<AuthEntity>>());
+    await cubit.refreshAuth();
+    expect(refresh.calls, 1);
+    await cubit.clearAuth();
+    expect(cubit.state.clearAuthStatus, const UseCaseState<void>.success(null));
+    await cubit.load();
+    expect(cubit.state, isA<AuthSuccess>());
+    expect(cubit.state.refreshAuthStatus, isA<UseCaseLoading<AuthEntity>>());
+    expect(cubit.state.clearAuthStatus, isA<UseCaseSuccess<void>>());
+    refresh.pending!.complete(const Success(AuthEntity(id: 'refreshed')));
+    await running;
+    expect((cubit.state.refreshAuthStatus as UseCaseSuccess<AuthEntity>).value.id, 'refreshed');
+    expect(cubit.state.clearAuthStatus, isA<UseCaseSuccess<void>>());
+    refresh.pending = null;
+    refresh.result = const Error(NetworkFailure());
+    await cubit.refreshAuth();
+    expect((cubit.state.refreshAuthStatus as UseCaseFailure<AuthEntity>).failure, isA<NetworkFailure>());
+    refresh.pending = Completer<Result<AuthEntity, Failure>>();
+    final pendingAction = cubit.refreshAuth();
+    await cubit.close();
+    refresh.pending!.complete(const Success(AuthEntity(id: 'late')));
+    await pendingAction;
+    await cubit.refreshAuth();
+  });
+
+  test('Bloc action events preserve concurrent actions through primary state changes', () async {
+    final repository = FakeRefreshCatalogRepository()
+      ..pending = Completer<Result<CatalogEntity, Failure>>();
+    final bloc = CatalogBloc(GetCatalog(FakeCatalogRepository()),
+      refreshCatalogUseCase: RefreshCatalog(repository), clearCatalogUseCase: ClearCatalog(FakeClearCatalogRepository()));
+    final loading = bloc.stream.firstWhere((s) => s.refreshCatalogStatus is UseCaseLoading<CatalogEntity>);
+    bloc.add(const CatalogEvent.refreshCatalogRequested());
+    bloc.add(const CatalogEvent.refreshCatalogRequested());
+    await loading;
+    final cleared = bloc.stream.firstWhere((s) => s.clearCatalogStatus is UseCaseSuccess<void>);
+    bloc.add(const CatalogEvent.clearCatalogRequested());
+    await cleared;
+    final main = bloc.stream.firstWhere((s) => s is CatalogSuccess);
+    bloc.add(const CatalogEvent.requested());
+    await main;
+    expect(bloc.state.refreshCatalogStatus, isA<UseCaseLoading<CatalogEntity>>());
+    expect(bloc.state.clearCatalogStatus, isA<UseCaseSuccess<void>>());
+    expect(repository.calls, 1);
+    final completed = bloc.stream.firstWhere((s) => s.refreshCatalogStatus is UseCaseSuccess<CatalogEntity>);
+    repository.pending!.complete(const Success(CatalogEntity(id: 'updated')));
+    await completed;
+    expect((bloc.state.refreshCatalogStatus as UseCaseSuccess<CatalogEntity>).value.id, 'updated');
+    expect(bloc.state.clearCatalogStatus, isA<UseCaseSuccess<void>>());
+    await bloc.close();
+  });
+
+  test('central DI wires new actions; unconnected backends return Failure without guessing HTTP', () async {
+    final container = GetIt.asNewInstance();
+    await configureDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com'));
+    final cubit = container<AuthCubit>();
+    expect(cubit.refreshAuthUseCase, isNotNull);
+    expect(cubit.clearAuthUseCase, isNotNull);
+    await cubit.refreshAuth();
+    expect((cubit.state.refreshAuthStatus as UseCaseFailure<AuthEntity>).failure, isA<UnexpectedFailure>());
+    final bloc = container<CatalogBloc>();
+    final failed = bloc.stream.firstWhere((s) => s.clearCatalogStatus is UseCaseFailure<void>);
+    bloc.add(const CatalogEvent.clearCatalogRequested());
+    await failed;
+    await cubit.close(); await bloc.close();
+    await disposeDependencies(container);
+  });
+
+  test('manual controllers remain compatible and report unavailable uninjected actions', () async {
+    final cubit = AuthCubit(GetAuth(FakeAuthRepository()));
+    await cubit.refreshAuth();
+    expect(cubit.state.refreshAuthStatus, isA<UseCaseFailure<AuthEntity>>());
+    await cubit.load();
+    expect(cubit.state, isA<AuthSuccess>());
+    await cubit.close();
+  });
+
+  test('component actions after disposal are ignored consistently', () async {
+    final cubit = CardCubitCubit();
+    cubit.update(2);
+    await cubit.close();
+    cubit.update(3);
+    final bloc = CardBlocBloc();
+    await bloc.close();
+    bloc.add(const CardBlocEvent.requested());
+  });
+
+  testWidgets('legacy component widget paths retain provider wiring and disposal', (tester) async {
+    final container = GetIt.asNewInstance();
+    await configureDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com'));
+    await tester.pumpWidget(MaterialApp(home: FeaturePages.legacyBadge(container)));
+    final cubit = tester.element(find.byType(LegacyBadgeWidget)).read<LegacyBadgeCubit>();
+    cubit.update(7);
+    await tester.pump();
+    expect(find.text('7'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(cubit.isClosed, isTrue);
+    await disposeDependencies(container);
   });
 
   testWidgets('component without state builds without DI', (tester) async {

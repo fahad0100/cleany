@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
@@ -44,7 +46,9 @@ class StagedWorkspace {
   final Project project;
   final OperationContext context;
   final Set<String> platforms;
-  late final Directory directory;
+  Directory? _directory;
+  Directory get directory =>
+      _directory ?? (throw StateError('Workspace not created.'));
   late final Set<String> inputRoots;
   static const outputRoots = {
     'lib',
@@ -77,7 +81,7 @@ class StagedWorkspace {
   Future<Map<String, FileFingerprint>> create() async {
     final cache = Directory(project.file('.cleany/cache'))
       ..createSync(recursive: true);
-    directory = await cache.createTemp('stage_');
+    _directory = await cache.createTemp('stage_');
     File(p.join(directory.path, '.cleany-stage'))
         .writeAsStringSync(project.root);
     inputRoots = {
@@ -116,6 +120,7 @@ class StagedWorkspace {
         }
       }
     }
+    _includeReferencedConfiguration();
     final baseline = await snapshot(project.root);
     for (final path in baseline.keys) {
       context.cancellation.check();
@@ -124,12 +129,93 @@ class StagedWorkspace {
       await File(project.file(path)).copy(destination.path);
       final copied = await fingerprint(destination);
       if (copied.digest != baseline[path]!.digest ||
-          copied.length != baseline[path]!.length) {
+          copied.length != baseline[path]!.length ||
+          (!Platform.isWindows && copied.mode != baseline[path]!.mode)) {
         throw GenerationException('Input changed while staging: $path');
       }
     }
     context.report('staging', detail: '${baseline.length} inputs copied');
     return baseline;
+  }
+
+  // Follow local YAML references recursively, retaining their relative layout.
+  void _includeReferencedConfiguration() {
+    final pending = <String>[
+      'analysis_options.yaml',
+      'build.yaml',
+      'dart_test.yaml',
+    ];
+    final seen = <String>{};
+    while (pending.isNotEmpty) {
+      final relative = pending.removeLast();
+      if (!seen.add(relative)) continue;
+      final file = File(project.file(relative));
+      if (!file.existsSync()) continue;
+      void include(String value) {
+        if (value.startsWith('package:') || value.contains(':')) return;
+        final target = p.posix.normalize(
+          p.posix.join(p.posix.dirname(relative), value),
+        );
+        project.file(target);
+        if (!File(project.file(target)).existsSync()) {
+          throw GenerationException(
+            'Referenced configuration is missing: $target (from $relative).',
+          );
+        }
+        inputRoots.add(target);
+        pending.add(target);
+      }
+
+      if (relative.endsWith('.dart')) {
+        final unit = parseString(
+          content: file.readAsStringSync(),
+          throwIfDiagnostics: false,
+        ).unit;
+        for (final directive in unit.directives) {
+          if (directive is UriBasedDirective &&
+              directive.uri.stringValue != null) {
+            include(directive.uri.stringValue!);
+          }
+          if (directive is ImportDirective) {
+            for (final config in directive.configurations) {
+              if (config.uri.stringValue != null) {
+                include(config.uri.stringValue!);
+              }
+            }
+          }
+          if (directive is ExportDirective) {
+            for (final config in directive.configurations) {
+              if (config.uri.stringValue != null) {
+                include(config.uri.stringValue!);
+              }
+            }
+          }
+        }
+        continue;
+      }
+      final yaml = loadYaml(file.readAsStringSync());
+      void visit(Object? value, [String? key]) {
+        if (value is Map) {
+          for (final entry in value.entries) {
+            visit(entry.value, '${entry.key}');
+          }
+        } else if (value is List) {
+          for (final entry in value) {
+            visit(entry, key);
+          }
+        } else if (value is String &&
+            (key == 'include' ||
+                key == 'includes' ||
+                key == 'import' ||
+                key == 'imports') &&
+            !value.startsWith('package:') &&
+            !value.contains('://')) {
+          include(value);
+        }
+      }
+
+      visit(yaml);
+    }
   }
 
   static const rootFiles = {
@@ -142,6 +228,8 @@ class StagedWorkspace {
     'dart_test.yaml',
     'flavorizr.yaml',
     '.metadata',
+    '.vscode/launch.json',
+    'CLEANY_RUN.md',
     '.gitignore',
   };
 
@@ -201,6 +289,20 @@ class StagedWorkspace {
   void rejectUnexpectedOutputs() {
     for (final entity in directory.listSync(followLinks: false)) {
       final name = p.basename(entity.path);
+      if (name == '.vscode' && entity is Directory) {
+        for (final child in entity.listSync(
+          recursive: true,
+          followLinks: false,
+        )) {
+          if (child is! File ||
+              !rootFiles.contains(relativePath(directory.path, child.path))) {
+            throw const GenerationException(
+              'A builder produced an unsupported VS Code output.',
+            );
+          }
+        }
+        continue;
+      }
       if (ignoredNames.contains(name) ||
           name == '.cleany' ||
           name == '.cleany-stage' ||
@@ -233,6 +335,20 @@ class StagedWorkspace {
   }
 
   Future<void> dispose() async {
-    if (directory.existsSync()) await directory.delete(recursive: true);
+    final created = _directory;
+    if (created != null && created.existsSync()) {
+      await created.delete(recursive: true);
+    }
+  }
+}
+
+/// Applies validated POSIX permissions with content; Windows uses its ACL policy.
+void setFileMode(File file, int? mode) {
+  if (Platform.isWindows || mode == null) return;
+  final result = Process.runSync('chmod', [mode.toRadixString(8), file.path]);
+  if (result.exitCode != 0) {
+    throw GenerationException(
+      'Cannot preserve permissions for ${file.path}: ${result.stderr}',
+    );
   }
 }

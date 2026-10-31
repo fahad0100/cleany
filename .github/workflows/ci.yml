@@ -23,7 +23,7 @@ jobs:
       - run: dart pub get
       - run: dart format --output=none --set-exit-if-changed lib bin test example
       - run: dart analyze --fatal-infos
-      - run: dart test test/generator_test.dart test/advanced_test.dart --concurrency=1
+      - run: dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart --concurrency=1
       - run: dart run example/cleany_example.dart
       - run: dart doc --output .dart_tool/api-docs
       - run: dart pub publish --dry-run
@@ -38,7 +38,7 @@ jobs:
       - run: dart pub get
       - run: dart pub downgrade
       - run: dart analyze --fatal-infos
-      - run: dart test test/generator_test.dart test/advanced_test.dart --concurrency=1
+      - run: dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart --concurrency=1
   generated-apps:
     runs-on: macos-latest
     timeout-minutes: 30

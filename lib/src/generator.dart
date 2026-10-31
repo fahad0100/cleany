@@ -1,22 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:analyzer/dart/analysis/utilities.dart';
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as p;
-import 'package:yaml/yaml.dart';
-import 'package:yaml_edit/yaml_edit.dart';
 
 import 'ast_editor.dart';
+import 'component_layout.dart';
 import 'project.dart';
 import 'templates/core_templates.dart';
 import 'templates/feature_templates.dart';
 import 'templates/documentation.dart';
 import 'transaction.dart';
 import 'registry.dart';
+import 'run_configuration.dart';
 import 'specification.dart';
 import 'dependencies.dart';
+import 'use_case_editor.dart';
+import 'use_case_support.dart';
+import 'templates/feature_context.dart';
+import 'templates/use_case_templates.dart';
 
 export 'registry.dart' show registryPath;
 
@@ -51,26 +53,14 @@ class Generator {
       );
     }
     appId ??= project.detectAppId();
-    if (!RegExp(r'^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*){2,}$')
-        .hasMatch(appId)) {
-      throw const GenerationException(
-        'Use an application id such as com.company.product.',
-      );
-    }
+    validateAppId(appId);
     final plan = GenerationPlan(project);
     for (final entry in coreTemplates(package, provider, appId).entries) {
       _write(plan, entry.key, entry.value, createOnly: true);
     }
-    // Preserve user entrypoints, tests, analysis rules, dependencies, comments,
-    // overrides, fonts, and all unrelated pubspec sections.
-    if (!File(project.file('lib/main.dart')).existsSync()) {
-      _write(
-        plan,
-        'lib/main.dart',
-        "import 'main_dev.dart' as dev;\nFuture<void> main() => dev.main();\n",
-        createOnly: true,
-      );
-    }
+    // Run profiles preserve custom configuration; recognizable Flutter scaffolds
+    // gain a dev entrypoint and an exact recovery copy of the original main.
+    planRunConfiguration(project, plan);
     if (!File(project.file('analysis_options.yaml')).existsSync()) {
       plan.write(
         'analysis_options.yaml',
@@ -78,59 +68,10 @@ class Generator {
         createOnly: true,
       );
     }
-    final yaml = YamlEditor(project.read('pubspec.yaml'));
-    final requirements = packageRequirements(provider);
-    final original = loadYaml(project.read('pubspec.yaml')) as YamlMap;
-    for (final group in requirements.entries) {
-      final section = original[group.key];
-      if (section != null && section is! YamlMap) {
-        throw GenerationException('Expected a mapping for ${group.key}.');
-      }
-      if (section == null) yaml.update([group.key], <String, Object>{});
-      for (final dependency in group.value.entries) {
-        if (section is YamlMap && section.containsKey(dependency.key)) continue;
-        // Preserve a dependency already declared in another section too.
-        if (original['dependencies'] is YamlMap &&
-            (original['dependencies'] as YamlMap).containsKey(dependency.key)) {
-          continue;
-        }
-        if (original['dev_dependencies'] is YamlMap &&
-            (original['dev_dependencies'] as YamlMap).containsKey(
-              dependency.key,
-            )) {
-          if (group.key == 'dependencies') {
-            throw GenerationException(
-              'Move ${dependency.key} from dev_dependencies to dependencies before initialization.',
-            );
-          }
-          continue;
-        }
-        yaml.update([group.key, dependency.key], dependency.value);
-      }
-    }
-    if (original['flutter'] == null) {
-      yaml.update(['flutter'], <String, Object>{});
-    }
-    yaml.update(['flutter', 'generate'], true);
-    final flutter = original['flutter'];
-    if (flutter != null && flutter is! YamlMap) {
-      throw const GenerationException('Expected a flutter mapping in pubspec.');
-    }
-    final existingAssets = flutter is YamlMap ? flutter['assets'] : null;
-    if (existingAssets != null && existingAssets is! YamlList) {
-      throw const GenerationException('Expected a flutter assets list.');
-    }
-    final assets = <Object?>[if (existingAssets is YamlList) ...existingAssets];
-    for (final asset in [
-      'assets/images/',
-      'assets/icons/',
-      'assets/translations/',
-      'config/flavors/',
-    ]) {
-      if (!assets.contains(asset)) assets.add(asset);
-    }
-    yaml.update(['flutter', 'assets'], assets);
-    plan.write('pubspec.yaml', yaml.toString());
+    plan.write(
+      'pubspec.yaml',
+      configurePubspec(project.read('pubspec.yaml'), provider),
+    );
     plan.write(
       registryPath,
       _json({
@@ -139,7 +80,8 @@ class Generator {
         'app_id': appId,
         'project_files': [
           for (final entry in plan.files.entries)
-            artifactRecord(entry.key, entry.value.after!, '@project'),
+            if (!entry.key.startsWith('.cleany/backups/'))
+              artifactRecord(entry.key, entry.value.after!, '@project'),
         ],
         'api_provider': provider.name,
         'features': <Object>[],
@@ -194,17 +136,7 @@ class Generator {
       path = '${parents.single['path']}/subfeatures';
     }
     path ??= kind == GenerationKind.feature ? 'lib/features' : 'lib/components';
-    if (p.posix.normalize(path) != path ||
-        !p.posix.isWithin('lib', path) ||
-        path
-            .split('/')
-            .any(
-              (segment) => !RegExp(r'^[a-z][a-z0-9_]*$').hasMatch(segment),
-            )) {
-      throw const GenerationException(
-        'The destination must be a snake_case directory inside lib.',
-      );
-    }
+    validateEntryDirectory(path);
     final target = '$path/$name';
     project.file(target);
     if (FileSystemEntity.typeSync(project.file(target), followLinks: false) !=
@@ -247,15 +179,184 @@ class Generator {
       'path': target,
       'kind': kind.name,
       'state': state.name,
+      if (kind == GenerationKind.component) 'component_layout': 'flat',
       'parent': ?parent,
       'template_version': templateVersion,
       'specification': (specification ?? FeatureSpec()).toJson(),
+      'integrations': integrationOwnership(plan, name),
       'files': [
         for (final entry in templates.entries)
           artifactRecord(entry.key, plan.files[entry.key]!.after!, name),
       ],
     });
     registry['features'] = entries;
+    plan.write(registryPath, _json(registry));
+    return plan;
+  }
+
+  /// Adds a transport-independent operation to an existing full feature.
+  /// Extends its existing repository contract and implementation, while central
+  /// DI injects the operation into the current Cubit or Bloc.
+  GenerationPlan addUseCase({
+    required String feature,
+    required String name,
+    required UseCaseReturnType returnType,
+  }) {
+    final package = project.validate();
+    validateName(feature);
+    var operation = UseCaseSpec(name: name, returnType: returnType);
+    final registry = readRegistry();
+    final entries = (registry['features'] as List).cast<Map<String, dynamic>>();
+    final selected = entries
+        .where(
+          (entry) => entry['name'] == feature && entry['kind'] == 'feature',
+        )
+        .singleOrNull;
+    if (selected == null) {
+      throw GenerationException('Feature not found: $feature');
+    }
+    final operations = entryUseCases(selected);
+    if (operations.any((existing) => existing.type == operation.type)) {
+      throw GenerationException('Use case already registered: $name');
+    }
+    final provider = ApiProvider.values.byName(
+      registry['api_provider'] as String,
+    );
+    final context = FeatureTemplateContext(
+      name: feature,
+      path: selected['path'] as String,
+      package: package,
+      kind: GenerationKind.feature,
+      state: StateManagement.values.byName(selected['state'] as String),
+      provider: provider,
+      specification: FeatureSpec.fromJson(
+        Map<String, dynamic>.from(selected['specification'] as Map? ?? {}),
+      ),
+    );
+    if (returnType == UseCaseReturnType.entity) {
+      operation = UseCaseSpec(
+        name: name,
+        returnType: returnType,
+        entityFields: existingEntityMappingFields(project, context),
+      );
+    }
+    operations.add(operation);
+    final inputs = <String, String>{};
+    for (final path in [
+      '${context.path}/${context.stateFolder}/${feature}_state.dart',
+      '${context.path}/${context.stateFolder}/${feature}_${context.mode}.dart',
+      '${context.path}/data/datasources/${feature}_remote_data_source.dart',
+      '${context.path}/domain/repositories/${feature}_repository.dart',
+      '${context.path}/data/repositories/${feature}_repository_impl.dart',
+      if (context.bloc)
+        '${context.path}/${context.stateFolder}/${feature}_event.dart',
+    ]) {
+      if (!File(project.file(path)).existsSync()) {
+        throw GenerationException(
+          'Missing $path. Run Project doctor before adding a use case.',
+        );
+      }
+      inputs[path] = project.read(path);
+    }
+    final newFiles = useCaseFiles(context, operation);
+    final shared = File(project.file(useCaseStatePath));
+    final projectFiles = (registry['project_files'] as List)
+        .cast<Map<String, dynamic>>();
+    if (shared.existsSync() &&
+        !projectFiles.any(
+          (file) =>
+              file['path'] == useCaseStatePath && file['owner'] == '@project',
+        )) {
+      throw const GenerationException(
+        'The shared use case state file exists without Cleany ownership. Resolve its ownership before retrying.',
+      );
+    }
+    _checkCollisions({
+      ...newFiles,
+      if (!shared.existsSync()) useCaseStatePath: useCaseStateTemplate(),
+    }, includeRedirects: true);
+    final changed = addUseCaseToFeature(context, operation, operations, inputs);
+    final plan = GenerationPlan(project);
+    for (final entry in changed.entries) {
+      _write(
+        plan,
+        entry.key,
+        entry.value,
+        createOnly: newFiles.containsKey(entry.key),
+      );
+    }
+    if (!shared.existsSync()) {
+      _write(plan, useCaseStatePath, useCaseStateTemplate(), createOnly: true);
+      projectFiles.add(
+        Map<String, dynamic>.from(
+          artifactRecord(
+            useCaseStatePath,
+            plan.files[useCaseStatePath]!.after!,
+            '@project',
+          ),
+        ),
+      );
+    }
+    _integrate(
+      plan,
+      feature,
+      context.path,
+      GenerationKind.feature,
+      context.state,
+      provider,
+      package,
+      specification: context.spec,
+      repairMissing: true,
+      useCases: operations,
+    );
+    final owned = (selected['files'] as List).cast<Map<String, dynamic>>();
+    for (final entry in changed.entries) {
+      final before = owned
+          .where((file) => file['path'] == entry.key)
+          .singleOrNull;
+      owned.removeWhere((file) => file['path'] == entry.key);
+      final bytes = plan.files[entry.key]?.after;
+      if (bytes != null) {
+        owned.add(
+          Map<String, dynamic>.from(
+            artifactRecord(
+              entry.key,
+              bytes,
+              feature,
+              origin: before?['origin'] as String? ?? 'use_case',
+            ),
+          ),
+        );
+      }
+    }
+    selected['use_cases'] = operations
+        .map((operation) => operation.toJson())
+        .toList();
+    selected['files'] = owned;
+    final previous = {
+      for (final node in selected['integrations'] as List? ?? [])
+        node['node']: node,
+    };
+    selected['integrations'] = [
+      for (final node in integrationOwnership(
+        plan,
+        feature,
+        useCases: operations,
+      ))
+        if (previous.containsKey(node['node']) &&
+            contentDigest(
+                  utf8.encode(
+                    AstEditor(project.read(node['path'] as String))
+                            .integrationNodes()[node['node']] ??
+                        '',
+                  ),
+                ) !=
+                previous[node['node']]['sha256'])
+          previous[node['node']]
+        else
+          node,
+    ];
+    registry['project_files'] = projectFiles;
     plan.write(registryPath, _json(registry));
     return plan;
   }
@@ -269,63 +370,77 @@ class Generator {
     GenerationPlan plan,
     List<Map<String, dynamic>> entries,
   ) {
-    final names = entries
-        .map((entry) => camelCase(entry['name'] as String))
-        .toSet();
-    final types = <String>{};
-    for (final entry in entries) {
-      final type = pascalCase(entry['name'] as String);
-      types.addAll([
-        '${type}Api',
-        '${type}RemoteDataSource',
-        '${type}Repository',
-        'Get$type',
-        '${type}Cubit',
-        '${type}Bloc',
-      ]);
-    }
-    bool owns(String uri, String from) {
-      final package = project.validate();
-      final resolved = uri.startsWith('package:')
-          ? uri
-          : 'package:$package/${p.posix.normalize(p.posix.join(p.posix.dirname(from.substring(4)), uri))}';
-      return entries.any(
-        (entry) =>
-            resolved.startsWith(
-              'package:$package/${(entry['path'] as String).substring(4)}/',
-            ) ||
-            resolved ==
-                'package:$package/core/network/retrofit/${entry['name']}_api.dart',
-      );
-    }
-
-    final di = AstEditor(plan.read('lib/app/di/injection.dart'));
-    di.removeImports((uri) => owns(uri, 'lib/app/di/injection.dart'));
-    di.ensureFunction(
-      'registerFeatureDependencies',
-      'void registerFeatureDependencies(GetIt container) {}',
-    );
-    di.removeRegistrations(types);
-    _write(plan, 'lib/app/di/injection.dart', di.source);
-    final factories = AstEditor(
-      plan.read('lib/app/composition/feature_pages.dart'),
-    );
-    factories.removeMembers('FeaturePages', names);
-    factories.removeImports(
-      (uri) => owns(uri, 'lib/app/composition/feature_pages.dart'),
-    );
-    _write(plan, 'lib/app/composition/feature_pages.dart', factories.source);
-    final routes = AstEditor(plan.read('lib/app/router/app_router.dart'))
-      ..removeRoutes(names);
-    _write(plan, 'lib/app/router/app_router.dart', routes.source);
-    final routeNames = AstEditor(plan.read('lib/app/router/route_names.dart'))
-      ..removeMembers('RouteNames', names);
-    _write(plan, 'lib/app/router/route_names.dart', routeNames.source);
     final registry =
         jsonDecode(plan.read(registryPath)) as Map<String, dynamic>;
     final provider = ApiProvider.values.byName(
       registry['api_provider'] as String,
     );
+    final active = (registry['features'] as List).cast<Map<String, dynamic>>();
+    final activeNames = active.map((entry) => entry['name']).toSet();
+    for (final stale in {
+      for (final entry in entries) entry['name']: entry,
+    }.values.where((entry) => !activeNames.contains(entry['name']))) {
+      final name = stale['name'] as String;
+      final ownership = (stale['integrations'] as List? ?? []).cast<Map>();
+      if (ownership.isEmpty) {
+        throw GenerationException(
+          'Missing $name has no integration ownership metadata; inspect its bindings manually.',
+        );
+      }
+      for (final record in ownership) {
+        final path = record['path'] as String;
+        final node = AstEditor(plan.read(path))
+            .integrationNodes()[record['node']];
+        if (node != null &&
+            contentDigest(utf8.encode(node)) != record['sha256']) {
+          throw GenerationException(
+            'Customized binding ${record['node']} for missing $name was preserved; resolve it manually.',
+          );
+        }
+      }
+      final member = camelCase(name);
+      final type = pascalCase(name);
+      for (final path in [
+        'lib/app/di/injection.dart',
+        'lib/app/composition/feature_pages.dart',
+        'lib/app/router/route_names.dart',
+        'lib/app/router/app_router.dart',
+      ]) {
+        final editor = AstEditor(plan.read(path));
+        if (path.endsWith('injection.dart')) {
+          editor.removeRegistrations({
+            '${type}Api',
+            '${type}RemoteDataSource',
+            '${type}Repository',
+            'Get$type',
+            '${type}Cubit',
+            '${type}Bloc',
+            for (final operation in entryUseCases(stale)) ...[
+              operation.type,
+              if (!operation.usesFeatureRepository) operation.repository,
+            ],
+          });
+        }
+        if (path.endsWith('feature_pages.dart')) {
+          editor.removeMembers('FeaturePages', {member});
+        }
+        if (path.endsWith('route_names.dart')) {
+          editor.removeMembers('RouteNames', {member});
+        }
+        if (path.endsWith('app_router.dart')) editor.removeRoutes({member});
+        editor.removeImports((uri) {
+          final resolved = uri.startsWith('package:')
+              ? uri
+              : 'package:${project.validate()}/${p.posix.normalize(p.posix.join(p.posix.dirname(path.substring(4)), uri))}';
+          return resolved.startsWith(
+                'package:${project.validate()}/${(stale['path'] as String).substring(4)}/',
+              ) ||
+              resolved ==
+                  'package:${project.validate()}/core/network/retrofit/${name}_api.dart';
+        });
+        _write(plan, path, editor.source);
+      }
+    }
     for (final entry
         in (registry['features'] as List).cast<Map<String, dynamic>>()) {
       _integrate(
@@ -336,11 +451,32 @@ class Generator {
         StateManagement.values.byName(entry['state'] as String),
         provider,
         project.validate(),
+        repairMissing: true,
+        useCases: entryUseCases(entry),
+        legacyComponentWidgets: usesLegacyComponentWidgets(entry),
         specification: FeatureSpec.fromJson(
           Map<String, dynamic>.from(entry['specification'] as Map? ?? {}),
         ),
       );
     }
+    for (final entry in active) {
+      final previous = {
+        for (final node in entry['integrations'] as List? ?? [])
+          node['node']: node,
+      };
+      entry['integrations'] = [
+        for (final node in integrationOwnership(
+          plan,
+          entry['name'] as String,
+          useCases: entryUseCases(entry),
+        ))
+          if (previous.containsKey(node['node']))
+            previous[node['node']]
+          else
+            {...node, 'origin': 'observed'},
+      ];
+    }
+    plan.write(registryPath, prettyJson(registry));
   }
 
   /// Plans removal of an entry, its nested children, and only their integrations.
@@ -385,6 +521,10 @@ class Generator {
         'Get$type',
         '${type}Cubit',
         '${type}Bloc',
+        for (final operation in entryUseCases(entry)) ...[
+          operation.type,
+          if (!operation.usesFeatureRepository) operation.repository,
+        ],
       ]);
       for (final owned in entry['files'] as List? ?? []) {
         final file = owned['path'] as String;
@@ -453,31 +593,14 @@ class Generator {
     return plan;
   }
 
-  void _checkCollisions(Map<String, String> templates) {
-    Set<String> symbols(String content) {
-      final declarations = parseString(
-        content: content,
-        throwIfDiagnostics: false,
-      ).unit.declarations;
-      return declarations
-          .expand(
-            (node) => switch (node) {
-              ClassDeclaration() => [node.namePart.typeName.lexeme],
-              EnumDeclaration() => [node.namePart.typeName.lexeme],
-              MixinDeclaration() => [node.name.lexeme],
-              GenericTypeAlias() => [node.name.lexeme],
-              FunctionTypeAlias() => [node.name.lexeme],
-              FunctionDeclaration() => [node.name.lexeme],
-              TopLevelVariableDeclaration() => node.variables.variables.map(
-                (v) => v.name.lexeme,
-              ),
-              _ => <String>[],
-            },
-          )
-          .where((n) => !n.startsWith('_'))
-          .toSet();
-    }
-
+  void _checkCollisions(
+    Map<String, String> templates, {
+    bool includeRedirects = false,
+  }) {
+    Set<String> symbols(String content) => {
+      ...declaredSymbols(content),
+      if (includeRedirects) ...redirectedSymbols(content),
+    };
     final generated = templates.entries
         .where((e) => e.key.endsWith('.dart'))
         .expand((e) => symbols(e.value))
@@ -511,6 +634,9 @@ class Generator {
     ApiProvider provider,
     String package, {
     FeatureSpec? specification,
+    bool repairMissing = false,
+    List<UseCaseSpec> useCases = const [],
+    bool legacyComponentWidgets = false,
   }) {
     final type = pascalCase(name);
     final member = camelCase(name);
@@ -534,8 +660,9 @@ class Generator {
       if (stateful) '$base/$statePath/${name}_${state.name}.dart',
     ];
     if (imports.isNotEmpty) {
-      final di = AstEditor(plan.read('lib/app/di/injection.dart'));
-      di.addImports(imports);
+      final di = _editor(plan, 'lib/app/di/injection.dart')
+        ..repairMissing = repairMissing;
+      final originalDi = di.source;
       di.addStatements('registerFeatureDependencies', '''
 ${full ? '''
 ${provider == ApiProvider.retrofit ? '  container.registerLazySingleton<${type}Api>(() => ${type}Api(container<Dio>()));' : ''}
@@ -545,41 +672,147 @@ ${provider == ApiProvider.retrofit ? '  container.registerLazySingleton<${type}A
 ''' : ''}
 ${stateful ? '  container.registerFactory<$controller>(() => $controller(${full ? 'container<Get$type>()' : ''}));' : ''}
 ''');
-      _write(plan, 'lib/app/di/injection.dart', di.source);
+      if (useCases.isNotEmpty) {
+        final actions = UseCaseEditor(di.source);
+        actions.ensureRegistrations(controller, {
+          for (final operation in useCases) ...{
+            if (!operation.usesFeatureRepository)
+              operation.repository:
+                  'container.registerLazySingleton<${operation.repository}>(() => ${operation.repository}Impl(container<${type}RemoteDataSource>()));',
+            operation.type:
+                'container.registerLazySingleton<${operation.type}>(() => ${operation.type}(container<${operation.usesFeatureRepository ? '${type}Repository' : operation.repository}>()));',
+          },
+        });
+        actions.injectController(controller, {
+          for (final operation in useCases)
+            operation.dependency: 'container<${operation.type}>()',
+        });
+        di.source = actions.source;
+      }
+      if (di.source != originalDi) {
+        di.addImports([
+          for (final operation in useCases) ...[
+            if (di.usesUnqualified(operation.type))
+              '$base/domain/usecases/${operation.name}.dart',
+            if (!operation.usesFeatureRepository &&
+                di.usesUnqualified(operation.repository))
+              '$base/domain/repositories/${operation.name}_repository.dart',
+            if (!operation.usesFeatureRepository &&
+                di.usesUnqualified('${operation.repository}Impl'))
+              '$base/data/repositories/${operation.name}_repository_impl.dart',
+          ],
+          ...imports,
+          if (di.usesUnqualified('Dio')) 'package:dio/dio.dart',
+          if (di.usesUnqualified('GetIt')) 'package:get_it/get_it.dart',
+        ]);
+        _write(plan, 'lib/app/di/injection.dart', di.source);
+      }
     }
     final suffix = full ? 'page' : 'widget';
     final widget = '$type${full ? 'Page' : 'Widget'}';
-    final factories = AstEditor(
-      plan.read('lib/app/composition/feature_pages.dart'),
-    );
-    factories.addImports([
-      '$base/${full ? 'presentation/pages' : 'widgets'}/${name}_$suffix.dart',
+    final factories = _editor(plan, 'lib/app/composition/feature_pages.dart');
+    factories.repairMissing = repairMissing;
+    final originalFactories = factories.source;
+    final widgetLocation = full
+        ? 'presentation/pages/'
+        : legacyComponentWidgets
+        ? 'widgets/'
+        : '';
+    final factoryImports = <String>[
+      '$base/$widgetLocation${name}_$suffix.dart',
       if (stateful) ...[
         'package:flutter_bloc/flutter_bloc.dart',
         '$base/$statePath/${name}_${state.name}.dart',
         if (bloc && automaticRequest) '$base/$statePath/${name}_event.dart',
       ],
-    ]);
+    ];
     factories.addMembers('FeaturePages', '''
   static Widget $member(GetIt container) => ${stateful ? '''BlocProvider<$controller>(
     create: (_) => container<$controller>()${automaticRequest ? (bloc ? '..add(const ${type}Event.requested())' : '..load()') : ''},
     child: const $widget(),
   )''' : 'const $widget()'};
 ''');
-    _write(plan, 'lib/app/composition/feature_pages.dart', factories.source);
+    if (factories.source != originalFactories) {
+      factories.addImports([
+        ...factoryImports,
+        'package:flutter/widgets.dart',
+        'package:get_it/get_it.dart',
+      ]);
+      _write(plan, 'lib/app/composition/feature_pages.dart', factories.source);
+    }
     if (full) {
       final names = AstEditor(plan.read('lib/app/router/route_names.dart'));
-      names.requireUnusedRoutePath('/$name');
-      names.addMembers('RouteNames', "static const $member = '/$name';");
-      _write(plan, 'lib/app/router/route_names.dart', names.source);
-      final router = AstEditor(plan.read('lib/app/router/app_router.dart'));
-      router.requireUnusedRoutePath('/$name');
+      if (!repairMissing || !names.hasMember('RouteNames', member)) {
+        names.requireUnusedRoutePath('/$name');
+        names.addMembers('RouteNames', "static const $member = '/$name';");
+        _write(plan, 'lib/app/router/route_names.dart', names.source);
+      }
+      final router = _editor(plan, 'lib/app/router/app_router.dart');
+      router.repairMissing = repairMissing;
+      final originalRouter = router.source;
+      if (!repairMissing) router.requireUnusedRoutePath('/$name');
       router.addRoutes(
         'GoRoute(path: RouteNames.$member, builder: (context, state) => FeaturePages.$member(container)),',
       );
-      _write(plan, 'lib/app/router/app_router.dart', router.source);
+      if (router.source != originalRouter) {
+        router.addImports([
+          'route_names.dart',
+          '../composition/feature_pages.dart',
+          'package:go_router/go_router.dart',
+        ]);
+        _write(plan, 'lib/app/router/app_router.dart', router.source);
+      }
     }
   }
+
+  /// Records individual integration nodes rather than claiming shared files.
+  List<Map<String, Object>> integrationOwnership(
+    GenerationPlan plan,
+    String name, {
+    List<UseCaseSpec> useCases = const [],
+  }) {
+    final type = pascalCase(name);
+    final member = camelCase(name);
+    final featureNodes = {
+      'DI.${type}Api',
+      'DI.${type}RemoteDataSource',
+      'DI.${type}Repository',
+      'DI.Get$type',
+      'DI.${type}Cubit',
+      'DI.${type}Bloc',
+    };
+    final actionNodes = {
+      for (final operation in useCases) ...[
+        'DI.${operation.type}',
+        if (!operation.usesFeatureRepository) 'DI.${operation.repository}',
+      ],
+    };
+    return [
+      for (final path in [
+        'lib/app/di/injection.dart',
+        'lib/app/composition/feature_pages.dart',
+        'lib/app/router/route_names.dart',
+        'lib/app/router/app_router.dart',
+      ])
+        for (final node in AstEditor(
+          plan.read(path),
+        ).integrationNodes().entries)
+          if (node.key.endsWith('.$member') ||
+              featureNodes.contains(node.key) ||
+              actionNodes.contains(node.key))
+            {
+              'path': path,
+              'node': node.key,
+              'owner': name,
+              'sha256': contentDigest(utf8.encode(node.value)),
+            },
+    ];
+  }
+
+  AstEditor _editor(GenerationPlan plan, String path) => AstEditor(
+    plan.read(path),
+    resolveUri: (uri) => project.dartUri(path, uri),
+  );
 
   void _write(
     GenerationPlan plan,

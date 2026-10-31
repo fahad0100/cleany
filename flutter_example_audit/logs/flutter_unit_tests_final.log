@@ -1,0 +1,49 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart
+00:00 +0: all seven CLI field types deserialize and map to Domain correctly
+00:00 +1: Freezed model parses JSON; repository maps data to an immutable Entity
+00:00 +2: HTTP 401 maps once at the repository boundary
+00:00 +3: HTTP 403 maps once at the repository boundary
+00:00 +4: HTTP 422 maps once at the repository boundary
+00:00 +5: HTTP 409 maps once at the repository boundary
+00:00 +6: HTTP 503 maps once at the repository boundary
+00:00 +7: invalid JSON produces a Failure and does not leak a TypeError
+00:00 +8: unexpected errors are reported exactly once and returned as Failure
+00:00 +9: audit limitation: a throwing reporter escapes the Result contract
+00:00 +10: Cubit emits loading, entity success and typed failure
+00:00 +11: Cubit suppresses duplicate requests and late emissions after close
+00:00 +12: Bloc emits entity success and failure
+00:00 +13: DI uses app services, singleton repositories and factory controllers
+00:00 +14: AppEnvironment.uat requires HTTPS configuration
+00:00 +15: AppEnvironment.prod requires HTTPS configuration
+00:00 +16: generated HomePage renders loading, entity success and failure
+00:00 +17: components own controllers and ignore actions after disposal
+00:00 +18: generated App supports English, Arabic and RTL
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "مرحبًا": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart:372:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart line 372
+The test description was:
+  generated App supports English, Arabic and RTL
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:00 +18 -1: generated App supports English, Arabic and RTL [E]
+  Test failed. See exception logs above.
+  The test description was: generated App supports English, Arabic and RTL
+  
+00:00 +18 -1: Some tests failed.
+
+Failing tests:
+  /Users/fahad/Documents/cleany/cleany/flutter_example/test/generated_architecture_test.dart: generated App supports English, Arabic and RTL

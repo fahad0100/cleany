@@ -111,7 +111,7 @@ flutter:
     final output = StringBuffer();
     final error = StringBuffer();
     final before = project.read('pubspec.yaml');
-    final answers = ['7', 'com.example.playground', '1', '2', '0'].iterator;
+    final answers = ['9', 'com.example.playground', '1', '2', '0'].iterator;
     final code = await runCli(
       [],
       projectRoot: directory.path,
@@ -508,7 +508,7 @@ flutter:
   test('failed commands never commit and return nonzero status', () async {
     final before = project.read('pubspec.yaml');
     final errors = StringBuffer();
-    final answers = ['7', 'com.example.playground', '1', '1'].iterator;
+    final answers = ['9', 'com.example.playground', '1', '1'].iterator;
     final code = await runCli(
       [],
       projectRoot: directory.path,
@@ -540,7 +540,13 @@ flutter:
           if (path == 'last.txt') throw StateError('disk failure');
         },
       ),
-      throwsStateError,
+      throwsA(
+        isA<OperationFailure>().having(
+          (failure) => failure.result.status,
+          'outcome',
+          OperationStatus.rolledBack,
+        ),
+      ),
     );
     expect(project.read('pubspec.yaml'), before);
     expect(Directory(project.file('lib')).existsSync(), isFalse);
@@ -670,7 +676,13 @@ void unrelated() {}
           if (path == 'last.txt') throw StateError('failure');
         },
       ),
-      throwsStateError,
+      throwsA(
+        isA<OperationFailure>().having(
+          (failure) => failure.result.status,
+          'outcome',
+          OperationStatus.rolledBack,
+        ),
+      ),
     );
     expect(Directory(project.file('lib/existing')).existsSync(), isTrue);
     expect(Directory(project.file('lib/existing')).listSync(), isEmpty);
@@ -934,7 +946,7 @@ android {
         state: mode,
       );
       expect(
-        component.read('lib/components/card/widgets/card_widget.dart'),
+        component.read('lib/components/card/card_widget.dart'),
         contains(
           'final _ = context.read<Card${mode == StateManagement.cubit ? 'Cubit' : 'Bloc'}>();',
         ),
@@ -951,7 +963,7 @@ android {
       state: StateManagement.none,
     );
     expect(
-      component.read('lib/components/plain/widgets/plain_widget.dart'),
+      component.read('lib/components/plain/plain_widget.dart'),
       isNot(contains('context.read')),
     );
   });
@@ -1065,7 +1077,13 @@ android {
           if (path == registryPath) throw StateError('failure');
         },
       ),
-      throwsStateError,
+      throwsA(
+        isA<OperationFailure>().having(
+          (failure) => failure.result.status,
+          'outcome',
+          OperationStatus.rolledBack,
+        ),
+      ),
     );
     expect(project.read(registryPath), registry);
     expect(
@@ -1083,7 +1101,7 @@ android {
         state: StateManagement.cubit,
       ),
     );
-    final answers = ['4', '6', '1', '2', '0'].iterator;
+    final answers = ['7', '5', '1', '2', '0'].iterator;
     final output = StringBuffer();
     final errors = StringBuffer();
     expect(
@@ -1107,7 +1125,7 @@ android {
       File(project.file('android/app/build.gradle.kts')).writeAsStringSync(
         'defaultConfig { applicationId = "com.example.detected" }',
       );
-      final answers = ['7', '1', '2', '0'].iterator;
+      final answers = ['9', '1', '2', '0'].iterator;
       final output = StringBuffer();
       final errors = StringBuffer();
       expect(
@@ -1142,8 +1160,8 @@ android {
         '1',
         '1',
         '1',
-        '3',
-        '5',
+        '6',
+        '4',
         '1',
         '1',
         '0',

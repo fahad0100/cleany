@@ -1,0 +1,113 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+  New project: choose 7 to initialize it first.
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Initialize project
+╰────────────────────────────────────────────╯
+Detected production app id: com.example.testCleanyDio
+  prod  com.example.testCleanyDio
+  dev   com.example.testCleanyDio.dev
+  uat   com.example.testCleanyDio.uat
+  1  Retrofit over Dio
+  2  Dio
+› API provider [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/app/app.dart
+  CREATE  lib/app/bootstrap.dart
+  CREATE  lib/app/config/app_environment.dart
+  CREATE  lib/app/config/app_config.dart
+  CREATE  lib/app/di/injection.dart
+  CREATE  lib/app/composition/feature_pages.dart
+  CREATE  lib/app/router/app_router.dart
+  CREATE  lib/app/router/route_names.dart
+  CREATE  lib/core/errors/error_reporter.dart
+  CREATE  lib/core/errors/failure.dart
+  CREATE  lib/core/network/failure_mapper.dart
+  CREATE  lib/core/network/dio/dio_client.dart
+  CREATE  lib/core/network/dio/interceptors/auth_interceptor.dart
+  CREATE  lib/core/network/api_endpoints.dart
+  CREATE  l10n.yaml
+  CREATE  assets/translations/app_en.arb
+  CREATE  assets/translations/app_ar.arb
+  CREATE  lib/app/config/flavor_config.dart
+  CREATE  lib/core/theme/app_theme.dart
+  CREATE  lib/core/widgets/loading_widget.dart
+  CREATE  assets/images/.gitkeep
+  CREATE  assets/icons/.gitkeep
+  CREATE  test/.gitkeep
+  CREATE  integration_test/.gitkeep
+  CREATE  lib/core/storage/.gitkeep
+  CREATE  lib/core/localization/.gitkeep
+  CREATE  lib/core/constants/.gitkeep
+  CREATE  lib/core/utils/.gitkeep
+  CREATE  lib/main_dev.dart
+  CREATE  config/flavors/dev.yaml
+  CREATE  lib/main_uat.dart
+  CREATE  config/flavors/uat.yaml
+  CREATE  lib/main_prod.dart
+  CREATE  config/flavors/prod.yaml
+  CREATE  flavorizr.yaml
+  UPDATE  pubspec.yaml
+  CREATE  .cleany/features.json
+  UPDATE  .gitignore
+  1  Apply and validate
+  2  Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 365ms ✓
+[0s] dart --version
+[0s] dart --version · 61ms ✓
+[0s] staging
+[0s] staging · 6 inputs copied
+[0s] flutter pub get
+[4s] flutter pub get · 3767ms ✓
+[4s] flutter gen-l10n
+[8s] flutter gen-l10n · 4049ms ✓
+[8s] dart run build_runner build --delete-conflicting-outputs
+[13s] dart run build_runner build --delete-conflicting-outputs · 5s
+[18s] dart run build_runner build --delete-conflicting-outputs · 10s
+[23s] dart run build_runner build --delete-conflicting-outputs · 15s
+[28s] dart run build_runner build --delete-conflicting-outputs · 20s
+[29s] dart run build_runner build --delete-conflicting-outputs · 20727ms ✓
+[29s] flutter analyze --no-pub
+[32s] flutter analyze --no-pub · 3935ms ✓
+[33s] collecting · 44 validated outputs
+[33s] applying · 44 files
+[33s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+  1  Create feature
+  2  Create component
+  3  List features
+  4  List components
+  5  Remove feature
+  6  Remove component
+  7  Initialize project
+  8  Recover interrupted operation
+  9  Cleany maintenance / reset
+  10  Project doctor / repair
+  11  Rename or move an entry
+  12  Configure native flavors
+  0  Exit
+› Choose a number: 
