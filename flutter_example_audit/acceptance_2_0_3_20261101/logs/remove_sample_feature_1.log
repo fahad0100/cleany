@@ -1,0 +1,127 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Remove feature
+╰────────────────────────────────────────────╯
+  Remove a feature and its nested entries, then clean dependencies, routes
+  and ownership records. Review the files before applying.
+
+     1. carts  (lib/features/carts)
+     2. users  (lib/features/users)
+     3. auth  (lib/features/auth)
+     4. products  (lib/features/products)
+     5. contract_sample  (lib/features/contract_sample)
+     6. Cancel
+› Select feature to remove: The directory, its files, and any nested entries will be removed: lib/features/contract_sample
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  REMOVE  lib/core/network/retrofit/contract_sample_api.dart
+  REMOVE  lib/core/network/retrofit/contract_sample_api.g.dart
+  REMOVE  lib/features/contract_sample/data/datasources/contract_sample_remote_data_source.dart
+  REMOVE  lib/features/contract_sample/data/repositories/contract_sample_repository_impl.dart
+  REMOVE  lib/features/contract_sample/data/models/contract_sample_model.dart
+  REMOVE  lib/features/contract_sample/data/models/contract_sample_model.freezed.dart
+  REMOVE  lib/features/contract_sample/data/models/contract_sample_model.g.dart
+  REMOVE  lib/features/contract_sample/domain/repositories/contract_sample_repository.dart
+  REMOVE  lib/features/contract_sample/domain/usecases/get_contract_sample.dart
+  REMOVE  lib/features/contract_sample/domain/entities/contract_sample_entity.dart
+  REMOVE  lib/features/contract_sample/domain/entities/contract_sample_entity.freezed.dart
+  REMOVE  lib/features/contract_sample/presentation/pages/contract_sample_page.dart
+  REMOVE  lib/features/contract_sample/presentation/widgets/.gitkeep
+  REMOVE  lib/features/contract_sample/presentation/bloc/contract_sample_state.dart
+  REMOVE  lib/features/contract_sample/presentation/bloc/contract_sample_event.dart
+  REMOVE  lib/features/contract_sample/presentation/bloc/contract_sample_event.freezed.dart
+  REMOVE  lib/features/contract_sample/presentation/bloc/contract_sample_bloc.dart
+  REMOVE  lib/features/contract_sample/presentation/bloc/contract_sample_state.freezed.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 365ms ✓
+[0s] dart --version
+[0s] dart --version · 61ms ✓
+[0s] staging
+[0s] staging · reusing validated compiler cache
+[0s] staging · 165 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1632ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 842ms ✓
+[3s] dart run build_runner build
+[7s] dart run build_runner build · 4633ms ✓
+[7s] flutter analyze --no-pub
+[11s] flutter analyze --no-pub · 3233ms ✓
+[11s] collecting · 147 validated outputs
+[11s] applying · 23 files
+[11s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

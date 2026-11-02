@@ -1,0 +1,112 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create component
+╰────────────────────────────────────────────╯
+  Create a reusable widget directly inside its component folder, with
+  optional Cubit or Bloc and central dependency wiring.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+     3. No state management
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/components/quantity_stepper/cubit/quantity_stepper_state.dart
+  CREATE  lib/components/quantity_stepper/cubit/quantity_stepper_cubit.dart
+  CREATE  lib/components/quantity_stepper/quantity_stepper_widget.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 375ms ✓
+[0s] dart --version
+[0s] dart --version · 66ms ✓
+[0s] staging
+[0s] staging · 115 inputs copied
+[0s] flutter pub get
+[5s] flutter pub get · 4428ms ✓
+[5s] flutter gen-l10n
+[5s] flutter gen-l10n · 754ms ✓
+[5s] dart run build_runner build --delete-conflicting-outputs
+[10s] dart run build_runner build --delete-conflicting-outputs · 5s
+[15s] dart run build_runner build --delete-conflicting-outputs · 10s
+[20s] dart run build_runner build --delete-conflicting-outputs · 15s
+[25s] dart run build_runner build --delete-conflicting-outputs · 20s
+[26s] dart run build_runner build --delete-conflicting-outputs · 20698ms ✓
+[26s] flutter analyze --no-pub
+[29s] flutter analyze --no-pub · 3211ms ✓
+[29s] collecting · 119 validated outputs
+[29s] applying · 7 files
+[29s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

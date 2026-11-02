@@ -1,0 +1,2 @@
+Running Gradle task 'assembleUatDebug'...                          14.2s
+✓ Built build/app/outputs/flutter-apk/app-uat-debug.apk

@@ -218,10 +218,10 @@ flutter:
     final cubit = project.read(
       'lib/features/auth/presentation/cubit/auth_cubit.dart',
     );
-    expect(cubit, contains('AuthState.loading()'));
-    expect(cubit, contains('AuthState.success(entity)'));
-    expect(cubit, contains('AuthState.failure(failure)'));
-    expect(cubit, contains('if (isClosed) return'));
+    expect(cubit, contains('authStatus: const UseCaseState.loading()'));
+    expect(cubit, contains('authStatus: UseCaseState.success(entity)'));
+    expect(cubit, contains('authStatus: UseCaseState.failure(failure)'));
+    expect(cubit, contains('if (isClosed) {'));
     final domainFiles = Directory(project.file('lib/features/auth/domain'))
         .listSync(recursive: true)
         .whereType<File>();
@@ -603,7 +603,7 @@ flutter:
     expect(calls, [
       'flutter pub get',
       'flutter gen-l10n',
-      'dart run build_runner build --delete-conflicting-outputs',
+      'dart run build_runner build',
       'flutter analyze --no-pub',
     ]);
     expect(project.read('lib/generated.g.dart'), '// generated\n');
@@ -930,15 +930,13 @@ android {
     },
   );
 
-  test('feature and stateful component builds read their controller explicitly', () async {
+  test('features use BlocBuilder and components read their locally owned controller', () async {
     await initialize();
     for (final mode in [StateManagement.cubit, StateManagement.bloc]) {
       final feature = generator.generate(name: 'sample', state: mode);
       expect(
         feature.read('lib/features/sample/presentation/pages/sample_page.dart'),
-        contains(
-          'final _ = context.read<Sample${mode == StateManagement.cubit ? 'Cubit' : 'Bloc'}>();',
-        ),
+        isNot(contains('context.read<')),
       );
       final component = generator.generate(
         name: 'card',

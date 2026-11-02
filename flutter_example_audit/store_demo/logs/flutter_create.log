@@ -1,0 +1,20 @@
+Found saved certificate choice "Apple Development: fahad.alazmi1994@gmail.com (5JLRCB9WFN)". To clear, use "flutter config --clear-ios-signing-settings".
+Developer identity "Apple Development: fahad.alazmi1994@gmail.com (5JLRCB9WFN)" selected for iOS code signing
+Creating project flutter_example...
+Resolving dependencies in `flutter_example`...
+Downloading packages...
+Got dependencies in `flutter_example`.
+Wrote 74 files.
+
+All done!
+You can find general documentation for Flutter at: https://docs.flutter.dev/
+Detailed API documentation is available at: https://api.flutter.dev/
+If you prefer video documentation, consider: https://www.youtube.com/c/flutterdev
+
+In order to run your empty application, type:
+
+  $ cd flutter_example
+  $ flutter run
+
+Your empty application code is in flutter_example/lib/main.dart.
+

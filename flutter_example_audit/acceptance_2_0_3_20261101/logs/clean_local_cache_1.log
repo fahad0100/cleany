@@ -1,0 +1,79 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Cleany maintenance / reset
+╰────────────────────────────────────────────╯
+  Clean abandoned project-local workspaces, configure command timeouts, or
+  archive managed files and reset the architecture.
+
+     1. Clean abandoned local cache
+     2. Archive managed folders and reset Cleany
+     3. Set command timeout
+     4. Cancel
+› Action: Only abandoned .cleany/cache workspaces will be removed. Backups, recovery data, and global Flutter caches are preserved.
+     1. Apply
+     2. Cancel
+› Continue [2]: Removed 1 abandoned workspaces.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

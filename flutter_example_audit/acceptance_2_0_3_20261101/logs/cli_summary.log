@@ -1,0 +1,14 @@
+{"case": "doctor", "seconds": 28.331, "status": "passed"}
+{"case": "existing_feature_entity", "seconds": 12.105, "status": "passed"}
+{"case": "alternate_existing_entity", "seconds": 11.976, "status": "passed"}
+{"case": "clean_local_cache", "seconds": 0.432, "status": "passed"}
+{"case": "component_cold", "seconds": 27.564, "status": "passed"}
+{"case": "component_warm", "seconds": 11.648, "status": "passed"}
+{"case": "feature_all_field_types", "seconds": 11.848, "status": "passed"}
+{"case": "component_cubit", "seconds": 12.03, "status": "passed"}
+{"case": "lists", "seconds": 0.484, "status": "passed"}
+{"case": "rename_and_move_component", "seconds": 12.988, "status": "passed"}
+{"case": "remove_sample_feature", "seconds": 11.808, "status": "passed"}
+{"case": "remove_audit_tag", "seconds": 11.782, "status": "passed"}
+{"case": "remove_audit_caption", "seconds": 15.147, "status": "passed"}
+{"case": "remove_audit_counter", "seconds": 11.506, "status": "passed"}

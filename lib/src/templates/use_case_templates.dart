@@ -5,14 +5,13 @@ import 'feature_context.dart';
 
 const useCaseStatePath = 'lib/core/state/use_case_state.dart';
 
-/// Typed action progress shared by every variant of a feature's main state.
-/// Additional actions do not add union variants or break existing page switches.
+/// Typed operation states composed inside each feature/component's single State.
 String useCaseStateTemplate() => r'''
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../errors/failure.dart';
 part 'use_case_state.freezed.dart';
 
-/// Tracks one operation independently of the feature's primary loading state.
+/// Represents initial, loading, success, or failure for one typed operation.
 @freezed
 sealed class UseCaseState<T> with _$UseCaseState<T> {
   const factory UseCaseState.initial() = UseCaseInitial<T>;
@@ -28,9 +27,7 @@ Map<String, String> useCaseFiles(
   FeatureTemplateContext c,
   UseCaseSpec operation,
 ) {
-  final valueType = operation.returnType == UseCaseReturnType.entity
-      ? '${c.type}Entity'
-      : 'void';
+  final valueType = operation.valueType(c.type);
   final repository = operation.usesFeatureRepository
       ? '${c.type}Repository'
       : operation.repository;
@@ -38,7 +35,7 @@ Map<String, String> useCaseFiles(
       ? c.name
       : operation.name;
   final entityImport = operation.returnType == UseCaseReturnType.entity
-      ? "import '${c.imports}/domain/entities/${c.name}_entity.dart';"
+      ? "import '${operation.entityUri(c.package, c.path, c.name)}';"
       : '';
   return {
     if (!operation.usesFeatureRepository)
@@ -97,9 +94,7 @@ String useCaseRepositoryMethod(
   String remoteName = '_remote',
   String reporterName = 'reportError',
 }) {
-  final valueType = operation.returnType == UseCaseReturnType.entity
-      ? '${c.type}Entity'
-      : 'void';
+  final valueType = operation.valueType(c.type);
   final mapping =
       (operation.entityFields ?? c.spec.fields.map((field) => field.name))
           .map((name) => '$name: model.$name')
@@ -112,7 +107,7 @@ String useCaseRepositoryMethod(
 ${operation.returnType == UseCaseReturnType.entity ? '''
       final json = await $remoteName.${operation.method}();
       final model = ${c.type}Model.fromJson(json);
-      return Success(${c.type}Entity($mapping));
+      return Success(${operation.mappingPending ? '_map${operation.type}Entity(model)' : '$valueType($mapping)'});
 ''' : '''
       await $remoteName.${operation.method}();
       return const Success<void, Failure>(null);
@@ -126,6 +121,13 @@ ${operation.returnType == UseCaseReturnType.entity ? '''
       return Error(failure);
     }
   }
+${operation.returnType == UseCaseReturnType.entity && operation.mappingPending ? '''
+  /// Complete this Data mapping using the existing Model and selected Entity.
+  /// Its different shape is preserved; no guessed casts or schema edits occur.
+  $valueType _map${operation.type}Entity(${c.type}Model model) {
+    throw UnimplementedError('Map ${c.type}Model to $valueType for ${operation.method}.');
+  }
+''' : ''}
 ''';
 }
 
@@ -136,9 +138,7 @@ Map<String, String> addUseCaseToFeature(
   List<UseCaseSpec> operations,
   Map<String, String> sources,
 ) {
-  final valueType = operation.returnType == UseCaseReturnType.entity
-      ? '${c.type}Entity'
-      : 'void';
+  final valueType = operation.valueType(c.type);
   final statePath = '${c.path}/${c.stateFolder}/${c.name}_state.dart';
   final controllerPath = '${c.path}/${c.stateFolder}/${c.name}_${c.mode}.dart';
   final remotePath =
@@ -150,13 +150,40 @@ Map<String, String> addUseCaseToFeature(
         '${c.path}/domain/repositories/${c.name}_repository.dart';
     final implementationPath =
         '${c.path}/data/repositories/${c.name}_repository_impl.dart';
-    final contract = AstEditor(sources[contractPath]!);
+    final contract = AstEditor(
+      sources[contractPath]!,
+      resolveUri: (uri) => c.canonicalImport(contractPath, uri),
+    );
+    contract.addImports([
+      'package:multiple_result/multiple_result.dart',
+      '${c.core}/errors/failure.dart',
+    ]);
+    if (operation.returnType == UseCaseReturnType.entity) {
+      contract.addImports([operation.entityUri(c.package, c.path, c.name)]);
+    }
     contract.addMembers('${c.type}Repository', '''
   /// Runs ${operation.method}, returning domain data or a Failure.
   Future<Result<$valueType, Failure>> ${operation.method}();
 ''');
     result[contractPath] = contract.source;
-    final implementation = AstEditor(sources[implementationPath]!);
+    final implementation = AstEditor(
+      sources[implementationPath]!,
+      resolveUri: (uri) => c.canonicalImport(implementationPath, uri),
+    );
+    // Customized repositories may delegate their existing error handling to a
+    // helper; add every import used by the new method rather than assuming the
+    // original template's import list is still present.
+    implementation.addImports([
+      'package:multiple_result/multiple_result.dart',
+      '${c.core}/errors/failure.dart',
+      '${c.core}/network/failure_mapper.dart',
+    ]);
+    if (operation.returnType == UseCaseReturnType.entity) {
+      implementation.addImports([
+        operation.entityUri(c.package, c.path, c.name),
+        '${c.imports}/data/models/${c.name}_model.dart',
+      ]);
+    }
     final dependencies = UseCaseEditor(implementation.source);
     implementation.addMembers(
       '${c.type}RepositoryImpl',
@@ -183,17 +210,27 @@ Map<String, String> addUseCaseToFeature(
     '@Default(UseCaseState<$valueType>.initial()) UseCaseState<$valueType> ${operation.statusField}',
     factories: true,
   );
-  final stateImports = AstEditor(state.source)
-    ..addImports(['${c.core}/state/use_case_state.dart']);
+  final stateImports =
+      AstEditor(
+        state.source,
+        resolveUri: (uri) => c.canonicalImport(statePath, uri),
+      )..addImports([
+        '${c.core}/state/use_case_state.dart',
+        if (operation.returnType == UseCaseReturnType.entity)
+          operation.entityUri(c.package, c.path, c.name),
+      ]);
   result[statePath] = stateImports.source;
 
-  final controller = AstEditor(sources[controllerPath]!);
+  final controller = AstEditor(
+    sources[controllerPath]!,
+    resolveUri: (uri) => c.canonicalImport(controllerPath, uri),
+  );
   controller.addImports([
     '${c.imports}/domain/usecases/${operation.name}.dart',
     '${c.core}/state/use_case_state.dart',
     '${c.core}/errors/failure.dart',
     if (operation.returnType == UseCaseReturnType.entity)
-      '${c.imports}/domain/entities/${c.name}_entity.dart',
+      operation.entityUri(c.package, c.path, c.name),
   ]);
   final actionBody =
       '''

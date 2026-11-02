@@ -4,6 +4,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 /// Gives each authored generated file a purpose and documents its entry points.
 String documentGeneratedDart(String path, String source) {
   final purpose = switch (path) {
+    _ when path.contains('/storage/') => 'Provides encrypted local persistence, platform key management, and storage key definitions.',
     _ when path.endsWith('/app.dart') => 'Builds the application with routing, theme, and Arabic/English localization.',
     _ when path.endsWith('/bootstrap.dart') =>
       'Loads environment settings and dependencies before starting Flutter.',

@@ -1,0 +1,6 @@
+# Flutter's official localization generator. Edit the ARB files to add messages.
+arb-dir: assets/translations
+template-arb-file: app_en.arb
+output-dir: lib/core/localization/generated
+output-localization-file: app_localizations.dart
+nullable-getter: false

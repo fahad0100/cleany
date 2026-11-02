@@ -17,6 +17,8 @@ import 'templates/core_templates.dart';
 import 'templates/documentation.dart';
 import 'transaction.dart';
 import 'workspace.dart';
+import 'validation_cache.dart';
+import 'config_value_spec.dart';
 
 /// Maintenance never clears the global Flutter/pub cache or recovery backups.
 class ProjectMaintenance {
@@ -36,7 +38,11 @@ class ProjectMaintenance {
       for (final entry
           in directory.listSync(followLinks: false).whereType<Directory>()) {
         final marker = File(p.join(entry.path, '.cleany-stage'));
-        if (marker.existsSync() && marker.readAsStringSync() == project.root) {
+        final validation = ValidationCache.metadata(entry);
+        if ((marker.existsSync() &&
+                marker.readAsStringSync() == project.root) ||
+            (validation?['project'] == project.root &&
+                validation?['version'] == 1)) {
           await entry.delete(recursive: true);
           count++;
         }
@@ -65,7 +71,36 @@ class ProjectMaintenance {
       registry['api_provider'] as String,
     );
     final id = registry['app_id'] as String? ?? project.detectAppId();
-    final fresh = coreTemplates(package, provider, id);
+    final configValues = registryConfigValues(registry);
+    final fresh = coreTemplates(
+      package,
+      provider,
+      id,
+      configValues: configValues,
+    );
+    // Reset code, not a user's environment choices or DB key selection.
+    for (final environment in ['dev', 'uat', 'prod']) {
+      final path = 'config/flavors/$environment.yaml';
+      final file = File(project.file(path));
+      if (!file.existsSync()) continue;
+      Object? old;
+      try {
+        old = loadYaml(file.readAsStringSync());
+      } on YamlException {
+        // The original is archived below; reset can recover malformed YAML.
+      }
+      if (old is Map && old['environment'] == environment) {
+        final restored = YamlEditor(fresh[path]!);
+        for (final key in [
+          'api_base_url',
+          'db_secret_key',
+          ...configValues.map((value) => value.yamlKey),
+        ]) {
+          if (old[key] is String) restored.update([key], old[key]);
+        }
+        fresh[path] = restored.toString();
+      }
+    }
     final roots = <String>{
       'lib/app',
       'lib/core',
@@ -151,6 +186,10 @@ class ProjectMaintenance {
         'version': registryVersion,
         'template_version': templateVersion,
         'api_provider': provider.name,
+        'app_config_values': configValues
+            .map((value) => value.toJson())
+            .toList(),
+        'local_storage': true,
         'app_id': id,
         'project_files': owned,
         'features': <Object>[],
@@ -247,6 +286,37 @@ GenerationPlan planPlatformFlavors(Project project, Set<String> platforms) {
   }
   editor.update(['instructions'], instructions);
   for (final entry in (yaml['flavors'] as YamlMap).entries) {
+    for (final platform in platforms.intersection({'ios', 'macos'})) {
+      final settings = (entry.value as Map)[platform] as Map;
+      final buildSettings = settings['buildSettings'];
+      if (settings['icon'] == null &&
+          (buildSettings is! Map ||
+              !buildSettings.containsKey(
+                'ASSETCATALOG_COMPILER_APPICON_NAME',
+              )) &&
+          Directory(
+            project.file('$platform/Runner/Assets.xcassets/AppIcon.appiconset'),
+          ).existsSync()) {
+        if (buildSettings == null) {
+          editor.update([
+            'flavors',
+            entry.key,
+            platform,
+            'buildSettings',
+          ], <String, Object>{});
+        }
+        // Flavorizr otherwise references AppIcon-dev/uat/prod without creating
+        // those catalogs when asset processors are intentionally excluded.
+        // Preserve explicit custom icons and reuse the project's real default.
+        editor.update([
+          'flavors',
+          entry.key,
+          platform,
+          'buildSettings',
+          'ASSETCATALOG_COMPILER_APPICON_NAME',
+        ], 'AppIcon');
+      }
+    }
     for (final platform in ['android', 'ios', 'macos']) {
       if (!platforms.contains(platform) &&
           (entry.value as Map).containsKey(platform)) {

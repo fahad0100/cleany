@@ -1,0 +1,93 @@
+00:00 +0: loading test/native_flavors_test.dart
+00:00 +0: real android builds for dev, uat and prod native flavors
+Native fixture: /var/folders/db/2_z7rqbd4s38r8mhpd3dh00w0000gn/T/cleany_native_android_nsGIAd
+[android] flutter --version --machine 
+[android] flutter --version --machine 388ms
+[android] dart --version 
+[android] dart --version 64ms
+[android] staging 
+[android] staging fresh compiler cache
+[android] staging 6 inputs copied
+[android] flutter pub get 
+[android] flutter pub get 5s
+[android] flutter pub get 10s
+[android] flutter pub get 13003ms
+[android] flutter gen-l10n 
+[android] flutter gen-l10n 826ms
+[android] dart run build_runner build 
+[android] dart run build_runner build 5s
+[android] dart run build_runner build 10s
+[android] dart run build_runner build 15s
+[android] dart run build_runner build 20s
+[android] dart run build_runner build 22270ms
+[android] flutter analyze --no-pub 
+[android] flutter analyze --no-pub 3006ms
+[android] collecting 47 validated outputs
+[android] applying 49 files
+[android] completed 
+[android] flutter --version --machine 
+[android] flutter --version --machine 369ms
+[android] dart --version 
+[android] dart --version 67ms
+[android] staging 
+[android] staging reusing validated compiler cache
+[android] staging 71 inputs copied
+[android] flutter pub get 
+[android] flutter pub get 1484ms
+[android] flutter gen-l10n 
+[android] flutter gen-l10n 811ms
+[android] dart run flutter_flavorizr --force 
+[android] dart run flutter_flavorizr --force 2695ms
+[android] flutter analyze --no-pub 
+[android] flutter analyze --no-pub 3035ms
+[android] collecting 73 validated outputs
+[android] applying 6 files
+[android] completed 
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 5s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 10s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 15s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 20s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 25s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 30s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 35s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 40s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 45s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 50s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 55s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 60s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 65s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 70s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 75s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 80s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 85s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 90s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 95s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 100s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 105s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 110s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 115s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 120s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 125s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 130s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 135s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 140s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 145s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 150s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 155s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 160s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 165s
+[android/dev] flutter build apk --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 168552ms
+BUILT android/dev
+[android/uat] flutter build apk --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 
+[android/uat] flutter build apk --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 5s
+[android/uat] flutter build apk --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 10s
+[android/uat] flutter build apk --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 14599ms
+BUILT android/uat
+[android/prod] flutter build apk --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 
+[android/prod] flutter build apk --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 5s
+[android/prod] flutter build apk --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 10s
+[android/prod] flutter build apk --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 15s
+[android/prod] flutter build apk --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 15031ms
+BUILT android/prod
+04:07 +1: All tests passed!

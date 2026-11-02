@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 
 import 'project.dart';
 import 'specification.dart';
+import 'config_value_spec.dart';
 
 /// Project-relative path of the versioned feature/component ownership registry.
 const registryPath = '.cleany/features.json';
@@ -85,6 +86,21 @@ class FeatureRegistry {
           throw const FormatException('Invalid component layout.');
         }
         final owned = record['files'] as List? ?? [];
+        if (record.containsKey('state_style') &&
+            !{'status', 'single', 'union'}.contains(record['state_style'])) {
+          throw const FormatException('Invalid presentation state style.');
+        }
+        if (record.containsKey('primary_status') &&
+            (record['primary_status'] is! String ||
+                !RegExp(r'^[a-z][a-zA-Z0-9]*Status$')
+                    .hasMatch(record['primary_status'] as String))) {
+          throw const FormatException('Invalid primary presentation status.');
+        }
+        if (record.containsKey('component_scope') &&
+            (record['kind'] != 'component' ||
+                !{'local', 'external'}.contains(record['component_scope']))) {
+          throw const FormatException('Invalid component scope.');
+        }
         for (final file in owned) {
           final target = file['path'] as String;
           project.file(target);
@@ -150,6 +166,10 @@ class FeatureRegistry {
       data['version'] = registryVersion;
       data['template_version'] ??= 'legacy';
       data['project_files'] ??= <Object>[];
+      registryConfigValues(data);
+      if (data.containsKey('local_storage') && data['local_storage'] is! bool) {
+        throw const FormatException('Invalid local storage metadata.');
+      }
       final projectPaths = <String>{};
       for (final raw in data['project_files'] as List) {
         final record = raw as Map;
@@ -171,6 +191,7 @@ class FeatureRegistry {
             {
               '.vscode/launch.json',
               'CLEANY_RUN.md',
+              'LOCAL_STORAGE.md',
               'lib/main.dart',
               'lib/main_dev.dart',
               'lib/main_uat.dart',

@@ -12,3 +12,7 @@ bool usesLegacyComponentWidgets(Map entry) {
   }
   return true;
 }
+
+/// Old entries retain their external controller wiring; new widgets own it.
+bool usesLocalComponentScope(Map entry) =>
+    entry['kind'] == 'component' && entry['component_scope'] == 'local';

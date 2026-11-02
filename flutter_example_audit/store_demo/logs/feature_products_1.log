@@ -1,0 +1,123 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/products/domain/entities/products_entity.dart
+  CREATE  lib/features/products/domain/repositories/products_repository.dart
+  CREATE  lib/features/products/domain/usecases/get_products.dart
+  CREATE  lib/features/products/data/models/products_model.dart
+  CREATE  lib/core/network/retrofit/products_api.dart
+  CREATE  lib/features/products/data/datasources/products_remote_data_source.dart
+  CREATE  lib/features/products/data/repositories/products_repository_impl.dart
+  CREATE  lib/features/products/presentation/widgets/.gitkeep
+  CREATE  lib/features/products/presentation/cubit/products_state.dart
+  CREATE  lib/features/products/presentation/cubit/products_cubit.dart
+  CREATE  lib/features/products/presentation/pages/products_page.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 371ms ✓
+[0s] dart --version
+[0s] dart --version · 72ms ✓
+[0s] staging
+[0s] staging · 98 inputs copied
+[0s] flutter pub get
+[4s] flutter pub get · 3420ms ✓
+[4s] flutter gen-l10n
+[4s] flutter gen-l10n · 764ms ✓
+[4s] dart run build_runner build --delete-conflicting-outputs
+[9s] dart run build_runner build --delete-conflicting-outputs · 5s
+[14s] dart run build_runner build --delete-conflicting-outputs · 10s
+[19s] dart run build_runner build --delete-conflicting-outputs · 15s
+[24s] dart run build_runner build --delete-conflicting-outputs · 20s
+[27s] dart run build_runner build --delete-conflicting-outputs · 22649ms ✓
+[27s] flutter analyze --no-pub
+[31s] flutter analyze --no-pub · 3641ms ✓
+[31s] collecting · 114 validated outputs
+[31s] applying · 21 files
+[31s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

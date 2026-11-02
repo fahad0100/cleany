@@ -1,0 +1,38 @@
+[
+  {
+    "platform": "android",
+    "flavor": "dev",
+    "application_id": "com.cleany.validation.nativefixture.dev",
+    "apk_bytes": 160675836
+  },
+  {
+    "platform": "android",
+    "flavor": "uat",
+    "application_id": "com.cleany.validation.nativefixture.uat",
+    "apk_bytes": 160675852
+  },
+  {
+    "platform": "android",
+    "flavor": "prod",
+    "application_id": "com.cleany.validation.nativefixture",
+    "apk_bytes": 160675828
+  },
+  {
+    "platform": "ios",
+    "flavor": "dev",
+    "application_id": "com.cleany.validation.nativefixture.dev",
+    "display_name": "native_fixture Dev"
+  },
+  {
+    "platform": "ios",
+    "flavor": "uat",
+    "application_id": "com.cleany.validation.nativefixture.uat",
+    "display_name": "native_fixture UAT"
+  },
+  {
+    "platform": "ios",
+    "flavor": "prod",
+    "application_id": "com.cleany.validation.nativefixture",
+    "display_name": "native_fixture"
+  }
+]

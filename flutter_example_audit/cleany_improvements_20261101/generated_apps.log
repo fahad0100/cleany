@@ -1,0 +1,242 @@
+00:00 +0: loading test/generated_app_test.dart
+00:00 +0: generated retrofit app builds, analyzes and passes runtime tests
+[retrofit] applying: 43 files
+[retrofit] completed: 
+[retrofit] applying: 16 files
+[retrofit] completed: 
+[retrofit] applying: 17 files
+[retrofit] completed: 
+[retrofit] applying: 17 files
+[retrofit] completed: 
+[retrofit] applying: 6 files
+[retrofit] completed: 
+[retrofit] applying: 7 files
+[retrofit] completed: 
+[retrofit] applying: 3 files
+[retrofit] completed: 
+[retrofit] applying: 6 files
+[retrofit] completed: 
+[retrofit] applying: 6 files
+[retrofit] completed: 
+[retrofit] applying: 18 files
+[retrofit] completed: 
+[retrofit] applying: 17 files
+[retrofit] completed: 
+[retrofit] applying: 9 files
+[retrofit] completed: 
+[retrofit] applying: 9 files
+[retrofit] completed: 
+[retrofit] applying: 9 files
+[retrofit] completed: 
+[retrofit] command: flutter --version --machine
+[retrofit] command: flutter --version --machine
+[retrofit] command: dart --version
+[retrofit] command: dart --version
+[retrofit] staging: 
+[retrofit] staging: reusing validated compiler cache
+[retrofit] staging: 176 inputs copied
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter gen-l10n
+[retrofit] command: flutter gen-l10n
+[retrofit] command: dart run build_runner build
+[retrofit] command: dart run build_runner build
+[retrofit] command: dart run build_runner build
+[retrofit] command: flutter analyze --no-pub
+[retrofit] command: flutter analyze --no-pub
+[retrofit] command: flutter analyze --no-pub
+[retrofit] collecting: 176 validated outputs
+[retrofit] applying: 74 files
+[retrofit] completed: 
+[retrofit] command: flutter --version --machine
+[retrofit] command: flutter --version --machine
+[retrofit] command: dart --version
+[retrofit] command: dart --version
+[retrofit] staging: 
+[retrofit] staging: reusing validated compiler cache
+[retrofit] staging: 176 inputs copied
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter gen-l10n
+[retrofit] command: flutter gen-l10n
+[retrofit] command: dart run build_runner build
+[retrofit] command: dart run build_runner build
+[retrofit] command: flutter analyze --no-pub
+[retrofit] command: flutter analyze --no-pub
+[retrofit] collecting: 176 validated outputs
+[retrofit] applying: 2 files
+[retrofit] completed: 
+[retrofit] applying: 41 files
+[retrofit] completed: 
+[retrofit] applying: 7 files
+[retrofit] completed: 
+[retrofit] command: flutter --version --machine
+[retrofit] command: flutter --version --machine
+[retrofit] command: dart --version
+[retrofit] command: dart --version
+[retrofit] staging: 
+[retrofit] staging: reusing validated compiler cache
+[retrofit] staging: 134 inputs copied
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter gen-l10n
+[retrofit] command: flutter gen-l10n
+[retrofit] command: dart run build_runner build
+[retrofit] command: dart run build_runner build
+[retrofit] command: flutter analyze --no-pub
+[retrofit] command: flutter analyze --no-pub
+[retrofit] collecting: 118 validated outputs
+[retrofit] applying: 21 files
+[retrofit] completed: 
+[retrofit] command: flutter --version --machine
+[retrofit] command: flutter --version --machine
+[retrofit] command: dart --version
+[retrofit] command: dart --version
+[retrofit] staging: 
+[retrofit] staging: reusing validated compiler cache
+[retrofit] staging: 215 inputs copied
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter gen-l10n
+[retrofit] command: flutter gen-l10n
+[retrofit] command: dart run flutter_flavorizr --force
+[retrofit] command: dart run flutter_flavorizr --force
+[retrofit] command: flutter analyze --no-pub
+[retrofit] command: flutter analyze --no-pub
+[retrofit] collecting: 249 validated outputs
+[retrofit] applying: 41 files
+[retrofit] completed: 
+[retrofit] command: flutter --version --machine
+[retrofit] command: flutter --version --machine
+[retrofit] command: dart --version
+[retrofit] command: dart --version
+[retrofit] staging: 
+[retrofit] staging: reusing validated compiler cache
+[retrofit] staging: 119 inputs copied
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter pub get
+[retrofit] command: flutter gen-l10n
+[retrofit] command: flutter gen-l10n
+[retrofit] command: dart run build_runner build
+[retrofit] command: dart run build_runner build
+[retrofit] command: flutter analyze --no-pub
+[retrofit] command: flutter analyze --no-pub
+[retrofit] collecting: 47 validated outputs
+[retrofit] applying: 234 files
+[retrofit] completed: 
+03:10 +1: generated dio app builds, analyzes and passes runtime tests
+[dio] applying: 42 files
+[dio] completed: 
+[dio] applying: 15 files
+[dio] completed: 
+[dio] applying: 16 files
+[dio] completed: 
+[dio] applying: 16 files
+[dio] completed: 
+[dio] applying: 6 files
+[dio] completed: 
+[dio] applying: 7 files
+[dio] completed: 
+[dio] applying: 3 files
+[dio] completed: 
+[dio] applying: 6 files
+[dio] completed: 
+[dio] applying: 6 files
+[dio] completed: 
+[dio] applying: 17 files
+[dio] completed: 
+[dio] applying: 16 files
+[dio] completed: 
+[dio] applying: 9 files
+[dio] completed: 
+[dio] applying: 9 files
+[dio] completed: 
+[dio] applying: 8 files
+[dio] completed: 
+[dio] command: flutter --version --machine
+[dio] command: flutter --version --machine
+[dio] command: dart --version
+[dio] command: dart --version
+[dio] staging: 
+[dio] staging: reusing validated compiler cache
+[dio] staging: 163 inputs copied
+[dio] command: flutter pub get
+[dio] command: flutter pub get
+[dio] command: flutter gen-l10n
+[dio] command: flutter gen-l10n
+[dio] command: dart run build_runner build
+[dio] command: dart run build_runner build
+[dio] command: flutter analyze --no-pub
+[dio] command: flutter analyze --no-pub
+[dio] collecting: 163 validated outputs
+[dio] applying: 72 files
+[dio] completed: 
+[dio] command: flutter --version --machine
+[dio] command: flutter --version --machine
+[dio] command: dart --version
+[dio] command: dart --version
+[dio] staging: 
+[dio] staging: reusing validated compiler cache
+[dio] staging: 163 inputs copied
+[dio] command: flutter pub get
+[dio] command: flutter pub get
+[dio] command: flutter gen-l10n
+[dio] command: flutter gen-l10n
+[dio] command: dart run build_runner build
+[dio] command: dart run build_runner build
+[dio] command: flutter analyze --no-pub
+[dio] command: flutter analyze --no-pub
+[dio] collecting: 163 validated outputs
+[dio] applying: 2 files
+[dio] completed: 
+[dio] applying: 37 files
+[dio] completed: 
+[dio] applying: 7 files
+[dio] completed: 
+[dio] command: flutter --version --machine
+[dio] command: flutter --version --machine
+[dio] command: dart --version
+[dio] command: dart --version
+[dio] staging: 
+[dio] staging: reusing validated compiler cache
+[dio] staging: 125 inputs copied
+[dio] command: flutter pub get
+[dio] command: flutter pub get
+[dio] command: flutter gen-l10n
+[dio] command: flutter gen-l10n
+[dio] command: dart run build_runner build
+[dio] command: dart run build_runner build
+[dio] command: flutter analyze --no-pub
+[dio] command: flutter analyze --no-pub
+[dio] collecting: 111 validated outputs
+[dio] applying: 19 files
+[dio] completed: 
+[dio] command: flutter --version --machine
+[dio] command: flutter --version --machine
+[dio] command: dart --version
+[dio] command: dart --version
+[dio] staging: 
+[dio] staging: reusing validated compiler cache
+[dio] staging: 112 inputs copied
+[dio] command: flutter pub get
+[dio] command: flutter pub get
+[dio] command: flutter gen-l10n
+[dio] command: flutter gen-l10n
+[dio] command: dart run build_runner build
+[dio] command: dart run build_runner build
+[dio] command: flutter analyze --no-pub
+[dio] command: flutter analyze --no-pub
+[dio] collecting: 46 validated outputs
+[dio] applying: 182 files
+[dio] completed: 
+04:54 +2: All tests passed!

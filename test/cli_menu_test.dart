@@ -93,6 +93,7 @@ void main() {
       'Rename or move an entry',
       'Initialize project',
       'Configure native flavors',
+      'App config value',
       'Project doctor / repair',
       'Recover interrupted operation',
       'Cleany maintenance / reset',
@@ -109,6 +110,10 @@ void main() {
       );
     }
     expect(output, matches(RegExp(r'^\s*0\. Exit$', multiLine: true)));
+    expect(
+      output,
+      matches(RegExp(r'^\s*11\. App config value$', multiLine: true)),
+    );
     expect(output, isNot(contains('\x1b[')));
     final colored = await menu(['0'], color: true);
     expect(colored, contains('\x1b[1;35m[ Generation ]'));
@@ -129,6 +134,7 @@ void main() {
         CliCommand.renameMove: '› Entry:',
         CliCommand.initialize: 'Production app id (example:',
         CliCommand.configureFlavors: '› Platforms:',
+        CliCommand.appConfigValue: '› Key (UPPER_SNAKE_CASE)',
         CliCommand.doctor: 'No repairable issues found.',
         CliCommand.recover: '› Recovery',
         CliCommand.maintenance: '› Action:',

@@ -1,0 +1,65 @@
+00:00 +0: loading test/native_flavors_test.dart
+00:00 +0: real macos builds for dev, uat and prod native flavors
+Native fixture: /var/folders/db/2_z7rqbd4s38r8mhpd3dh00w0000gn/T/cleany_native_macos_c68Jlz
+[macos] flutter --version --machine 
+[macos] flutter --version --machine 372ms
+[macos] dart --version 
+[macos] dart --version 68ms
+[macos] staging 
+[macos] staging fresh compiler cache
+[macos] staging 6 inputs copied
+[macos] flutter pub get 
+[macos] flutter pub get 3181ms
+[macos] flutter gen-l10n 
+[macos] flutter gen-l10n 757ms
+[macos] dart run build_runner build 
+[macos] dart run build_runner build 5s
+[macos] dart run build_runner build 10s
+[macos] dart run build_runner build 15s
+[macos] dart run build_runner build 20s
+[macos] dart run build_runner build 21806ms
+[macos] flutter analyze --no-pub 
+[macos] flutter analyze --no-pub 3273ms
+[macos] collecting 47 validated outputs
+[macos] applying 49 files
+[macos] completed 
+[macos] flutter --version --machine 
+[macos] flutter --version --machine 372ms
+[macos] dart --version 
+[macos] dart --version 66ms
+[macos] staging 
+[macos] staging reusing validated compiler cache
+[macos] staging 74 inputs copied
+[macos] flutter pub get 
+[macos] flutter pub get 1744ms
+[macos] flutter gen-l10n 
+[macos] flutter gen-l10n 760ms
+[macos] dart run flutter_flavorizr --force 
+[macos] dart run flutter_flavorizr --force 2674ms
+[macos] flutter analyze --no-pub 
+[macos] flutter analyze --no-pub 2800ms
+[macos] collecting 96 validated outputs
+[macos] applying 26 files
+[macos] completed 
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 5s
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 10s
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 15s
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 20s
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 25s
+[macos/dev] flutter build macos --debug --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 26456ms
+BUILT macos/dev
+[macos/uat] flutter build macos --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 
+[macos/uat] flutter build macos --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 5s
+[macos/uat] flutter build macos --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 10s
+[macos/uat] flutter build macos --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 15s
+[macos/uat] flutter build macos --debug --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 19982ms
+BUILT macos/uat
+[macos/prod] flutter build macos --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 
+[macos/prod] flutter build macos --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 5s
+[macos/prod] flutter build macos --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 10s
+[macos/prod] flutter build macos --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 15s
+[macos/prod] flutter build macos --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 20s
+[macos/prod] flutter build macos --debug --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 23680ms
+BUILT macos/prod
+01:49 +1: All tests passed!

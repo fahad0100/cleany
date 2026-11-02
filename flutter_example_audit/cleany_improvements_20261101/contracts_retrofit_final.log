@@ -1,0 +1,98 @@
+00:00 +0: loading test/contract_flutter_test.dart
+00:00 +0: custom contracts, alternate Entity and warm validation (retrofit)
+[retrofit] applying 43 files
+[retrofit] completed 
+[retrofit] applying 16 files
+[retrofit] completed 
+[retrofit] applying 17 files
+[retrofit] completed 
+[retrofit] applying 16 files
+[retrofit] completed 
+[retrofit] applying 9 files
+[retrofit] completed 
+[retrofit] applying 9 files
+[retrofit] completed 
+[retrofit] flutter --version --machine 
+[retrofit] flutter --version --machine 378ms
+[retrofit] dart --version 
+[retrofit] dart --version 81ms
+[retrofit] staging 
+[retrofit] staging fresh compiler cache
+[retrofit] staging 81 inputs copied
+[retrofit] flutter pub get 
+[retrofit] flutter pub get 5s
+[retrofit] flutter pub get 5415ms
+[retrofit] flutter gen-l10n 
+[retrofit] flutter gen-l10n 817ms
+[retrofit] dart run build_runner build 
+[retrofit] dart run build_runner build 5s
+[retrofit] dart run build_runner build 10s
+[retrofit] dart run build_runner build 15s
+[retrofit] dart run build_runner build 20s
+[retrofit] dart run build_runner build 23156ms
+[retrofit] flutter analyze --no-pub 
+[retrofit] flutter analyze --no-pub 2434ms
+[retrofit] collecting 102 validated outputs
+[retrofit] applying 25 files
+[retrofit] completed 
+[retrofit] flutter --version --machine 
+[retrofit] flutter --version --machine 368ms
+[retrofit] dart --version 
+[retrofit] dart --version 69ms
+[retrofit] staging 
+[retrofit] staging fresh compiler cache
+[retrofit] staging 102 inputs copied
+[retrofit] flutter pub get 
+[retrofit] flutter pub get 1553ms
+[retrofit] flutter gen-l10n 
+[retrofit] flutter gen-l10n 777ms
+[retrofit] dart run build_runner build 
+[retrofit] dart run build_runner build 24s
+[retrofit] dart run build_runner build 25s
+[retrofit] dart run build_runner build 30s
+[retrofit] dart run build_runner build 35s
+[retrofit] dart run build_runner build 40s
+[retrofit] dart run build_runner build 43201ms
+[retrofit] flutter analyze --no-pub 
+[retrofit] flutter analyze --no-pub 2344ms
+[retrofit] collecting 103 validated outputs
+[retrofit] applying 4 files
+[retrofit] completed 
+[retrofit] flutter --version --machine 
+[retrofit] flutter --version --machine 361ms
+[retrofit] dart --version 
+[retrofit] dart --version 75ms
+[retrofit] staging 
+[retrofit] staging reusing validated compiler cache
+[retrofit] staging 103 inputs copied
+[retrofit] flutter pub get 
+[retrofit] flutter pub get 1484ms
+[retrofit] flutter gen-l10n 
+[retrofit] flutter gen-l10n 755ms
+[retrofit] dart run build_runner build 
+[retrofit] dart run build_runner build 4393ms
+[retrofit] flutter analyze --no-pub 
+[retrofit] flutter analyze --no-pub 2257ms
+[retrofit] collecting 104 validated outputs
+[retrofit] applying 3 files
+[retrofit] completed 
+VALIDATION_TIMING retrofit: cold=48542ms warm=9521ms
+[retrofit] flutter --version --machine 
+[retrofit] flutter --version --machine 362ms
+[retrofit] dart --version 
+[retrofit] dart --version 76ms
+[retrofit] staging 
+[retrofit] staging reusing validated compiler cache
+[retrofit] staging 103 inputs copied
+[retrofit] flutter pub get 
+[retrofit] flutter pub get 1478ms
+[retrofit] flutter gen-l10n 
+[retrofit] flutter gen-l10n 750ms
+[retrofit] dart run build_runner build 
+[retrofit] dart run build_runner build 1250ms
+[retrofit] flutter analyze --no-pub 
+[retrofit] flutter analyze --no-pub 1877ms
+[retrofit] collecting 104 validated outputs
+[retrofit] applying 2 files
+[retrofit] completed 
+01:43 +1: All tests passed!

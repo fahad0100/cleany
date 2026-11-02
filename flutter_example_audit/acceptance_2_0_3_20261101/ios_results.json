@@ -1,0 +1,32 @@
+[
+  {
+    "operation": "live_flow_dev",
+    "seconds": 86.988,
+    "status": "passed"
+  },
+  {
+    "operation": "build_ios_uat",
+    "seconds": 28.267,
+    "status": "passed"
+  },
+  {
+    "operation": "launch_ios_uat",
+    "seconds": 26.609,
+    "status": "passed"
+  },
+  {
+    "operation": "build_ios_prod",
+    "seconds": 25.337,
+    "status": "passed"
+  },
+  {
+    "operation": "launch_ios_prod",
+    "seconds": 26.689,
+    "status": "passed"
+  },
+  {
+    "operation": "leave_dev_running",
+    "seconds": 28.348,
+    "status": "passed"
+  }
+]

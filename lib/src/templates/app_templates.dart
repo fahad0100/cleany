@@ -1,30 +1,47 @@
-/// Fixed shared template module.
-Map<String, String> appTemplates() => {
-  'lib/app/app.dart': '''
+import '../app_config_editor.dart';
+import '../config_value_spec.dart';
+
+/// Fixed shared template module with registered public configuration fields.
+Map<String, String> appTemplates({
+  List<AppConfigValueSpec> configValues = const [],
+  bool includeLocalStorage = true,
+}) {
+  final files = <String, String>{
+    'lib/app/app.dart': '''
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sizer/sizer.dart';
 import '../core/localization/generated/app_localizations.dart';
 import '../core/theme/app_theme.dart';
 
 class App extends StatelessWidget {
-  const App({required this.router, super.key});
+  const App({required this.router, this.themeMode = ThemeMode.system, super.key});
   final GoRouter router;
+  final ThemeMode themeMode;
 
   @override
-  Widget build(BuildContext context) => MaterialApp.router(
+  Widget build(BuildContext context) => Sizer(
+    maxTabletWidth: 1024,
+    builder: (context, orientation, screenType) => MaterialApp.router(
     routerConfig: router,
     theme: AppTheme.light,
+    darkTheme: AppTheme.dark,
+    themeMode: themeMode,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
     debugShowCheckedModeBanner: false,
+    ),
   );
 }
 ''',
-  'lib/app/bootstrap.dart': '''
+    'lib/app/bootstrap.dart':
+        '''
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+${includeLocalStorage ? "import '../core/storage/app_local_storage.dart';" : ''}
 import 'app.dart';
 import 'config/app_config.dart';
 import 'config/app_environment.dart';
@@ -39,12 +56,20 @@ Future<void> bootstrap(AppEnvironment environment) async {
   try {
     final flavor = await FlavorConfig.load(environment);
     stage = 'validating API_BASE_URL';
-    final config = AppConfig.fromEnvironment(environment, fallbackBaseUrl: flavor.apiBaseUrl);
-    stage = 'configuring application services';
+    final config = AppConfig.fromEnvironment(environment, fallbackBaseUrl: flavor.apiBaseUrl${includeLocalStorage || configValues.isNotEmpty ? ', values: flavor.values' : ''});
+    stage = '${includeLocalStorage ? 'opening encrypted local storage and configuring application services' : 'configuring application services'}';
     await configureDependencies(container, config);
     stage = 'creating the router';
     final router = createRouter(container);
-    runApp(_ApplicationLifetime(container: container, disposeRouter: router.dispose, child: App(router: router)));
+    // Expose the same DI instances to pages without transferring their ownership.
+    runApp(_ApplicationLifetime(container: container, disposeRouter: router.dispose,
+      child: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AppConfig>.value(value: container<AppConfig>()),
+${includeLocalStorage ? '          RepositoryProvider<AppLocalStorage>.value(value: container<AppLocalStorage>()),' : ''}
+        ],
+        child: App(router: router),
+      )));
   } catch (error, stackTrace) {
     // Startup diagnostics identify the failing stage without printing config values.
     FlutterError.reportError(FlutterErrorDetails(exception: error, stack: stackTrace,
@@ -71,7 +96,10 @@ class _ApplicationLifetime extends StatefulWidget {
 class _ApplicationLifetimeState extends State<_ApplicationLifetime> {
   @override
   void dispose() {
-    widget.disposeRouter();
+    try { widget.disposeRouter(); } catch (error, stackTrace) {
+      FlutterError.reportError(FlutterErrorDetails(exception: error, stack: stackTrace,
+        library: 'app.bootstrap', context: ErrorDescription('Disposing the router.')));
+    }
     unawaited(widget.container.reset(dispose: true).catchError((Object error, StackTrace stackTrace) {
       FlutterError.reportError(FlutterErrorDetails(exception: error, stack: stackTrace,
         library: 'app.bootstrap', context: ErrorDescription('Disposing application services.')));
@@ -82,18 +110,23 @@ class _ApplicationLifetimeState extends State<_ApplicationLifetime> {
   Widget build(BuildContext context) => widget.child;
 }
 ''',
-  'lib/app/config/app_environment.dart': '''
+    'lib/app/config/app_environment.dart': '''
 enum AppEnvironment { dev, uat, prod }
 ''',
-  'lib/app/config/app_config.dart': r'''
+    'lib/app/config/app_config.dart': r'''
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'app_environment.dart';
 
 class AppConfig {
-  const AppConfig({required this.environment, required this.apiBaseUrl});
+  const AppConfig({required this.environment, required this.apiBaseUrl, this.dbSecretKey = 'pass_key_storage'});
   final AppEnvironment environment;
   final String apiBaseUrl;
+  final String dbSecretKey;
 
-  factory AppConfig.fromEnvironment(AppEnvironment environment, {String fallbackBaseUrl = ''}) {
+  /// True only in Flutter debug builds, independently of dev, uat or prod.
+  bool get isDebug => kDebugMode;
+
+  factory AppConfig.fromEnvironment(AppEnvironment environment, {String fallbackBaseUrl = '', Map<String, Object?> values = const {}}) {
     const override = String.fromEnvironment('API_BASE_URL');
     final baseUrl = override.isEmpty ? fallbackBaseUrl : override;
     final uri = Uri.tryParse(baseUrl);
@@ -103,22 +136,40 @@ class AppConfig {
         (environment != AppEnvironment.dev && uri.scheme != 'https')) {
       throw StateError('Provide a valid API_BASE_URL; UAT and prod require HTTPS.');
     }
-    return AppConfig(environment: environment, apiBaseUrl: baseUrl);
+    return AppConfig(environment: environment, apiBaseUrl: baseUrl,
+      dbSecretKey: const bool.hasEnvironment('DB_SECRET_KEY')
+        ? const String.fromEnvironment('DB_SECRET_KEY')
+        : _cleanyConfigValue(values, 'db_secret_key', fallback: 'pass_key_storage'));
+  }
+
+  // Values are bundled public configuration. Keep secrets in secure storage.
+  static String _cleanyConfigValue(Map<String, Object?> values, String key, {String fallback = ''}) {
+    final value = values[key];
+    if (value == null) { return fallback; }
+    if (value is! String) { throw StateError('App configuration value $key must be a string.'); }
+    return value;
   }
 }
 ''',
-  'lib/app/di/injection.dart': '''
+    'lib/app/di/injection.dart':
+        '''
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import '../config/app_config.dart';
 import '../../core/network/dio/dio_client.dart';
+${includeLocalStorage ? "import '../../core/storage/app_local_storage.dart';" : ''}
 
 // One composition root. Application services live in an explicit app scope.
 // Repositories are lazy singletons; presentation controllers are factories.
-Future<void> configureDependencies(GetIt container, AppConfig config) async {
+Future<void> configureDependencies(GetIt container, AppConfig config${includeLocalStorage ? ', {AppLocalStorage? localStorage}' : ''}) async {
   container.pushNewScope(scopeName: 'app');
   try {
     container.registerSingleton<AppConfig>(config);
+${includeLocalStorage ? '''
+    final storage = localStorage ?? await AppLocalStorage.open(
+      environment: config.environment.name, dbSecretKey: config.dbSecretKey);
+    container.registerSingleton<AppLocalStorage>(storage, dispose: (storage) => storage.close());
+''' : ''}
     container.registerLazySingleton<Dio>(
       () => createDio(config.apiBaseUrl), dispose: (dio) => dio.close(force: true));
     registerFeatureDependencies(container);
@@ -132,7 +183,7 @@ void registerFeatureDependencies(GetIt container) {}
 
 Future<void> disposeDependencies(GetIt container) => container.popScope();
 ''',
-  'lib/app/composition/feature_pages.dart': '''
+    'lib/app/composition/feature_pages.dart': '''
 // Presentation factories are wired here, keeping the router independent of
 // controllers and data-layer implementation details.
 import 'package:flutter/widgets.dart';
@@ -146,7 +197,7 @@ class FeaturePages {
   );
 }
 ''',
-  'lib/app/router/app_router.dart': '''
+    'lib/app/router/app_router.dart': '''
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -164,10 +215,15 @@ List<RouteBase> buildRoutes(GetIt container) => [
   GoRoute(path: RouteNames.root, builder: (context, state) => FeaturePages.placeholder(container)),
 ];
 ''',
-  'lib/app/router/route_names.dart': '''
+    'lib/app/router/route_names.dart': '''
 class RouteNames {
   RouteNames._();
   static const root = '/';
 }
 ''',
-};
+  };
+  for (final value in configValues) {
+    files[appConfigPath] = addAppConfigField(files[appConfigPath]!, value);
+  }
+  return files;
+}

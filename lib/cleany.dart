@@ -17,3 +17,5 @@ export 'src/doctor.dart';
 export 'src/lifecycle.dart';
 export 'src/maintenance.dart';
 export 'src/project_lock.dart';
+export 'src/app_config_values.dart';
+export 'src/config_value_spec.dart';

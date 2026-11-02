@@ -10,6 +10,10 @@ import 'package:yaml/yaml.dart';
 
 import 'dependencies.dart';
 import 'component_layout.dart';
+import 'presentation_state.dart';
+import 'responsive_support.dart';
+import 'config_value_spec.dart';
+import 'app_config_editor.dart';
 import 'generator.dart';
 import 'project.dart';
 import 'registry.dart';
@@ -85,6 +89,46 @@ class ProjectDoctor {
         );
       }
     }
+    if (!registry.containsKey('app_config_values')) {
+      final config = File(project.file(appConfigPath));
+      registry['app_config_values'] = <Object>[];
+      if (config.existsSync()) {
+        try {
+          registry['app_config_values'] = discoverConfigValues(
+            config.readAsStringSync(),
+          ).map((value) => value.toJson()).toList();
+        } on Object {
+          issues.add(
+            const DiagnosticIssue(
+              'custom_config',
+              'Custom AppConfig was preserved; automatic field discovery is unavailable for its structure.',
+              repairable: false,
+            ),
+          );
+        }
+      }
+    }
+    registry['local_storage'] ??=
+        registry['project_files'] is List &&
+        (registry['project_files'] as List).any(
+          (record) =>
+              record['path'] == 'lib/core/storage/app_local_storage.dart',
+        );
+    // Recovered registries have no ownership list; recognize generated storage.
+    if (registry['local_storage'] != true &&
+        registry['project_files'] is List &&
+        (registry['project_files'] as List).isEmpty &&
+        (File(
+              project.file(
+                'lib/core/storage/storage_extension/storage_cipher.dart',
+              ),
+            ).existsSync() ||
+            File(project.file('lib/core/storage/storage_cipher.dart'))
+                .existsSync())) {
+      registry['local_storage'] = true;
+    }
+    final storageEnabled = registry['local_storage'] == true;
+    final configValues = registryConfigValues(registry);
     final old = (registry['features'] as List).cast<Map<String, dynamic>>();
     final active = old
         .where(
@@ -100,7 +144,16 @@ class ProjectDoctor {
         ),
       );
     }
-    final discovered = discoverEntries();
+    final discovered = discoverEntries(
+      knownPaths: active.map((entry) => entry['path'] as String).toSet(),
+      onUnsupported: (path, error) => issues.add(
+        DiagnosticIssue(
+          'custom_specification',
+          '$path has a custom data contract: $error. Its sources were preserved; automatic adoption requires an explicit specification.',
+          repairable: false,
+        ),
+      ),
+    );
     for (final entry in discovered) {
       if (active.any((existing) => existing['path'] == entry['path'])) continue;
       if (active.any((existing) => existing['name'] == entry['name'])) {
@@ -149,6 +202,12 @@ class ProjectDoctor {
       registry['api_provider'] as String,
     );
     for (final entry in active) {
+      if (entry['state'] != 'none') {
+        entry['state_style'] = presentationStateStyle(project, entry);
+        if (entry['state_style'] == 'status') {
+          entry['primary_status'] = primaryPresentationStatus(project, entry);
+        }
+      }
       final owned = (entry['files'] as List? ?? [])
           .cast<Map<String, dynamic>>();
       final templates = featureTemplates(
@@ -160,6 +219,10 @@ class ProjectDoctor {
         provider: provider,
         useCases: entryUseCases(entry),
         legacyComponentWidgets: usesLegacyComponentWidgets(entry),
+        localComponentScope: usesLocalComponentScope(entry),
+        singleState: usesSinglePresentationState(project, entry),
+        splitPrimaryState: usesSplitPresentationState(project, entry),
+        primaryStatus: primaryPresentationStatus(project, entry),
         specification: FeatureSpec.fromJson(
           Map<String, dynamic>.from(entry['specification'] as Map? ?? {}),
         ),
@@ -261,9 +324,8 @@ class ProjectDoctor {
       package,
       provider,
       applicationId ?? 'com.example.diagnostic',
-      includeUseCaseState: active.any(
-        (entry) => entryUseCases(entry).isNotEmpty,
-      ),
+      configValues: configValues,
+      includeLocalStorage: storageEnabled,
     );
     final projectFiles = (registry['project_files'] as List? ?? [])
         .cast<Map<String, dynamic>>();
@@ -313,6 +375,14 @@ class ProjectDoctor {
       );
       issues.add(DiagnosticIssue('missing_core', 'Restore ${entry.key}.'));
     }
+    if (planSizerIntegration(plan)) {
+      issues.add(
+        const DiagnosticIssue(
+          'responsive_root',
+          'Wrap existing MaterialApp configuration in Sizer before evaluating responsive themes.',
+        ),
+      );
+    }
     final previousRunFiles = plan.files.keys.toSet();
     planRunConfiguration(project, plan);
     recordRunConfigurationOwnership(plan, projectFiles);
@@ -335,7 +405,12 @@ class ProjectDoctor {
     registry['project_files'] = projectFiles;
     if (applicationId != null) registry['app_id'] = applicationId;
     plan.write(registryPath, prettyJson(registry));
-    _repairDependencies(plan, provider, issues);
+    _repairDependencies(
+      plan,
+      provider,
+      issues,
+      includeLocalStorage: storageEnabled,
+    );
     try {
       Generator(project).reconcileIntegrations(plan, [...old, ...active]);
       if (plan.files.keys.any((key) => key.startsWith('lib/app/'))) {
@@ -364,7 +439,10 @@ class ProjectDoctor {
   }
 
   /// Finds recognizable feature/component source layouts inside `lib`.
-  List<Map<String, dynamic>> discoverEntries() {
+  List<Map<String, dynamic>> discoverEntries({
+    Set<String> knownPaths = const {},
+    void Function(String path, GenerationException error)? onUnsupported,
+  }) {
     final lib = Directory(project.file('lib'));
     if (!lib.existsSync()) return [];
     final result = <String, Map<String, dynamic>>{};
@@ -431,6 +509,16 @@ class ProjectDoctor {
           ? 'bloc'
           : 'none';
       if (kind == GenerationKind.feature && state == 'none') continue;
+      // A registered contract is authoritative. Custom Models are not template
+      // schemas and must never prevent inspection of the rest of the project.
+      if (knownPaths.contains(path)) continue;
+      late final FeatureSpec specification;
+      try {
+        specification = _inferSpec(path, name);
+      } on GenerationException catch (error) {
+        onUnsupported?.call(path, error);
+        continue;
+      }
       result[path] = {
         'name': name,
         'path': path,
@@ -440,8 +528,15 @@ class ProjectDoctor {
           'component_layout': p.posix.dirname(relative) == path
               ? 'flat'
               : 'widgets',
+        if (kind == GenerationKind.component)
+          'component_scope':
+              file.readAsStringSync().contains(
+                '// Cleany component scope: local.',
+              )
+              ? 'local'
+              : 'external',
         'template_version': 'discovered',
-        'specification': _inferSpec(path, name).toJson(),
+        'specification': specification.toJson(),
         if (kind == GenerationKind.feature)
           'use_cases': discoverUseCases(
             project,
@@ -450,6 +545,18 @@ class ProjectDoctor {
           ).map((operation) => operation.toJson()).toList(),
         'files': <Object>[],
       };
+      if (state != 'none') {
+        result[path]!['state_style'] = presentationStateStyle(
+          project,
+          result[path]!,
+        );
+        if (result[path]!['state_style'] == 'status') {
+          result[path]!['primary_status'] = primaryPresentationStatus(
+            project,
+            result[path]!,
+          );
+        }
+      }
     }
     return result.values.toList();
   }
@@ -589,14 +696,16 @@ class ProjectDoctor {
   void _repairDependencies(
     GenerationPlan plan,
     ApiProvider provider,
-    List<DiagnosticIssue> issues,
-  ) {
+    List<DiagnosticIssue> issues, {
+    required bool includeLocalStorage,
+  }) {
     plan.write(
       'pubspec.yaml',
       configurePubspec(
         plan.read('pubspec.yaml'),
         provider,
         repairConstraints: true,
+        includeLocalStorage: includeLocalStorage,
         onRepair: (message) =>
             issues.add(DiagnosticIssue('dependency', message)),
       ),

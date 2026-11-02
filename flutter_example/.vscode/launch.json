@@ -1,0 +1,91 @@
+{"version":"0.2.0",
+  "configurations": [
+  {
+    "name": "Cleany DEV",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main_dev.dart",
+    "flutterMode": "debug",
+    "toolArgs": [
+      "--dart-define=API_BASE_URL=${input:cleany_dev_api_url}"
+    ]
+  },
+  {
+    "name": "Cleany DEV (native flavor)",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main_dev.dart",
+    "flutterMode": "debug",
+    "toolArgs": [
+      "--flavor",
+      "dev",
+      "--dart-define=API_BASE_URL=${input:cleany_dev_api_url}"
+    ]
+  },
+  {
+    "name": "Cleany UAT",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main_uat.dart",
+    "flutterMode": "debug",
+    "toolArgs": [
+      "--dart-define=API_BASE_URL=${input:cleany_uat_api_url}"
+    ]
+  },
+  {
+    "name": "Cleany UAT (native flavor)",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main_uat.dart",
+    "flutterMode": "debug",
+    "toolArgs": [
+      "--flavor",
+      "uat",
+      "--dart-define=API_BASE_URL=${input:cleany_uat_api_url}"
+    ]
+  },
+  {
+    "name": "Cleany PROD",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main_prod.dart",
+    "flutterMode": "debug",
+    "toolArgs": [
+      "--dart-define=API_BASE_URL=${input:cleany_prod_api_url}"
+    ]
+  },
+  {
+    "name": "Cleany PROD (native flavor)",
+    "type": "dart",
+    "request": "launch",
+    "program": "lib/main_prod.dart",
+    "flutterMode": "debug",
+    "toolArgs": [
+      "--flavor",
+      "prod",
+      "--dart-define=API_BASE_URL=${input:cleany_prod_api_url}"
+    ]
+  }
+]
+,
+  "inputs": [
+  {
+    "id": "cleany_dev_api_url",
+    "type": "promptString",
+    "description": "Public dev API base URL. Leave empty to use flavor YAML.",
+    "default": ""
+  },
+  {
+    "id": "cleany_uat_api_url",
+    "type": "promptString",
+    "description": "Public uat API base URL (HTTPS required). Leave empty to use flavor YAML.",
+    "default": ""
+  },
+  {
+    "id": "cleany_prod_api_url",
+    "type": "promptString",
+    "description": "Public prod API base URL (HTTPS required). Leave empty to use flavor YAML.",
+    "default": ""
+  }
+]
+}

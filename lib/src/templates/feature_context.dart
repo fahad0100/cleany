@@ -1,6 +1,8 @@
 import '../project.dart';
 import '../specification.dart';
 
+import 'package:path/path.dart' as p;
+
 class FeatureTemplateContext {
   FeatureTemplateContext({
     required this.name,
@@ -11,6 +13,10 @@ class FeatureTemplateContext {
     required this.provider,
     FeatureSpec? specification,
     this.legacyComponentWidgets = false,
+    this.localComponentScope = true,
+    this.singleState = true,
+    this.splitPrimaryState = false,
+    this.primaryStatusName,
   }) : spec = specification ?? FeatureSpec();
   final String name;
   final String path;
@@ -20,6 +26,11 @@ class FeatureTemplateContext {
   final ApiProvider provider;
   final FeatureSpec spec;
   final bool legacyComponentWidgets;
+  final bool localComponentScope;
+  final bool singleState;
+  final bool splitPrimaryState;
+  final String? primaryStatusName;
+  String get primaryStatus => primaryStatusName ?? '${camelCase(name)}Status';
   String get type => pascalCase(name);
   bool get full => kind == GenerationKind.feature;
   bool get stateful => state != StateManagement.none;
@@ -28,6 +39,16 @@ class FeatureTemplateContext {
   String get controller => '$type${bloc ? 'Bloc' : 'Cubit'}';
   String get imports => 'package:$package/${path.substring(4)}';
   String get core => 'package:$package/core';
+
+  /// Treats package and relative imports of the same source as one library.
+  String canonicalImport(String from, String uri) {
+    if (uri.contains(':')) return uri;
+    final path = p.posix.normalize(p.posix.join(p.posix.dirname(from), uri));
+    return path.startsWith('lib/')
+        ? 'package:$package/${path.substring(4)}'
+        : path;
+  }
+
   String get widgetLocation => full
       ? 'presentation/pages/'
       : legacyComponentWidgets

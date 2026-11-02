@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'command_runner.dart';
+import 'app_config_values.dart';
+import 'component_integrations.dart';
 import 'generator.dart';
 import 'registry.dart';
 import 'project.dart';
@@ -63,7 +65,7 @@ class _Terminal {
     output.writeln();
   }
 
-  String? line(String label, {String? fallback}) {
+  String? line(String label, {String? fallback, bool trim = true}) {
     if (_remember && !{'Continue', 'Recovery'}.contains(label)) {
       fallback = _draft[label] ?? fallback;
     }
@@ -72,7 +74,8 @@ class _Terminal {
     );
     final value = input();
     if (value == null) return null;
-    final answer = value.trim().isEmpty ? fallback ?? '' : value.trim();
+    final normalized = trim ? value.trim() : value;
+    final answer = normalized.isEmpty ? fallback ?? '' : normalized;
     if (_remember) _draft[label] = answer;
     return answer;
   }
@@ -215,7 +218,32 @@ Future<int> runCli(
         late final GenerationPlan plan;
         var runChecks = true;
         var runBuild = true;
-        if (action == CliCommand.maintenance) {
+        if (action == CliCommand.appConfigValue) {
+          output.writeln(
+            'These are bundled public settings. DB_SECRET_KEY defaults to pass_key_storage; change this public scaffold password before release.',
+          );
+          final manager = AppConfigValues(project);
+          String? key;
+          while (true) {
+            key = terminal.line('Key (UPPER_SNAKE_CASE)');
+            if (key == null) break;
+            try {
+              manager.validateNewKey(key);
+              break;
+            } on GenerationException catch (error) {
+              output.writeln(terminal.paint(error.toString(), '31'));
+            }
+          }
+          if (key == null) continue;
+          final values = <String, String>{};
+          for (final environment in ['dev', 'uat', 'prod']) {
+            final value = terminal.line('$environment value', trim: false);
+            if (value == null) break;
+            values[environment] = value;
+          }
+          if (values.length != 3) continue;
+          plan = manager.add(key: key, values: values);
+        } else if (action == CliCommand.maintenance) {
           final selected = terminal.choose('Action', [
             'Clean abandoned local cache',
             'Archive managed folders and reset Cleany',
@@ -353,12 +381,21 @@ Future<int> runCli(
             '${pascalCase(feature['name'] as String)}Entity (existing feature entity)',
           ]);
           if (result == null) continue;
+          String? entityName;
+          if (result == 2) {
+            entityName = terminal.line(
+              'Existing Entity name or source path (Enter = feature Entity)',
+              fallback: '${pascalCase(feature['name'] as String)}Entity',
+            );
+            if (entityName == null) continue;
+          }
           plan = generator.addUseCase(
             feature: feature['name'] as String,
             name: name,
             returnType: result == 1
                 ? UseCaseReturnType.voidResult
                 : UseCaseReturnType.entity,
+            entityName: entityName,
           );
           output.writeln(
             'The Data connection point needs its backend contract; until connected, the operation returns Failure.',
@@ -473,6 +510,7 @@ Future<int> runCli(
                 : null,
           );
         }
+        planComponentPageCleanup(plan);
         terminal.endForm();
         terminal.title('Review changes');
         for (final entry in plan.files.entries) {
@@ -593,7 +631,7 @@ List<FieldSpec> _fields(_Terminal terminal) {
     'Format: fieldName:type:jsonKey (example: userName:string:user_name)',
   );
   terminal.output.writeln(
-    'Types: string, int, double, bool, datetime, list<string>, list<int>.',
+    'Types: string, int, double, bool, datetime, list, list<string>, list<int>, list<num>, list<map<string,dynamic>>, map<string,dynamic>, set, dynamic.',
   );
   final fields = <FieldSpec>[];
   while (fields.length < count) {
@@ -608,18 +646,7 @@ List<FieldSpec> _fields(_Terminal terminal) {
       if (parts.length != 3) {
         throw const GenerationException('Use fieldName:type:jsonKey.');
       }
-      final requestedType = parts[1]
-          .replaceAll(RegExp(r'\s+'), '')
-          .toLowerCase();
-      final type = FieldSpec.types
-          .where((value) => value.toLowerCase() == requestedType)
-          .firstOrNull;
-      if (type == null) {
-        throw const GenerationException(
-          'Choose string, int, double, bool, datetime, list<string>, or list<int>.',
-        );
-      }
-      field = FieldSpec(parts[0], type, jsonKey: parts[2]);
+      field = FieldSpec(parts[0], parts[1], jsonKey: parts[2]);
       if (fields.any(
         (existing) =>
             existing.name == field.name || existing.jsonKey == field.jsonKey,

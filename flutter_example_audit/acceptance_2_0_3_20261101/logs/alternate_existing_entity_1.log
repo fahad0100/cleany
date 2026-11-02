@@ -1,0 +1,115 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Add use case
+╰────────────────────────────────────────────╯
+  Add an Entity-returning or void operation to an existing feature, reuse
+  its repository, and connect its Cubit or Bloc.
+
+     1. carts  (lib/features/carts)
+     2. users  (lib/features/users)
+     3. auth  (lib/features/auth)
+     4. products  (lib/features/products)
+     5. Cancel
+› Feature: › Use case name (snake_case):      1. void (completion only)
+     2. ProductsEntity (existing feature entity)
+› Return type: › Existing Entity name or source path (Enter = feature Entity) [ProductsEntity]: The Data connection point needs its backend contract; until connected, the operation returns Failure.
+The existing feature repository gains a method. Update other implementations and test fakes to match its expanded contract before validation.
+Call: ProductsCubit.auditUsersEntity(). Observe state.auditUsersEntityStatus.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/products/domain/usecases/audit_users_entity.dart
+  UPDATE  lib/features/products/domain/repositories/products_repository.dart
+  UPDATE  lib/features/products/data/repositories/products_repository_impl.dart
+  UPDATE  lib/features/products/presentation/cubit/products_state.dart
+  UPDATE  lib/features/products/presentation/cubit/products_cubit.dart
+  UPDATE  lib/features/products/data/datasources/products_remote_data_source.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 371ms ✓
+[0s] dart --version
+[0s] dart --version · 65ms ✓
+[0s] staging
+[0s] staging · reusing validated compiler cache
+[0s] staging · 140 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1566ms ✓
+[2s] flutter gen-l10n
+[2s] flutter gen-l10n · 761ms ✓
+[2s] dart run build_runner build
+[7s] dart run build_runner build · 4732ms ✓
+[7s] flutter analyze --no-pub
+[10s] flutter analyze --no-pub · 3235ms ✓
+[11s] collecting · 141 validated outputs
+[11s] applying · 9 files
+[11s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

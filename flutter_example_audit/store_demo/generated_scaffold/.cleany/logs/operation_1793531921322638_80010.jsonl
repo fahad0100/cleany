@@ -1,0 +1,21 @@
+{"stage":"command","seconds":0,"command":"flutter --version --machine","detail":null,"completed":false}
+{"stage":"command","seconds":0,"command":"flutter --version --machine","detail":"371ms","completed":true}
+{"stage":"command","seconds":0,"command":"dart --version","detail":null,"completed":false}
+{"stage":"command","seconds":0,"command":"dart --version","detail":"72ms","completed":true}
+{"stage":"staging","seconds":0,"command":null,"detail":null,"completed":false}
+{"stage":"staging","seconds":0,"command":null,"detail":"98 inputs copied","completed":false}
+{"stage":"command","seconds":0,"command":"flutter pub get","detail":null,"completed":false}
+{"stage":"command","seconds":4,"command":"flutter pub get","detail":"3420ms","completed":true}
+{"stage":"command","seconds":4,"command":"flutter gen-l10n","detail":null,"completed":false}
+{"stage":"command","seconds":4,"command":"flutter gen-l10n","detail":"764ms","completed":true}
+{"stage":"command","seconds":4,"command":"dart run build_runner build --delete-conflicting-outputs","detail":null,"completed":false}
+{"stage":"command","seconds":9,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"5s","completed":false}
+{"stage":"command","seconds":14,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"10s","completed":false}
+{"stage":"command","seconds":19,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"15s","completed":false}
+{"stage":"command","seconds":24,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"20s","completed":false}
+{"stage":"command","seconds":27,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"22649ms","completed":true}
+{"stage":"command","seconds":27,"command":"flutter analyze --no-pub","detail":null,"completed":false}
+{"stage":"command","seconds":31,"command":"flutter analyze --no-pub","detail":"3641ms","completed":true}
+{"stage":"collecting","seconds":31,"command":null,"detail":"114 validated outputs","completed":false}
+{"stage":"applying","seconds":31,"command":null,"detail":"21 files","completed":false}
+{"stage":"completed","seconds":31,"command":null,"detail":null,"completed":true}

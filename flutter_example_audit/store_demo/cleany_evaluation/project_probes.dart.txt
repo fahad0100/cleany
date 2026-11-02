@@ -1,0 +1,11 @@
+import 'dart:convert';
+import 'package:cleany/cleany.dart';
+void main(){
+ final project=Project('/Users/fahad/Documents/cleany/cleany/flutter_example');
+ for(final pair in [('products',UseCaseReturnType.entity),('auth',UseCaseReturnType.voidResult)]){
+  try {final plan=Generator(project).addUseCase(feature:pair.$1,name:'review_probe_action',returnType:pair.$2);print(jsonEncode({'probe':'add_use_case_${pair.$1}','files':plan.files.keys.toList(),'applied':false}));}
+  catch(e){print(jsonEncode({'probe':'add_use_case_${pair.$1}','error':'$e','applied':false}));}
+ }
+ try {final report=ProjectDoctor(project).inspect();print(jsonEncode({'probe':'doctor','issues':report.issues.map((i)=>{'code':i.code,'message':i.message,'repairable':i.repairable}).toList(),'planned_files':report.plan.files.keys.toList(),'applied':false}));}
+ catch(e){print(jsonEncode({'probe':'doctor','error':'$e','applied':false}));}
+}

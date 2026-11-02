@@ -6,6 +6,8 @@ import 'package:path/path.dart' as p;
 
 import 'ast_editor.dart';
 import 'component_layout.dart';
+import 'component_integrations.dart';
+import 'presentation_state.dart';
 import 'project.dart';
 import 'templates/core_templates.dart';
 import 'templates/feature_templates.dart';
@@ -84,6 +86,8 @@ class Generator {
               artifactRecord(entry.key, entry.value.after!, '@project'),
         ],
         'api_provider': provider.name,
+        'app_config_values': <Object>[],
+        'local_storage': true,
         'features': <Object>[],
       }),
       createOnly: true,
@@ -97,7 +101,7 @@ class Generator {
     return plan;
   }
 
-  /// Plans an entry and its central DI, presentation factory, and route wiring.
+  /// Plans a feature's central wiring or a self-contained reusable component.
   ///
   /// [path] is a parent directory inside `lib`. Alternatively, [parent] selects
   /// a registered feature whose `subfeatures` directory receives the entry.
@@ -164,6 +168,21 @@ class Generator {
     for (final entry in templates.entries) {
       _write(plan, entry.key, entry.value, createOnly: true);
     }
+    if (state != StateManagement.none &&
+        !File(project.file(useCaseStatePath)).existsSync()) {
+      _checkCollisions({useCaseStatePath: useCaseStateTemplate()});
+      _write(plan, useCaseStatePath, useCaseStateTemplate(), createOnly: true);
+      final projectFiles = registry['project_files'] as List? ?? [];
+      projectFiles.removeWhere((record) => record['path'] == useCaseStatePath);
+      projectFiles.add(
+        artifactRecord(
+          useCaseStatePath,
+          plan.files[useCaseStatePath]!.after!,
+          '@project',
+        ),
+      );
+      registry['project_files'] = projectFiles;
+    }
     _integrate(
       plan,
       name,
@@ -179,11 +198,17 @@ class Generator {
       'path': target,
       'kind': kind.name,
       'state': state.name,
+      if (state != StateManagement.none) 'state_style': 'status',
+      if (state != StateManagement.none)
+        'primary_status': '${camelCase(name)}Status',
       if (kind == GenerationKind.component) 'component_layout': 'flat',
+      if (kind == GenerationKind.component) 'component_scope': 'local',
       'parent': ?parent,
       'template_version': templateVersion,
       'specification': (specification ?? FeatureSpec()).toJson(),
-      'integrations': integrationOwnership(plan, name),
+      'integrations': kind == GenerationKind.component
+          ? <Map<String, Object>>[]
+          : integrationOwnership(plan, name),
       'files': [
         for (final entry in templates.entries)
           artifactRecord(entry.key, plan.files[entry.key]!.after!, name),
@@ -191,16 +216,20 @@ class Generator {
     });
     registry['features'] = entries;
     plan.write(registryPath, _json(registry));
+    planComponentPageCleanup(plan);
     return plan;
   }
 
   /// Adds a transport-independent operation to an existing full feature.
   /// Extends its existing repository contract and implementation, while central
   /// DI injects the operation into the current Cubit or Bloc.
+  /// [entityName] selects an existing Domain class or source path; omitting it
+  /// keeps the feature Entity. Different data shapes get a typed mapping hook.
   GenerationPlan addUseCase({
     required String feature,
     required String name,
     required UseCaseReturnType returnType,
+    String? entityName,
   }) {
     final package = project.validate();
     validateName(feature);
@@ -229,15 +258,43 @@ class Generator {
       kind: GenerationKind.feature,
       state: StateManagement.values.byName(selected['state'] as String),
       provider: provider,
+      singleState: usesSinglePresentationState(project, selected),
+      splitPrimaryState: usesSplitPresentationState(project, selected),
+      primaryStatusName: primaryPresentationStatus(project, selected),
       specification: FeatureSpec.fromJson(
         Map<String, dynamic>.from(selected['specification'] as Map? ?? {}),
       ),
     );
     if (returnType == UseCaseReturnType.entity) {
+      final requested = entityName?.trim();
+      final entity = resolveExistingEntity(
+        project,
+        requested == null || requested.isEmpty
+            ? '${context.type}Entity'
+            : requested,
+        preferredPath:
+            requested == null ||
+                requested.isEmpty ||
+                requested == '${context.type}Entity'
+            ? '${context.path}/domain/entities/${context.name}_entity.dart'
+            : null,
+      );
+      final fields = existingEntityMappingFields(
+        project,
+        context,
+        selected: entity,
+      );
       operation = UseCaseSpec(
         name: name,
         returnType: returnType,
-        entityFields: existingEntityMappingFields(project, context),
+        entityType: entity.type,
+        entityPath: entity.path,
+        entityFields: fields,
+        mappingPending: fields == null,
+      );
+    } else if (entityName != null) {
+      throw const GenerationException(
+        'An Entity can only be selected for an Entity-returning use case.',
       );
     }
     operations.add(operation);
@@ -358,6 +415,7 @@ class Generator {
     ];
     registry['project_files'] = projectFiles;
     plan.write(registryPath, _json(registry));
+    planComponentPageCleanup(plan);
     return plan;
   }
 
@@ -382,6 +440,7 @@ class Generator {
     }.values.where((entry) => !activeNames.contains(entry['name']))) {
       final name = stale['name'] as String;
       final ownership = (stale['integrations'] as List? ?? []).cast<Map>();
+      if (ownership.isEmpty && usesLocalComponentScope(stale)) continue;
       if (ownership.isEmpty) {
         throw GenerationException(
           'Missing $name has no integration ownership metadata; inspect its bindings manually.',
@@ -460,6 +519,10 @@ class Generator {
       );
     }
     for (final entry in active) {
+      if (usesLocalComponentScope(entry)) {
+        entry['integrations'] = <Map<String, Object>>[];
+        continue;
+      }
       final previous = {
         for (final node in entry['integrations'] as List? ?? [])
           node['node']: node,
@@ -477,6 +540,7 @@ class Generator {
       ];
     }
     plan.write(registryPath, prettyJson(registry));
+    planComponentPageCleanup(plan);
   }
 
   /// Plans removal of an entry, its nested children, and only their integrations.
@@ -559,37 +623,42 @@ class Generator {
       );
     }
 
-    const diPath = 'lib/app/di/injection.dart';
-    final di = AstEditor(plan.read(diPath));
-    di.removeRegistrations(types);
-    di.removeImports((uri) => ownsImport(uri, diPath));
-    _write(plan, diPath, di.source);
-    const factoryPath = 'lib/app/composition/feature_pages.dart';
-    final factories = AstEditor(plan.read(factoryPath));
-    factories.removeMembers('FeaturePages', members);
-    factories.removeImports((uri) => ownsImport(uri, factoryPath));
-    // Avoid unused imports after removing the last stateful factory.
     final remaining = entries
         .where((entry) => !removed.contains(entry))
         .toList();
-    if (!remaining.any((entry) => entry['state'] != 'none')) {
-      factories.removeImports(
-        (uri) => uri == 'package:flutter_bloc/flutter_bloc.dart',
-      );
-    }
-    _write(plan, factoryPath, factories.source);
-    if (routeMembers.isNotEmpty) {
-      const namesPath = 'lib/app/router/route_names.dart';
-      final names = AstEditor(plan.read(namesPath))
-        ..removeMembers('RouteNames', routeMembers);
-      _write(plan, namesPath, names.source);
-      const routerPath = 'lib/app/router/app_router.dart';
-      final router = AstEditor(plan.read(routerPath))
-        ..removeRoutes(routeMembers);
-      _write(plan, routerPath, router.source);
+    if (removed.any((entry) => !usesLocalComponentScope(entry))) {
+      const diPath = 'lib/app/di/injection.dart';
+      final di = AstEditor(plan.read(diPath));
+      di.removeRegistrations(types);
+      di.removeImports((uri) => ownsImport(uri, diPath));
+      _write(plan, diPath, di.source);
+      const factoryPath = 'lib/app/composition/feature_pages.dart';
+      final factories = AstEditor(plan.read(factoryPath));
+      factories.removeMembers('FeaturePages', members);
+      factories.removeImports((uri) => ownsImport(uri, factoryPath));
+      // Avoid unused imports after removing the last stateful factory.
+      if (!remaining.any(
+        (entry) => entry['state'] != 'none' && !usesLocalComponentScope(entry),
+      )) {
+        factories.removeImports(
+          (uri) => uri == 'package:flutter_bloc/flutter_bloc.dart',
+        );
+      }
+      _write(plan, factoryPath, factories.source);
+      if (routeMembers.isNotEmpty) {
+        const namesPath = 'lib/app/router/route_names.dart';
+        final names = AstEditor(plan.read(namesPath))
+          ..removeMembers('RouteNames', routeMembers);
+        _write(plan, namesPath, names.source);
+        const routerPath = 'lib/app/router/app_router.dart';
+        final router = AstEditor(plan.read(routerPath))
+          ..removeRoutes(routeMembers);
+        _write(plan, routerPath, router.source);
+      }
     }
     registry['features'] = remaining;
     plan.write(registryPath, _json(registry));
+    planComponentPageCleanup(plan);
     return plan;
   }
 
@@ -638,6 +707,9 @@ class Generator {
     List<UseCaseSpec> useCases = const [],
     bool legacyComponentWidgets = false,
   }) {
+    // Components are embedded in feature UI, including legacy widgets. Never
+    // synthesize a page factory or DI registration for any component on repair.
+    if (kind == GenerationKind.component) return;
     final type = pascalCase(name);
     final member = camelCase(name);
     final full = kind == GenerationKind.feature;

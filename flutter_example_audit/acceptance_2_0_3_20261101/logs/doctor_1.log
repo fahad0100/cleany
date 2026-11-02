@@ -1,0 +1,170 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Project doctor / repair
+╰────────────────────────────────────────────╯
+  Inspect the registry, generated sources, dependencies, routes and
+  bindings, then review specific supported repairs.
+
+  NOTICE  lib/features/carts/domain/entities/carts_entity.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/domain/usecases/get_carts.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/data/models/carts_model.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/carts_api.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/presentation/pages/carts_page.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/carts_api.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/data/models/carts_model.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/data/models/carts_model.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/domain/entities/carts_entity.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/domain/usecases/create_cart.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/domain/usecases/delete_cart.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/domain/repositories/carts_repository.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/data/repositories/carts_repository_impl.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/presentation/bloc/carts_state.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/presentation/bloc/carts_event.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/presentation/bloc/carts_bloc.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/data/datasources/carts_remote_data_source.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/presentation/bloc/carts_state.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/carts/presentation/bloc/carts_event.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/domain/entities/users_entity.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/domain/usecases/get_users.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/data/models/users_model.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/users_api.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/presentation/pages/users_page.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/users_api.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/data/models/users_model.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/data/models/users_model.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/domain/entities/users_entity.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/domain/usecases/get_user_profile.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/domain/repositories/users_repository.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/data/repositories/users_repository_impl.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/presentation/cubit/users_state.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/presentation/cubit/users_cubit.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/data/datasources/users_remote_data_source.dart contains user edits and will be preserved.
+  NOTICE  lib/features/users/presentation/cubit/users_state.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/domain/entities/auth_entity.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/data/models/auth_model.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/auth_api.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/presentation/pages/auth_page.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/auth_api.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/data/models/auth_model.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/data/models/auth_model.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/domain/entities/auth_entity.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/domain/usecases/sign_in.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/domain/repositories/auth_repository.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/data/repositories/auth_repository_impl.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/presentation/cubit/auth_state.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/presentation/cubit/auth_cubit.dart contains user edits and will be preserved.
+  NOTICE  lib/features/auth/data/datasources/auth_remote_data_source.dart contains user edits and will be preserved.
+  NOTICE  lib/components/product_card/product_card_widget.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/domain/entities/products_entity.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/domain/usecases/get_products.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/data/models/products_model.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/products_api.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/presentation/pages/products_page.dart contains user edits and will be preserved.
+  NOTICE  lib/core/network/retrofit/products_api.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/data/models/products_model.g.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/data/models/products_model.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/domain/entities/products_entity.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/domain/repositories/products_repository.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/data/repositories/products_repository_impl.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/presentation/cubit/products_state.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/presentation/cubit/products_cubit.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/data/datasources/products_remote_data_source.dart contains user edits and will be preserved.
+  NOTICE  lib/features/products/presentation/cubit/products_state.freezed.dart contains user edits and will be preserved.
+  NOTICE  lib/components/status_panel/status_panel_widget.dart contains user edits and will be preserved.
+  NOTICE  lib/components/quantity_stepper/cubit/quantity_stepper_cubit.dart contains user edits and will be preserved.
+  NOTICE  lib/components/quantity_stepper/quantity_stepper_widget.dart contains user edits and will be preserved.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 388ms ✓
+[0s] dart --version
+[0s] dart --version · 69ms ✓
+[0s] staging
+[0s] staging · fresh compiler cache
+[0s] staging · 139 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1703ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 798ms ✓
+[3s] dart run build_runner build
+[8s] dart run build_runner build · 5s
+[13s] dart run build_runner build · 10s
+[18s] dart run build_runner build · 15s
+[23s] dart run build_runner build · 20s
+[23s] dart run build_runner build · 20513ms ✓
+[23s] flutter analyze --no-pub
+[27s] flutter analyze --no-pub · 3620ms ✓
+[27s] collecting · 139 validated outputs
+[27s] applying · 3 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

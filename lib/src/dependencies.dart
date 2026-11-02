@@ -4,11 +4,24 @@ import 'package:yaml_edit/yaml_edit.dart';
 
 import 'project.dart';
 
-Map<String, Map<String, Object>> packageRequirements(ApiProvider provider) => {
+Map<String, Map<String, Object>> packageRequirements(
+  ApiProvider provider, {
+  bool includeLocalStorage = true,
+}) => {
   'dependencies': {
     'flutter_localizations': {'sdk': 'flutter'},
     'intl': 'any',
     'flutter_bloc': '^9.1.1',
+    'sizer': '3.1.3',
+    if (includeLocalStorage) ...{
+      'sembast': '^3.9.0',
+      'sembast_web': '^2.4.6',
+      'crypto': '^3.0.6',
+      'path_provider': '^2.1.2',
+      'path': '^1.9.1',
+      'pointycastle': '^4.0.0',
+      'flutter_secure_storage': '^10.0.0',
+    },
     'get_it': '^9.2.1',
     'go_router': '^18.0.0',
     'multiple_result': '^5.3.0',
@@ -34,11 +47,15 @@ String configurePubspec(
   String source,
   ApiProvider provider, {
   bool repairConstraints = false,
+  bool includeLocalStorage = true,
   void Function(String message)? onRepair,
 }) {
   final original = loadYaml(source) as YamlMap;
   final editor = YamlEditor(source);
-  for (final section in packageRequirements(provider).entries) {
+  for (final section in packageRequirements(
+    provider,
+    includeLocalStorage: includeLocalStorage,
+  ).entries) {
     if (original[section.key] != null && original[section.key] is! Map) {
       throw GenerationException('Expected a mapping for ${section.key}.');
     }

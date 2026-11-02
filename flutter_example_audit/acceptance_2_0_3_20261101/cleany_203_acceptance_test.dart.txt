@@ -1,0 +1,163 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:cleany_store/app/config/app_config.dart';
+import 'package:cleany_store/app/config/app_environment.dart';
+import 'package:cleany_store/app/di/injection.dart';
+import 'package:cleany_store/core/errors/failure.dart';
+import 'package:cleany_store/core/state/use_case_state.dart';
+import 'package:cleany_store/core/network/retrofit/products_api.dart';
+import 'package:cleany_store/features/products/data/datasources/products_remote_data_source.dart';
+import 'package:cleany_store/features/products/data/repositories/products_repository_impl.dart';
+import 'package:cleany_store/features/products/domain/entities/products_entity.dart';
+import 'package:cleany_store/features/users/domain/entities/users_entity.dart';
+import 'package:cleany_store/features/products/presentation/cubit/products_cubit.dart';
+import 'package:cleany_store/features/products/presentation/cubit/products_state.dart';
+import 'package:cleany_store/core/network/retrofit/contract_sample_api.dart';
+import 'package:cleany_store/features/contract_sample/data/datasources/contract_sample_remote_data_source.dart';
+import 'package:cleany_store/features/contract_sample/data/repositories/contract_sample_repository_impl.dart';
+import 'package:cleany_store/features/contract_sample/data/models/contract_sample_model.dart';
+import 'package:cleany_store/components/audit_counter/audit_counter_widget.dart';
+import 'package:cleany_store/components/audit_counter/cubit/audit_counter_cubit.dart';
+
+Map<String, dynamic> productJson() => Map<String, dynamic>.from(
+  (jsonDecode(
+        File('test/fixtures/products.json').readAsStringSync(),
+      ) as List).first
+      as Map,
+);
+
+class ConnectedProducts extends ProductsRemoteDataSource {
+  ConnectedProducts(Dio dio) : super(ProductsApi(dio));
+  @override
+  Future<Map<String, dynamic>> auditProductEntity() async => productJson();
+  @override
+  Future<Map<String, dynamic>> auditUsersEntity() async => productJson();
+}
+
+final contractJson = <String, dynamic>{
+  'id': 'sample',
+  'count': 3,
+  'price': 9.5,
+  'enabled': true,
+  'createdAt': '2026-11-01T00:00:00.000Z',
+  'values': [1, 'two', null],
+  'tags': ['a'],
+  'integers': [1, 2],
+  'numbers': [1, 2.5],
+  'rows': [
+    {'key': 'value'},
+  ],
+  'metadata': {
+    'nested': [1, true],
+  },
+  'selection': ['a', 'b'],
+  'payload': null,
+};
+
+class ContractRemote extends ContractSampleRemoteDataSource {
+  ContractRemote(Dio dio) : super(ContractSampleApi(dio));
+  @override
+  Future<Map<String, dynamic>> fetch() async => contractJson;
+}
+
+void main() {
+  test('central DI injects both existing-Entity actions without making guessed API requests', () async {
+    final container = GetIt.asNewInstance();
+    await configureDependencies(
+      container,
+      const AppConfig(
+        environment: AppEnvironment.dev,
+        apiBaseUrl: 'https://fakestoreapi.com',
+      ),
+    );
+    addTearDown(() => container.reset(dispose: true));
+    var requests = 0;
+    container<Dio>().interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          requests++;
+          handler.next(options);
+        },
+      ),
+    );
+    final cubit = container<ProductsCubit>();
+    addTearDown(cubit.close);
+    await cubit.auditProductEntity();
+    expect(
+      cubit.state.auditProductEntityStatus,
+      isA<UseCaseFailure<ProductsEntity>>(),
+    );
+    await cubit.auditUsersEntity();
+    expect(
+      cubit.state.auditUsersEntityStatus,
+      isA<UseCaseFailure<UsersEntity>>(),
+    );
+    expect(cubit.state, isA<ProductsInitial>());
+    expect(requests, 0);
+  });
+  test(
+    'different Model/Entity shapes reach explicit Data mapping hooks safely',
+    () async {
+      final dio = Dio();
+      addTearDown(() => dio.close(force: true));
+      var reports = 0;
+      final repository = ProductsRepositoryImpl(
+        ConnectedProducts(dio),
+        reportError: (_, _) => reports++,
+      );
+      expect(
+        (await repository.auditProductEntity()).tryGetError(),
+        isA<UnexpectedFailure>(),
+      );
+      expect(
+        (await repository.auditUsersEntity()).tryGetError(),
+        isA<UnexpectedFailure>(),
+      );
+      expect(reports, 2);
+    },
+  );
+  test('all thirteen field types serialize and become Entity values', () async {
+    final model = ContractSampleModel.fromJson(contractJson);
+    expect(model.toJson(), contractJson);
+    final dio = Dio();
+    addTearDown(() => dio.close(force: true));
+    final entity = (await ContractSampleRepositoryImpl(
+      ContractRemote(dio),
+    ).fetch()).tryGetSuccess()!;
+    expect(entity.id, 'sample');
+    expect(entity.selection, {'a', 'b'});
+    expect(entity.rows.single, {'key': 'value'});
+    expect(entity.numbers, [1, 2.5]);
+    expect(entity.payload, isNull);
+    expect(entity.createdAt, DateTime.utc(2026, 11, 1));
+  });
+  testWidgets(
+    'fresh flat Cubit component renders updates and ignores closed actions',
+    (tester) async {
+      final cubit = AuditCounterCubit();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: cubit,
+              child: const AuditCounterWidget(),
+            ),
+          ),
+        ),
+      );
+      cubit.update(7);
+      await tester.pump();
+      expect(find.text('7'), findsOneWidget);
+      await cubit.close();
+      cubit.update(99);
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    },
+  );
+}

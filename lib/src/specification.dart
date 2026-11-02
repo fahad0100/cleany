@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'project.dart';
 
 /// Fixed-template release recorded for newly generated entries.
-const templateVersion = '2.0.2';
+const templateVersion = '2.0.4';
 
 /// Current ownership-registry schema version, independent of package semver.
 const registryVersion = 2;
@@ -11,8 +11,9 @@ const registryVersion = 2;
 /// A constrained Dart field, with an independently configurable JSON key.
 class FieldSpec {
   /// Validates a lowerCamelCase field, supported Dart type, and JSON alias.
-  FieldSpec(this.name, this.type, {String? jsonKey})
-    : jsonKey = jsonKey ?? name {
+  FieldSpec(this.name, String type, {String? jsonKey})
+    : type = normalizeType(type),
+      jsonKey = jsonKey ?? name {
     if (!RegExp(r'^[a-z][A-Za-z0-9]*$').hasMatch(name)) {
       throw const GenerationException('Field names must be lowerCamelCase.');
     }
@@ -38,9 +39,6 @@ class FieldSpec {
     validateName(
       name.replaceAllMapped(RegExp('[A-Z]'), (m) => '_${m[0]!.toLowerCase()}'),
     );
-    if (!types.contains(type.replaceFirst(RegExp(r'\?$'), ''))) {
-      throw const GenerationException('Choose a supported field type.');
-    }
     if (this.jsonKey.isEmpty || this.jsonKey.contains(RegExp(r'[\x00-\x1f]'))) {
       throw const GenerationException('Invalid JSON field key.');
     }
@@ -55,7 +53,30 @@ class FieldSpec {
     'DateTime',
     'List<String>',
     'List<int>',
+    'List<num>',
+    'List<dynamic>',
+    'List<Map<String, dynamic>>',
+    'Map<String, dynamic>',
+    'Set<dynamic>',
+    'dynamic',
   ];
+
+  /// Accepts CLI spellings while storing valid, explicit Dart collection types.
+  static String normalizeType(String input) {
+    final value = input.replaceAll(RegExp(r'\s+'), '').toLowerCase();
+    final nullable = value.endsWith('?');
+    final base = nullable ? value.substring(0, value.length - 1) : value;
+    final aliases = {
+      for (final type in types) type.replaceAll(' ', '').toLowerCase(): type,
+      'list': 'List<dynamic>',
+      'set': 'Set<dynamic>',
+    };
+    final canonical = aliases[base];
+    if (canonical == null) {
+      throw GenerationException('Unsupported field type: $input.');
+    }
+    return '$canonical${nullable && canonical != 'dynamic' ? '?' : ''}';
+  }
 
   /// Dart property name used in both Model and Entity.
   final String name;
@@ -67,7 +88,7 @@ class FieldSpec {
   final String jsonKey;
 
   /// Whether the field accepts null values.
-  bool get nullable => type.endsWith('?');
+  bool get nullable => type == 'dynamic' || type.endsWith('?');
 
   /// Serializes this specification into the versioned registry representation.
   Map<String, Object?> toJson() => {
@@ -190,11 +211,22 @@ class UseCaseSpec {
     required this.name,
     required this.returnType,
     this.repositoryBinding = UseCaseRepositoryBinding.feature,
+    this.entityType,
+    this.entityPath,
+    this.mappingPending = false,
     List<String>? entityFields,
   }) : entityFields = entityFields == null
            ? null
            : List.unmodifiable(entityFields) {
     validateName(name);
+    if ((entityType == null) != (entityPath == null) ||
+        (entityType != null &&
+            (!RegExp(r'^[A-Z][A-Za-z0-9_]*$').hasMatch(entityType!) ||
+                !RegExp(
+                  r'^lib/(?:[A-Za-z0-9_]+/)*domain/entities/(?:[A-Za-z0-9_]+/)*[A-Za-z0-9_]+\.dart$',
+                ).hasMatch(entityPath!)))) {
+      throw const GenerationException('Invalid existing Entity reference.');
+    }
     if (entityFields != null &&
         (entityFields.toSet().length != entityFields.length ||
             entityFields.any(
@@ -254,6 +286,22 @@ class UseCaseSpec {
   /// Existing entity fields mapped from the feature model, when captured.
   final List<String>? entityFields;
 
+  /// Existing Domain class and its project-relative source, when selected.
+  final String? entityType;
+  final String? entityPath;
+
+  /// A developer-owned Data mapping hook is needed instead of guessed casts.
+  final bool mappingPending;
+
+  /// Resolved result type; old metadata keeps the conventional feature Entity.
+  String valueType(String featureType) => returnType == UseCaseReturnType.entity
+      ? entityType ?? '${featureType}Entity'
+      : 'void';
+
+  /// The import stays in Domain; no transport DTO is exposed to presentation.
+  String entityUri(String package, String featurePath, String featureName) =>
+      'package:$package/${(entityPath ?? '$featurePath/domain/entities/${featureName}_entity.dart').substring(4)}';
+
   /// Public operation class name.
   String get type => pascalCase(name);
 
@@ -275,6 +323,9 @@ class UseCaseSpec {
     'return_type': returnType == UseCaseReturnType.entity ? 'entity' : 'void',
     'repository_binding': repositoryBinding.name,
     'entity_fields': ?entityFields,
+    'entity_type': ?entityType,
+    'entity_path': ?entityPath,
+    if (mappingPending) 'mapping_pending': true,
   };
 
   /// Restores and validates an operation definition.
@@ -293,6 +344,9 @@ class UseCaseSpec {
       ),
       name: json['name'] as String,
       entityFields: (json['entity_fields'] as List?)?.cast<String>(),
+      entityType: json['entity_type'] as String?,
+      entityPath: json['entity_path'] as String?,
+      mappingPending: json['mapping_pending'] == true,
       returnType: result == 'entity'
           ? UseCaseReturnType.entity
           : UseCaseReturnType.voidResult,

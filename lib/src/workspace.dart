@@ -8,6 +8,7 @@ import 'package:yaml/yaml.dart';
 
 import 'operation.dart';
 import 'project.dart';
+import 'validation_cache.dart';
 
 class FileFingerprint {
   const FileFingerprint(this.digest, this.length, this.mode);
@@ -41,8 +42,16 @@ String relativePath(String root, String path) =>
 /// Stages only Dart inputs, declared assets/configuration, and selected platforms.
 /// Contents are copied by the filesystem and hashed as streams, not held in RAM.
 class StagedWorkspace {
-  StagedWorkspace(this.project, this.context, {Set<String>? platforms})
-    : platforms = platforms ?? {};
+  StagedWorkspace(
+    this.project,
+    this.context, {
+    Set<String>? platforms,
+    String? cacheIdentity,
+  }) : platforms = platforms ?? {},
+       _cache = cacheIdentity == null
+           ? null
+           : ValidationCache(project, cacheIdentity);
+  ValidationCache? _cache;
   final Project project;
   final OperationContext context;
   final Set<String> platforms;
@@ -81,9 +90,13 @@ class StagedWorkspace {
   Future<Map<String, FileFingerprint>> create() async {
     final cache = Directory(project.file('.cleany/cache'))
       ..createSync(recursive: true);
-    _directory = await cache.createTemp('stage_');
-    File(p.join(directory.path, '.cleany-stage'))
-        .writeAsStringSync(project.root);
+    _directory = await _cache?.prepare(context);
+    if (_directory == null) {
+      _cache = null;
+      _directory = await cache.createTemp('stage_');
+      File(p.join(directory.path, '.cleany-stage'))
+          .writeAsStringSync(project.root);
+    }
     inputRoots = {
       'lib',
       'test',
@@ -230,6 +243,7 @@ class StagedWorkspace {
     '.metadata',
     '.vscode/launch.json',
     'CLEANY_RUN.md',
+    'LOCAL_STORAGE.md',
     '.gitignore',
   };
 
@@ -306,6 +320,7 @@ class StagedWorkspace {
       if (ignoredNames.contains(name) ||
           name == '.cleany' ||
           name == '.cleany-stage' ||
+          name == ValidationCache.markerName ||
           name == '.flutter-plugins-dependencies' ||
           rootFiles.contains(name) ||
           inputRoots.any((root) => p.posix.split(root).first == name) ||
@@ -334,7 +349,11 @@ class StagedWorkspace {
     return removed;
   }
 
-  Future<void> dispose() async {
+  Future<void> dispose({bool preserveCache = false}) async {
+    if (_cache != null) {
+      await _cache!.dispose(validated: preserveCache);
+      return;
+    }
     final created = _directory;
     if (created != null && created.existsSync()) {
       await created.delete(recursive: true);

@@ -1,0 +1,3 @@
+# Public configuration only. Supply API_BASE_URL with --dart-define.
+environment: dev
+api_base_url: https://fakestoreapi.com

@@ -1,0 +1,72 @@
+00:00 +0: loading test/native_flavors_test.dart
+00:00 +0: real ios builds for dev, uat and prod native flavors
+Native fixture: /var/folders/db/2_z7rqbd4s38r8mhpd3dh00w0000gn/T/cleany_native_ios_3bNnb7
+[ios] flutter --version --machine 
+[ios] flutter --version --machine 370ms
+[ios] dart --version 
+[ios] dart --version 60ms
+[ios] staging 
+[ios] staging fresh compiler cache
+[ios] staging 6 inputs copied
+[ios] flutter pub get 
+[ios] flutter pub get 5s
+[ios] flutter pub get 10s
+[ios] flutter pub get 12030ms
+[ios] flutter gen-l10n 
+[ios] flutter gen-l10n 841ms
+[ios] dart run build_runner build 
+[ios] dart run build_runner build 5s
+[ios] dart run build_runner build 10s
+[ios] dart run build_runner build 15s
+[ios] dart run build_runner build 20s
+[ios] dart run build_runner build 21250ms
+[ios] flutter analyze --no-pub 
+[ios] flutter analyze --no-pub 2988ms
+[ios] collecting 47 validated outputs
+[ios] applying 49 files
+[ios] completed 
+[ios] flutter --version --machine 
+[ios] flutter --version --machine 421ms
+[ios] dart --version 
+[ios] dart --version 69ms
+[ios] staging 
+[ios] staging reusing validated compiler cache
+[ios] staging 87 inputs copied
+[ios] flutter pub get 
+[ios] flutter pub get 1996ms
+[ios] flutter gen-l10n 
+[ios] flutter gen-l10n 776ms
+[ios] dart run flutter_flavorizr --force 
+[ios] dart run flutter_flavorizr --force 2564ms
+[ios] flutter analyze --no-pub 
+[ios] flutter analyze --no-pub 2871ms
+[ios] collecting 103 validated outputs
+[ios] applying 20 files
+[ios] completed 
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 5s
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 10s
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 15s
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 20s
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 25s
+[ios/dev] flutter build ios --debug --simulator --flavor dev -t lib/main_dev.dart --dart-define=API_BASE_URL=https://example.com 29212ms
+BUILT ios/dev
+LAUNCHED ios/dev
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 5s
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 10s
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 15s
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 20s
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 25s
+[ios/uat] flutter build ios --debug --simulator --flavor uat -t lib/main_uat.dart --dart-define=API_BASE_URL=https://example.com 25798ms
+BUILT ios/uat
+LAUNCHED ios/uat
+[ios/prod] flutter build ios --debug --simulator --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 
+[ios/prod] flutter build ios --debug --simulator --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 5s
+[ios/prod] flutter build ios --debug --simulator --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 10s
+[ios/prod] flutter build ios --debug --simulator --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 15s
+[ios/prod] flutter build ios --debug --simulator --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 20s
+[ios/prod] flutter build ios --debug --simulator --flavor prod -t lib/main_prod.dart --dart-define=API_BASE_URL=https://example.com 23577ms
+BUILT ios/prod
+LAUNCHED ios/prod
+03:25 +1: All tests passed!

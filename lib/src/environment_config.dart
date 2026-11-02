@@ -14,6 +14,11 @@ void validatePublicFlavor(String source, String environment, String path) {
     );
   }
   final url = yaml['api_base_url'] as String;
+  if (yaml.containsKey('db_secret_key') && yaml['db_secret_key'] is! String) {
+    throw GenerationException(
+      'Invalid $path: db_secret_key must be a string (pass_key_storage is the scaffold default).',
+    );
+  }
   if (url.isEmpty) return;
   final uri = Uri.tryParse(url);
   if (uri == null ||

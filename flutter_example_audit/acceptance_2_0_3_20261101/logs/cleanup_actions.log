@@ -1,0 +1,21 @@
+flutter --version --machine: 
+flutter --version --machine: 419ms
+dart --version: 
+dart --version: 85ms
+staging: 
+staging: reusing validated compiler cache
+staging: 141 inputs copied
+flutter pub get: 
+flutter pub get: 5s
+flutter pub get: 5529ms
+flutter gen-l10n: 
+flutter gen-l10n: 795ms
+dart run build_runner build: 
+dart run build_runner build: 5s
+dart run build_runner build: 5191ms
+flutter analyze --no-pub: 
+flutter analyze --no-pub: 3724ms
+collecting: 139 validated outputs
+applying: 10 files
+completed: 
+Temporary action cleanup: applied

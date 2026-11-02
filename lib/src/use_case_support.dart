@@ -27,7 +27,8 @@ Map<String, String> _fields(String source, String type) {
   for (final parameter in constructor.parameters.parameters) {
     if (parameter is! RegularFormalParameter ||
         parameter.name == null ||
-        parameter.type == null) {
+        parameter.type == null ||
+        !parameter.isNamed) {
       throw GenerationException(
         'An explicit model/entity mapper is required for customized $type constructors.',
       );
@@ -37,28 +38,95 @@ Map<String, String> _fields(String source, String type) {
   return result;
 }
 
-/// Captures the current feature fields instead of recreating its Entity/Model.
-/// Nonmatching types need an explicit mapper rather than a guessed conversion.
-List<String> existingEntityMappingFields(
+/// Source identity of an existing Domain Entity; no new Entity is generated.
+class ExistingEntity {
+  const ExistingEntity(this.type, this.path);
+  final String type;
+  final String path;
+}
+
+/// Finds a public Entity class in Domain. Ambiguous names require a source path.
+ExistingEntity resolveExistingEntity(
   Project project,
-  FeatureTemplateContext c,
-) {
-  final entity = _fields(
-    project.read('${c.path}/domain/entities/${c.name}_entity.dart'),
-    '${c.type}Entity',
-  );
-  final model = _fields(
-    project.read('${c.path}/data/models/${c.name}_model.dart'),
-    '${c.type}Model',
-  );
-  for (final field in entity.entries) {
-    if (model[field.key] != field.value) {
-      throw GenerationException(
-        'Model/Entity field ${field.key} needs an explicit mapper before adding this use case.',
-      );
+  String name, {
+  String? preferredPath,
+}) {
+  final requested = name.trim();
+  final isPath = requested.startsWith('lib/') && requested.endsWith('.dart');
+  if (isPath) project.file(requested);
+  final matches = <ExistingEntity>[];
+  final lib = Directory(project.file('lib'));
+  for (final file
+      in lib.listSync(recursive: true, followLinks: false).whereType<File>()) {
+    final path = file.path
+        .substring(project.root.length + 1)
+        .replaceAll('\\', '/');
+    if (!path.contains('/domain/entities/') ||
+        !path.endsWith('.dart') ||
+        path.endsWith('.freezed.dart') ||
+        path.endsWith('.g.dart') ||
+        (isPath && path != requested)) {
+      continue;
+    }
+    final parsed = parseString(
+      content: file.readAsStringSync(),
+      throwIfDiagnostics: false,
+    );
+    if (parsed.errors.isNotEmpty ||
+        parsed.unit.directives.any((d) => d is PartOfDirective)) {
+      continue;
+    }
+    final type = isPath
+        ? null
+        : (requested.contains('_') ? pascalCase(requested) : requested);
+    for (final declaration
+        in parsed.unit.declarations.whereType<ClassDeclaration>()) {
+      final className = declaration.namePart.typeName.lexeme;
+      if (!className.startsWith('_') && (type == null || className == type)) {
+        matches.add(ExistingEntity(className, path));
+      }
     }
   }
-  return entity.keys.toList();
+  final preferred = matches
+      .where((entity) => entity.path == preferredPath)
+      .toList();
+  if (preferred.length == 1) return preferred.single;
+  if (matches.length != 1) {
+    throw GenerationException(
+      matches.isEmpty
+          ? 'Existing Domain Entity not found: $name.'
+          : 'Ambiguous Entity $name. Enter its lib/.../domain/entities/...dart source path.',
+    );
+  }
+  return matches.single;
+}
+
+/// Compatible flat fields retain their mapping; customized shapes get a typed
+/// developer connection hook rather than a guessed conversion or blocked plan.
+List<String>? existingEntityMappingFields(
+  Project project,
+  FeatureTemplateContext c, {
+  ExistingEntity? selected,
+}) {
+  try {
+    final entity = _fields(
+      project.read(
+        selected?.path ?? '${c.path}/domain/entities/${c.name}_entity.dart',
+      ),
+      selected?.type ?? '${c.type}Entity',
+    );
+    final model = _fields(
+      project.read('${c.path}/data/models/${c.name}_model.dart'),
+      '${c.type}Model',
+    );
+    if (entity.isEmpty ||
+        entity.entries.any((field) => model[field.key] != field.value)) {
+      return null;
+    }
+    return entity.keys.toList();
+  } on GenerationException {
+    return null;
+  }
 }
 
 /// Reconstructs only recognizable generated operation contracts after registry loss.
@@ -103,8 +171,17 @@ List<UseCaseSpec> discoverUseCases(
           continue;
         }
         final value = wrapped.typeArguments!.arguments.first.toSource();
-        if (value != 'void' && value != '${pascalCase(featureName)}Entity') {
-          continue;
+        ExistingEntity? entity;
+        if (value != 'void') {
+          try {
+            entity = resolveExistingEntity(
+              project,
+              value,
+              preferredPath: '$path/domain/entities/${featureName}_entity.dart',
+            );
+          } on GenerationException {
+            continue;
+          }
         }
         // Registry recovery adopts only the fixed no-argument forwarding shape.
         // A shared feature repository's existence alone does not establish ownership.
@@ -148,6 +225,20 @@ List<UseCaseSpec> discoverUseCases(
         result.add(
           UseCaseSpec(
             name: operationName,
+            entityType: entity?.type,
+            entityPath: entity?.path,
+            mappingPending:
+                entity != null &&
+                File(
+                  project.file(
+                    '$path/data/repositories/${featureName}_repository_impl.dart',
+                  ),
+                ).existsSync() &&
+                project
+                    .read(
+                      '$path/data/repositories/${featureName}_repository_impl.dart',
+                    )
+                    .contains('_map${pascalCase(operationName)}Entity('),
             repositoryBinding: legacy
                 ? UseCaseRepositoryBinding.operation
                 : UseCaseRepositoryBinding.feature,

@@ -1,0 +1,96 @@
+DOCTOR_OK issues=71
+flutter --version --machine: 
+flutter --version --machine: 539ms
+dart --version: 
+dart --version: 130ms
+staging: 
+staging: fresh compiler cache
+staging: 133 inputs copied
+flutter pub get: 
+flutter pub get: 5s
+flutter pub get: 8087ms
+flutter gen-l10n: 
+flutter gen-l10n: 2407ms
+dart run build_runner build: 
+dart run build_runner build: 201s
+dart run build_runner build: 205s
+dart run build_runner build: 210s
+dart run build_runner build: 215s
+dart run build_runner build: 220s
+dart run build_runner build: 222307ms
+flutter analyze --no-pub: 
+flutter analyze --no-pub: 3771ms
+collecting: 136 validated outputs
+applying: 7 files
+completed: 
+flutter --version --machine: 
+flutter --version --machine: 375ms
+dart --version: 
+dart --version: 82ms
+staging: 
+staging: reusing validated compiler cache
+staging: 136 inputs copied
+flutter pub get: 
+flutter pub get: 1613ms
+flutter gen-l10n: 
+flutter gen-l10n: 812ms
+dart run build_runner build: 
+dart run build_runner build: 4997ms
+flutter analyze --no-pub: 
+flutter analyze --no-pub: 3543ms
+collecting: 137 validated outputs
+applying: 9 files
+completed: 
+flutter --version --machine: 
+flutter --version --machine: 365ms
+dart --version: 
+dart --version: 79ms
+staging: 
+staging: reusing validated compiler cache
+staging: 137 inputs copied
+flutter pub get: 
+flutter pub get: 1585ms
+flutter gen-l10n: 
+flutter gen-l10n: 817ms
+dart run build_runner build: 
+dart run build_runner build: 5s
+dart run build_runner build: 5041ms
+flutter analyze --no-pub: 
+flutter analyze --no-pub: 3363ms
+collecting: 138 validated outputs
+applying: 9 files
+completed: 
+Resolving dependencies...
+Downloading packages...
+  built_collection 5.1.2 (6.0.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.3 (2.4.4 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+7 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /private/var/folders/db/2_z7rqbd4s38r8mhpd3dh00w0000gn/T/cleany_store_upgrade_C2OF4B/test/store_test.dart
+00:00 +0: products: array and nested rating become domain entities
+00:00 +1: carts: domain joins product details without coupling data layers
+00:00 +2: create cart sends typed IDs and quantities and enriches the response
+00:00 +3: invalid cart quantities fail before network activity
+00:00 +4: delete cart uses DELETE with the selected ID
+00:00 +5: users: nested profile maps into a password-free entity
+00:00 +6: profile validation avoids invalid network calls
+00:00 +7: sign in resolves identity, redacts token, and sign out clears memory
+00:00 +8: failed login never creates a session
+00:00 +9: blank credentials fail before transport
+00:00 +10: offline transport maps once to NetworkFailure
+00:00 +11: malformed JSON maps to ValidationFailure
+00:00 +12: unexpected reporter errors cannot escape the Result boundary
+00:00 +13: session token is attached only to the trusted API origin
+00:00 +14: products cubit loads, filters, sorts and runs its generated use case
+00:00 +15: products cubit presents failures
+00:00 +16: cart bloc keeps load, create and delete operation states independent
+00:00 +17: closed controllers ignore late requests
+00:00 +18: flat quantity component enforces bounds and reports changes
+00:00 +19: All tests passed!
+{"project":"/private/var/folders/db/2_z7rqbd4s38r8mhpd3dh00w0000gn/T/cleany_store_upgrade_C2OF4B","doctor":"passed","default_entity_use_case":"passed","alternate_entity_use_case":"passed","existing_tests":"passed"}

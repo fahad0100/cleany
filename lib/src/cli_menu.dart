@@ -11,7 +11,7 @@ enum CliCommand {
     2,
     'Generation',
     'Create component',
-    'Create a reusable widget directly inside its component folder, with optional Cubit or Bloc and central dependency wiring.',
+    'Create a reusable widget to embed inside feature UI, with an optional Cubit or Bloc owned and disposed by its local BlocProvider.',
     requiresInitialization: true,
   ),
   addUseCase(
@@ -32,7 +32,7 @@ enum CliCommand {
     5,
     'Cleanup',
     'Remove component',
-    'Remove a component and its state files, then clean its central bindings and registry entry.',
+    'Remove a component and its state files, update the registry, and clean any legacy central bindings.',
     requiresInitialization: true,
   ),
   listFeatures(
@@ -68,20 +68,27 @@ enum CliCommand {
     'Configure native flavors',
     'Configure dev, uat and prod native app identities on selected platforms through Flavorizr, then validate the staged changes.',
   ),
-  doctor(
+  appConfigValue(
     11,
+    'Core & Setup',
+    'App config value',
+    'Add a public String configuration key with dev, uat and prod YAML values and a dart-define override in AppConfig.',
+    requiresInitialization: true,
+  ),
+  doctor(
+    12,
     'Maintenance & Recovery',
     'Project doctor / repair',
     'Inspect the registry, generated sources, dependencies, routes and bindings, then review specific supported repairs.',
   ),
   recover(
-    12,
+    13,
     'Maintenance & Recovery',
     'Recover interrupted operation',
     'Recover an interrupted transaction from its journal, restoring safe files while retaining conflicting edits and backups.',
   ),
   maintenance(
-    13,
+    14,
     'Maintenance & Recovery',
     'Cleany maintenance / reset',
     'Clean abandoned project-local workspaces, configure command timeouts, or archive managed files and reset the architecture.',

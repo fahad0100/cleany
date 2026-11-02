@@ -1,0 +1,26 @@
+Resolving dependencies...
+Downloading packages...
+  built_collection 5.1.2 (6.0.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.3 (2.4.4 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+7 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Adding Swift Package Manager integration...                        530ms
+Running Xcode build...                                          
+Xcode build done.                                           29.9s
+VMServiceFlutterDriver: Connecting to Flutter application at http://127.0.0.1:55445/4pypX_jm7TU=/
+VMServiceFlutterDriver: Isolate found with number: 629335600645987
+VMServiceFlutterDriver: Isolate 629335600645987 is runnable.
+VMServiceFlutterDriver: Isolate is paused at start.
+VMServiceFlutterDriver: Attempting to resume isolate
+flutter: 00:00 +0: live catalog, cart create/delete, profiles, login/logout and Arabic
+VMServiceFlutterDriver: Connected to Flutter application.
+VMServiceFlutterDriver: request_data message is taking a long time to complete...
+flutter: 00:34 +1: (tearDownAll)
+flutter: 00:34 +2: All tests passed!
+All tests passed.

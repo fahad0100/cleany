@@ -6,6 +6,7 @@ import 'package:cleany/src/ast_editor.dart';
 import 'package:cleany/src/cli.dart';
 import 'package:cleany/src/journal_store.dart';
 import 'package:cleany/src/workspace.dart';
+import 'package:cleany/src/templates/feature_templates.dart';
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
@@ -437,7 +438,7 @@ dependencies:
     );
     expect(
       component.read('lib/components/card/cubit/card_cubit.dart'),
-      contains('if (!isClosed)'),
+      contains('if (isClosed) return;'),
     );
   });
 
@@ -723,6 +724,19 @@ dependencies:
       await source(
         generator.generate(name: 'auth', state: StateManagement.cubit),
       );
+      // Retain explicit coverage of pre-single-state Freezed union variants.
+      final previous = featureTemplates(
+        name: 'auth',
+        path: 'lib/features/auth',
+        package: 'fixture_app',
+        kind: GenerationKind.feature,
+        state: StateManagement.cubit,
+        provider: ApiProvider.retrofit,
+        singleState: false,
+      );
+      for (final entry in previous.entries) {
+        if (entry.key.contains('/presentation/')) write(entry.key, entry.value);
+      }
       write(
         'lib/client.dart',
         "import 'features/auth/presentation/cubit/auth_state.dart';\nAuthFailure? failure;\n",
@@ -830,7 +844,7 @@ dependencies:
   test(
     'successful recovery clears an earlier failed CLI exit status',
     () async {
-      final answers = ['12', '1', '2', '12', '1', '0'].iterator;
+      final answers = ['13', '1', '2', '13', '1', '0'].iterator;
       var reads = 0;
       createJournal();
       final original = project.read('.cleany/transaction/manifest.json');

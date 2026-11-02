@@ -1,0 +1,17 @@
+[
+  {
+    "operation": "build_android_dev",
+    "seconds": 45.884,
+    "status": "passed"
+  },
+  {
+    "operation": "build_android_uat",
+    "seconds": 16.089,
+    "status": "passed"
+  },
+  {
+    "operation": "build_android_prod",
+    "seconds": 15.848,
+    "status": "passed"
+  }
+]

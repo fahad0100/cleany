@@ -1,0 +1,102 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Configure native flavors
+╰────────────────────────────────────────────╯
+  Configure dev, uat and prod native app identities on selected platforms
+  through Flavorizr, then validate the staged changes.
+
+     1. android
+     2. ios
+     3. All available
+     4. Cancel
+› Platforms: Configure android, ios through Flavorizr in isolation, then validate and apply native project changes.
+
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 379ms ✓
+[0s] dart --version
+[0s] dart --version · 66ms ✓
+[0s] staging
+[0s] staging · reusing validated compiler cache
+[0s] staging · 208 inputs copied
+[0s] flutter pub get
+[4s] flutter pub get · 3605ms ✓
+[4s] flutter gen-l10n
+[7s] flutter gen-l10n · 3546ms ✓
+[7s] dart run flutter_flavorizr --force
+[10s] dart run flutter_flavorizr --force · 2428ms ✓
+[10s] flutter analyze --no-pub
+[13s] flutter analyze --no-pub · 3464ms ✓
+[13s] collecting · 221 validated outputs
+[13s] applying · 18 files
+[13s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

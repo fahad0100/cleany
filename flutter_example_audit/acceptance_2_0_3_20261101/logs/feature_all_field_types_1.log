@@ -1,0 +1,123 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: › Response field count (1 to 30): Format: fieldName:type:jsonKey (example: userName:string:user_name)
+Types: string, int, double, bool, datetime, list, list<string>, list<int>, list<num>, list<map<string,dynamic>>, map<string,dynamic>, set, dynamic.
+› Response field 1, lowerCamelCase:type:JSON key: › Nullable [1] (y/N): › Response field 2, lowerCamelCase:type:JSON key: › Nullable [2] (y/N): › Response field 3, lowerCamelCase:type:JSON key: › Nullable [3] (y/N): › Response field 4, lowerCamelCase:type:JSON key: › Nullable [4] (y/N): › Response field 5, lowerCamelCase:type:JSON key: › Nullable [5] (y/N): › Response field 6, lowerCamelCase:type:JSON key: › Nullable [6] (y/N): › Response field 7, lowerCamelCase:type:JSON key: › Nullable [7] (y/N): › Response field 8, lowerCamelCase:type:JSON key: › Nullable [8] (y/N): › Response field 9, lowerCamelCase:type:JSON key: › Nullable [9] (y/N): › Response field 10, lowerCamelCase:type:JSON key: › Nullable [10] (y/N): › Response field 11, lowerCamelCase:type:JSON key: › Nullable [11] (y/N): › Response field 12, lowerCamelCase:type:JSON key: › Nullable [12] (y/N): › Response field 13, lowerCamelCase:type:JSON key: › Nullable [13] (y/N): 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/contract_sample/domain/entities/contract_sample_entity.dart
+  CREATE  lib/features/contract_sample/domain/repositories/contract_sample_repository.dart
+  CREATE  lib/features/contract_sample/domain/usecases/get_contract_sample.dart
+  CREATE  lib/features/contract_sample/data/models/contract_sample_model.dart
+  CREATE  lib/core/network/retrofit/contract_sample_api.dart
+  CREATE  lib/features/contract_sample/data/datasources/contract_sample_remote_data_source.dart
+  CREATE  lib/features/contract_sample/data/repositories/contract_sample_repository_impl.dart
+  CREATE  lib/features/contract_sample/presentation/widgets/.gitkeep
+  CREATE  lib/features/contract_sample/presentation/bloc/contract_sample_state.dart
+  CREATE  lib/features/contract_sample/presentation/bloc/contract_sample_event.dart
+  CREATE  lib/features/contract_sample/presentation/bloc/contract_sample_bloc.dart
+  CREATE  lib/features/contract_sample/presentation/pages/contract_sample_page.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 374ms ✓
+[0s] dart --version
+[0s] dart --version · 60ms ✓
+[0s] staging
+[0s] staging · reusing validated compiler cache
+[0s] staging · 143 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1543ms ✓
+[2s] flutter gen-l10n
+[2s] flutter gen-l10n · 761ms ✓
+[2s] dart run build_runner build
+[7s] dart run build_runner build · 4671ms ✓
+[7s] flutter analyze --no-pub
+[10s] flutter analyze --no-pub · 3170ms ✓
+[10s] collecting · 161 validated outputs
+[10s] applying · 23 files
+[10s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Exit
+╰────────────────────────────────────────────╯
+  Close the Cleany session.
+

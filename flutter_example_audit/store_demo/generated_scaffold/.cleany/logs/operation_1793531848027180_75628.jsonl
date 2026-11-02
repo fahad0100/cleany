@@ -1,0 +1,13 @@
+{"stage":"command","seconds":0,"command":"flutter --version --machine","detail":null,"completed":false}
+{"stage":"command","seconds":0,"command":"flutter --version --machine","detail":"370ms","completed":true}
+{"stage":"command","seconds":0,"command":"dart --version","detail":null,"completed":false}
+{"stage":"command","seconds":0,"command":"dart --version","detail":"79ms","completed":true}
+{"stage":"staging","seconds":0,"command":null,"detail":null,"completed":false}
+{"stage":"staging","seconds":0,"command":null,"detail":"98 inputs copied","completed":false}
+{"stage":"command","seconds":0,"command":"flutter pub get","detail":null,"completed":false}
+{"stage":"command","seconds":2,"command":"flutter pub get","detail":"1578ms","completed":true}
+{"stage":"command","seconds":2,"command":"flutter gen-l10n","detail":null,"completed":false}
+{"stage":"command","seconds":2,"command":"flutter gen-l10n","detail":"801ms","completed":true}
+{"stage":"command","seconds":2,"command":"dart run build_runner build --delete-conflicting-outputs","detail":null,"completed":false}
+{"stage":"command","seconds":7,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"5s","completed":false}
+{"stage":"command","seconds":12,"command":"dart run build_runner build --delete-conflicting-outputs","detail":"10s","completed":false}

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cleany/cleany.dart';
+import 'package:cleany/src/ast_editor.dart';
 import 'package:cleany/src/registry.dart';
 import 'package:cleany/src/templates/feature_templates.dart';
 import 'package:test/test.dart';
@@ -46,9 +47,18 @@ void main() {
           ),
           isFalse,
         );
+        expect(plan.files.containsKey('lib/app/di/injection.dart'), isFalse);
         expect(
-          plan.files.containsKey('lib/app/di/injection.dart'),
-          mode != StateManagement.none,
+          plan.files.containsKey('lib/app/composition/feature_pages.dart'),
+          isFalse,
+        );
+        expect(
+          plan.files.containsKey('lib/app/router/route_names.dart'),
+          isFalse,
+        );
+        final originalDi = project.read('lib/app/di/injection.dart');
+        final originalPages = project.read(
+          'lib/app/composition/feature_pages.dart',
         );
         if (mode != StateManagement.none) {
           expect(
@@ -56,6 +66,18 @@ void main() {
             contains("import '${mode.name}/user_card_${mode.name}.dart'"),
           );
           expect(plan.read(widget), isNot(contains("import '../")));
+          final controller = mode == StateManagement.bloc
+              ? 'UserCardBloc'
+              : 'UserCardCubit';
+          expect(
+            plan.read(widget),
+            contains('create: (context) => $controller()'),
+          );
+          expect(plan.read(widget), contains('child: Builder('));
+          expect(
+            plan.read(widget),
+            contains('final _ = context.read<$controller>();'),
+          );
         }
         await source(plan);
         expect(project.read('lib/app/router/app_router.dart'), routes);
@@ -73,6 +95,8 @@ void main() {
         final entry = (generator.readRegistry()['features'] as List).single;
         expect(entry['component_layout'], 'flat');
         expect(entry['state'], mode.name);
+        expect(entry['component_scope'], 'local');
+        expect(entry['integrations'], isEmpty);
         await source(
           FeatureLifecycle(project).renameMove(
             name: 'user_card',
@@ -91,14 +115,20 @@ void main() {
         );
         expect(
           project.read('lib/app/composition/feature_pages.dart'),
-          contains('components/profile_card/profile_card_widget.dart'),
+          originalPages,
         );
+        expect(project.read('lib/app/di/injection.dart'), originalDi);
         expect(ProjectDoctor(project).inspect().plan.files, isEmpty);
         await source(
           generator.remove(
             name: 'profile_card',
             kind: GenerationKind.component,
           ),
+        );
+        expect(project.read('lib/app/di/injection.dart'), originalDi);
+        expect(
+          project.read('lib/app/composition/feature_pages.dart'),
+          originalPages,
         );
         expect(
           project.read('lib/app/composition/feature_pages.dart'),
@@ -127,6 +157,8 @@ void main() {
           state: mode,
           provider: ApiProvider.retrofit,
           legacyComponentWidgets: true,
+          localComponentScope: false,
+          singleState: false,
         );
         final conversion = GenerationPlan(project)
           ..delete('lib/components/card/card_widget.dart');
@@ -134,7 +166,9 @@ void main() {
           conversion.write(file.key, file.value);
         }
         entry.remove('component_layout');
+        entry.remove('component_scope');
         entry['template_version'] = '2.0.0';
+        if (mode != StateManagement.none) entry['state_style'] = 'union';
         entry['files'] = [
           for (final file in legacy.entries)
             artifactRecord(file.key, utf8.encode(file.value), 'card'),
@@ -149,6 +183,7 @@ void main() {
               ),
         );
         conversion.write(registryPath, jsonEncode(registry));
+        generator.reconcileIntegrations(conversion, []);
         await source(conversion);
         expect(ProjectDoctor(project).inspect().plan.files, isEmpty);
         const path = 'lib/components/card/widgets/card_widget.dart';
@@ -169,7 +204,7 @@ void main() {
         );
         expect(
           project.read('lib/app/composition/feature_pages.dart'),
-          contains('/card/widgets/card_widget.dart'),
+          isNot(contains('/card/widgets/card_widget.dart')),
         );
         expect(ProjectDoctor(project).inspect().plan.files, isEmpty);
       },
@@ -217,6 +252,94 @@ void main() {
       expect(component['path'], 'lib/features/home/subfeatures/card');
       expect(component['parent'], 'home');
       expect(component['component_layout'], 'flat');
+      expect(component['component_scope'], 'local');
     },
   );
+
+  test('previous flat components keep external providers during repair and recovery', () async {
+    await source(
+      generator.generate(
+        name: 'badge',
+        kind: GenerationKind.component,
+        state: StateManagement.bloc,
+      ),
+    );
+    final registry = generator.readRegistry();
+    final entry = (registry['features'] as List).single;
+    entry.remove('component_scope');
+    entry['state_style'] = 'union';
+    final previousFiles = featureTemplates(
+      name: 'badge',
+      path: 'lib/components/badge',
+      package: 'fixture_app',
+      kind: GenerationKind.component,
+      state: StateManagement.bloc,
+      provider: ApiProvider.retrofit,
+      localComponentScope: false,
+      singleState: false,
+    );
+    final conversion = GenerationPlan(project);
+    for (final file in previousFiles.entries) {
+      conversion.write(file.key, file.value);
+    }
+    entry['files'] = [
+      for (final file in previousFiles.entries)
+        artifactRecord(file.key, utf8.encode(file.value), 'badge'),
+    ];
+    conversion.write(registryPath, jsonEncode(registry));
+    // Previous releases registered the controller externally. Keep an existing
+    // registration, but never synthesize a component page during repair.
+    final di = AstEditor(project.read('lib/app/di/injection.dart'))
+      ..addImports([
+        'package:fixture_app/components/badge/bloc/badge_bloc.dart',
+      ])
+      ..addStatements(
+        'registerFeatureDependencies',
+        'container.registerFactory<BadgeBloc>(() => BadgeBloc());',
+      );
+    conversion.write('lib/app/di/injection.dart', di.source);
+    generator.reconcileIntegrations(conversion, []);
+    await source(conversion);
+    const widget = 'lib/components/badge/badge_widget.dart';
+    File(project.file(widget)).deleteSync();
+    await source(ProjectDoctor(project).inspect().plan);
+    expect(project.read(widget), isNot(contains('return BlocProvider(')));
+    expect(
+      project.read('lib/app/di/injection.dart'),
+      contains('registerFactory<BadgeBloc>'),
+    );
+    File(project.file(registryPath)).deleteSync();
+    await source(ProjectDoctor(project).inspect().plan);
+    expect(
+      (generator.readRegistry()['features'] as List).single['component_scope'],
+      'external',
+    );
+    expect(
+      project.read('lib/app/composition/feature_pages.dart'),
+      isNot(contains('static Widget badge(')),
+    );
+    expect(ProjectDoctor(project).inspect().plan.files, isEmpty);
+  });
+
+  test('Doctor removes a missing local component without requiring central ownership', () async {
+    await source(
+      generator.generate(
+        name: 'card',
+        kind: GenerationKind.component,
+        state: StateManagement.cubit,
+      ),
+    );
+    final originalDi = project.read('lib/app/di/injection.dart');
+    final originalPages = project.read(
+      'lib/app/composition/feature_pages.dart',
+    );
+    Directory(project.file('lib/components/card')).deleteSync(recursive: true);
+    await source(ProjectDoctor(project).inspect().plan);
+    expect(generator.readRegistry()['features'], isEmpty);
+    expect(project.read('lib/app/di/injection.dart'), originalDi);
+    expect(
+      project.read('lib/app/composition/feature_pages.dart'),
+      originalPages,
+    );
+  });
 }

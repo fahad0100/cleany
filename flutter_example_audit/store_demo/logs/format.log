@@ -1,0 +1,80 @@
+Formatted flutter_example/lib/app/app.dart
+Formatted flutter_example/lib/app/bootstrap.dart
+Formatted flutter_example/lib/app/composition/feature_pages.dart
+Formatted flutter_example/lib/app/config/store_preferences.dart
+Formatted flutter_example/lib/app/di/injection.dart
+Formatted flutter_example/lib/app/router/app_router.dart
+Formatted flutter_example/lib/app/store_shell.dart
+Could not format because the source could not be parsed:
+
+line 15, column 6 of flutter_example/lib/components/product_card/product_card_widget.dart: Expected to find ';'.
+   ╷
+15 │  ])))));
+   │      ^
+   ╵
+line 15, column 7 of flutter_example/lib/components/product_card/product_card_widget.dart: Expected a class member.
+   ╷
+15 │  ])))));
+   │       ^
+   ╵
+line 15, column 8 of flutter_example/lib/components/product_card/product_card_widget.dart: Expected a class member.
+   ╷
+15 │  ])))));
+   │        ^
+   ╵
+Formatted flutter_example/lib/components/quantity_stepper/cubit/quantity_stepper_cubit.dart
+Formatted flutter_example/lib/components/quantity_stepper/quantity_stepper_widget.dart
+Formatted flutter_example/lib/components/status_panel/status_panel_widget.dart
+Formatted flutter_example/lib/core/errors/error_reporter.dart
+Formatted flutter_example/lib/core/errors/repository_guard.dart
+Formatted flutter_example/lib/core/localization/store_localization.dart
+Formatted flutter_example/lib/core/network/retrofit/auth_api.dart
+Formatted flutter_example/lib/core/network/retrofit/carts_api.dart
+Formatted flutter_example/lib/core/network/retrofit/products_api.dart
+Formatted flutter_example/lib/core/network/retrofit/users_api.dart
+Formatted flutter_example/lib/core/storage/session_store.dart
+Formatted flutter_example/lib/core/theme/app_theme.dart
+Formatted flutter_example/lib/features/auth/data/datasources/auth_remote_data_source.dart
+Formatted flutter_example/lib/features/auth/data/models/auth_model.dart
+Formatted flutter_example/lib/features/auth/data/repositories/auth_repository_impl.dart
+Formatted flutter_example/lib/features/auth/domain/entities/auth_entity.dart
+Formatted flutter_example/lib/features/auth/domain/repositories/auth_repository.dart
+Formatted flutter_example/lib/features/auth/domain/usecases/sign_in.dart
+Formatted flutter_example/lib/features/auth/presentation/cubit/auth_cubit.dart
+Formatted flutter_example/lib/features/auth/presentation/cubit/auth_state.dart
+Formatted flutter_example/lib/features/auth/presentation/pages/auth_page.dart
+Formatted flutter_example/lib/features/carts/data/datasources/carts_remote_data_source.dart
+Formatted flutter_example/lib/features/carts/data/models/carts_model.dart
+Formatted flutter_example/lib/features/carts/data/repositories/carts_repository_impl.dart
+Formatted flutter_example/lib/features/carts/domain/entities/cart_draft.dart
+Formatted flutter_example/lib/features/carts/domain/entities/carts_entity.dart
+Formatted flutter_example/lib/features/carts/domain/repositories/carts_repository.dart
+Formatted flutter_example/lib/features/carts/domain/usecases/cart_enrichment.dart
+Formatted flutter_example/lib/features/carts/domain/usecases/create_cart.dart
+Formatted flutter_example/lib/features/carts/domain/usecases/delete_cart.dart
+Formatted flutter_example/lib/features/carts/domain/usecases/get_carts.dart
+Formatted flutter_example/lib/features/carts/presentation/bloc/carts_bloc.dart
+Formatted flutter_example/lib/features/carts/presentation/bloc/carts_event.dart
+Formatted flutter_example/lib/features/carts/presentation/bloc/carts_state.dart
+Formatted flutter_example/lib/features/carts/presentation/pages/carts_page.dart
+Formatted flutter_example/lib/features/products/data/datasources/products_remote_data_source.dart
+Formatted flutter_example/lib/features/products/data/models/products_model.dart
+Formatted flutter_example/lib/features/products/data/repositories/products_repository_impl.dart
+Formatted flutter_example/lib/features/products/domain/entities/products_entity.dart
+Formatted flutter_example/lib/features/products/domain/repositories/products_repository.dart
+Formatted flutter_example/lib/features/products/domain/usecases/get_products.dart
+Formatted flutter_example/lib/features/products/presentation/cubit/products_cubit.dart
+Formatted flutter_example/lib/features/products/presentation/cubit/products_state.dart
+Formatted flutter_example/lib/features/products/presentation/pages/products_page.dart
+Formatted flutter_example/lib/features/users/data/datasources/users_remote_data_source.dart
+Formatted flutter_example/lib/features/users/data/models/users_model.dart
+Formatted flutter_example/lib/features/users/data/repositories/users_repository_impl.dart
+Formatted flutter_example/lib/features/users/domain/entities/users_entity.dart
+Formatted flutter_example/lib/features/users/domain/repositories/users_repository.dart
+Formatted flutter_example/lib/features/users/domain/usecases/get_user_profile.dart
+Formatted flutter_example/lib/features/users/domain/usecases/get_users.dart
+Formatted flutter_example/lib/features/users/presentation/cubit/users_cubit.dart
+Formatted flutter_example/lib/features/users/presentation/cubit/users_state.dart
+Formatted flutter_example/lib/features/users/presentation/pages/users_page.dart
+Formatted flutter_example/lib/main.dart
+Formatted 106 files (62 changed) in 0.19 seconds.

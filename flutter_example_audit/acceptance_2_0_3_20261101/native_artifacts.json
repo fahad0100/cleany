@@ -1,0 +1,48 @@
+[
+  {
+    "platform": "android",
+    "mode": "debug",
+    "flavor": "dev",
+    "application_id": "com.cleany.cleanyStore.dev",
+    "internet_permission": true
+  },
+  {
+    "platform": "android",
+    "mode": "debug",
+    "flavor": "uat",
+    "application_id": "com.cleany.cleanyStore.uat",
+    "internet_permission": true
+  },
+  {
+    "platform": "android",
+    "mode": "debug",
+    "flavor": "prod",
+    "application_id": "com.cleany.cleanyStore",
+    "internet_permission": true
+  },
+  {
+    "platform": "android",
+    "mode": "release",
+    "flavor": "prod",
+    "internet_permission": false,
+    "apk_bytes": 54984996
+  },
+  {
+    "platform": "ios",
+    "flavor": "dev",
+    "application_id": "com.cleany.cleanyStore.dev",
+    "display_name": "cleany_store Dev"
+  },
+  {
+    "platform": "ios",
+    "flavor": "uat",
+    "application_id": "com.cleany.cleanyStore.uat",
+    "display_name": "cleany_store UAT"
+  },
+  {
+    "platform": "ios",
+    "flavor": "prod",
+    "application_id": "com.cleany.cleanyStore",
+    "display_name": "cleany_store"
+  }
+]

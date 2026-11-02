@@ -1,0 +1,26 @@
+{
+  "local_cleany_version": "2.0.2",
+  "features": [
+    "carts",
+    "users",
+    "auth",
+    "products"
+  ],
+  "components": [
+    "product_card",
+    "status_panel",
+    "quantity_stepper"
+  ],
+  "added_use_cases": [
+    "create_cart",
+    "delete_cart",
+    "get_user_profile",
+    "sign_in",
+    "sign_out",
+    "get_featured_product"
+  ],
+  "static_analysis": "No issues found",
+  "deterministic_tests": 19,
+  "live_ui_flow": "passed on iPhone 17 Pro / iOS 26.5",
+  "root_library_modified": false
+}

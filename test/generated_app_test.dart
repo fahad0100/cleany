@@ -140,6 +140,8 @@ flutter:
             state: StateManagement.cubit,
             provider: provider,
             legacyComponentWidgets: true,
+            localComponentScope: false,
+            singleState: false,
           );
           final legacyPlan = GenerationPlan(project)
             ..delete('lib/components/legacy_badge/legacy_badge_widget.dart');
@@ -147,7 +149,9 @@ flutter:
             legacyPlan.write(file.key, file.value);
           }
           legacyEntry.remove('component_layout');
+          legacyEntry.remove('component_scope');
           legacyEntry['template_version'] = '2.0.0';
+          legacyEntry['state_style'] = 'union';
           legacyEntry['files'] = [
             for (final file in legacyFiles.entries)
               artifactRecord(file.key, utf8.encode(file.value), 'legacy_badge'),
@@ -162,6 +166,16 @@ flutter:
                 ),
           );
           legacyPlan.write(registryPath, prettyJson(legacyRegistry));
+          final legacyDi = AstEditor(project.read('lib/app/di/injection.dart'))
+            ..addImports([
+              'package:generated_app/components/legacy_badge/cubit/legacy_badge_cubit.dart',
+            ])
+            ..addStatements(
+              'registerFeatureDependencies',
+              'container.registerFactory<LegacyBadgeCubit>(() => LegacyBadgeCubit());',
+            );
+          legacyPlan.write('lib/app/di/injection.dart', legacyDi.source);
+          generator.reconcileIntegrations(legacyPlan, []);
           await sourceOnly(legacyPlan);
           await sourceOnly(
             generator.generate(
@@ -242,6 +256,7 @@ flutter:
             provider == ApiProvider.retrofit ? '1' : '2',
             provider == ApiProvider.retrofit ? 'refresh_auth' : 'clear_catalog',
             provider == ApiProvider.retrofit ? '2' : '1',
+            if (provider == ApiProvider.retrofit) '',
             '1',
             '0',
           ].iterator;
@@ -378,7 +393,7 @@ flutter:
             );
             expect(
               project.read('.dart_tool/package_config.json'),
-              isNot(contains('.cleany/cache/stage_')),
+              isNot(contains('.cleany/cache/')),
             );
           }
           File(project.file('lib/core/utils/user_note.dart'))
@@ -404,18 +419,20 @@ flutter:
 String _runtimeTests(ApiProvider provider) =>
     '''
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:sembast/sembast_memory.dart';
+import 'package:generated_app/core/storage/app_local_storage.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:generated_app/app/config/app_config.dart';
 import 'package:generated_app/app/config/app_environment.dart';
 import 'package:generated_app/app/config/flavor_config.dart';
 import 'package:generated_app/app/di/injection.dart';
-import 'package:generated_app/app/composition/feature_pages.dart';
 import 'package:generated_app/components/legacy_badge/cubit/legacy_badge_cubit.dart';
 import 'package:generated_app/components/legacy_badge/widgets/legacy_badge_widget.dart';
 import 'package:generated_app/core/state/use_case_state.dart';
@@ -437,6 +454,7 @@ import 'package:generated_app/features/auth/domain/repositories/auth_repository.
 import 'package:generated_app/features/auth/domain/usecases/get_auth.dart';
 import 'package:generated_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:generated_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:generated_app/features/auth/presentation/pages/auth_page.dart';
 import 'package:generated_app/modules/shop/catalog/domain/entities/catalog_entity.dart';
 import 'package:generated_app/modules/shop/catalog/domain/repositories/catalog_repository.dart';
 import 'package:generated_app/modules/shop/catalog/domain/usecases/get_catalog.dart';
@@ -447,6 +465,14 @@ import 'package:generated_app/modules/shop/catalog/subfeatures/card_cubit/cubit/
 import 'package:generated_app/modules/shop/catalog/subfeatures/card_bloc/bloc/card_bloc_bloc.dart';
 import 'package:generated_app/modules/shop/catalog/subfeatures/card_bloc/bloc/card_bloc_event.dart';
 import 'package:generated_app/modules/shop/catalog/subfeatures/card_none/card_none_widget.dart';
+
+var storageSequence = 0;
+Future<void> configureTestDependencies(GetIt container, AppConfig config) async {
+  final db = await databaseFactoryMemory.openDatabase('test-storage-\${storageSequence++}');
+  final storage = await AppLocalStorage.open(environment: config.environment.name,
+    dbSecretKey: base64Encode(List.generate(32, (i) => i + 1)), database: db);
+  await configureDependencies(container, config, localStorage: storage);
+}
 
 class FakeRemote extends AuthRemoteDataSource {
   FakeRemote() : super(${provider == ApiProvider.retrofit ? 'AuthApi(Dio())' : 'Dio()'});
@@ -616,11 +642,15 @@ void main() {
     final subscription = cubit.stream.listen(states.add);
     await cubit.load();
     await Future<void>.delayed(Duration.zero);
-    expect(states, [const AuthState.loading(), const AuthState.success(AuthEntity(id: '42'))]);
+    expect(states, [const AuthState(authStatus: UseCaseState.loading()), const AuthState(authStatus: UseCaseState.success(AuthEntity(id: '42')))]);
     repository.result = const Error(UnauthorizedFailure());
     await cubit.load();
     await Future<void>.delayed(Duration.zero);
-    expect(states.last, isA<AuthFailure>());
+    expect(states.last.authStatus, isA<UseCaseFailure<AuthEntity>>());
+    expect(states[2].authStatus, isA<UseCaseLoading<AuthEntity>>());
+    repository.result = const Success(AuthEntity(id: 'retry'));
+    await cubit.load();
+    expect(cubit.state.authStatus, const UseCaseState<AuthEntity>.success(AuthEntity(id: 'retry')));
     await subscription.cancel();
     await cubit.close();
   });
@@ -641,19 +671,19 @@ void main() {
   test('Bloc emits loading and entity success or failure', () async {
     final repository = FakeCatalogRepository();
     final bloc = CatalogBloc(GetCatalog(repository));
-    final success = bloc.stream.firstWhere((s) => s is CatalogSuccess);
+    final success = bloc.stream.firstWhere((s) => s.catalogStatus is UseCaseSuccess<CatalogEntity>);
     bloc.add(const CatalogEvent.requested());
-    expect(await success, const CatalogState.success(CatalogEntity(id: '99')));
+    expect(await success, const CatalogState(catalogStatus: UseCaseState.success(CatalogEntity(id: '99'))));
     repository.result = const Error(NetworkFailure());
-    final failure = bloc.stream.firstWhere((s) => s is CatalogFailure);
+    final failure = bloc.stream.firstWhere((s) => s.catalogStatus is UseCaseFailure<CatalogEntity>);
     bloc.add(const CatalogEvent.requested());
-    expect(await failure, isA<CatalogFailure>());
+    expect((await failure).catalogStatus, isA<UseCaseFailure<CatalogEntity>>());
     await bloc.close();
   });
 
   test('DI has one app scope, singleton repositories and owned controllers', () async {
     final container = GetIt.asNewInstance();
-    await configureDependencies(container, const AppConfig(
+    await configureTestDependencies(container, const AppConfig(
       environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com'));
     expect(identical(container<AuthRepository>(), container<AuthRepository>()), isTrue);
     final first = container<AuthCubit>();
@@ -663,6 +693,29 @@ void main() {
     await second.close();
     await disposeDependencies(container);
     expect(container.isRegistered<Dio>(), isFalse);
+  });
+
+  testWidgets('feature UI renders loading, data and errors from one composed State', (tester) async {
+    final repository = FakeAuthRepository();
+    final cubit = AuthCubit(GetAuth(repository));
+    addTearDown(cubit.close);
+    await tester.pumpWidget(MaterialApp(home: BlocProvider.value(value: cubit, child: const AuthPage())));
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    repository.pending = Completer<Result<AuthEntity, Failure>>();
+    final load = cubit.load();
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    repository.pending!.complete(const Success(AuthEntity(id: 'visible')));
+    await load;
+    await tester.pump();
+    expect(find.text('visible'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    repository.pending = null;
+    repository.result = const Error(ValidationFailure('Invalid phone'));
+    await cubit.load();
+    await tester.pump();
+    expect(find.text('Invalid phone'), findsOneWidget);
+    expect(find.text('visible'), findsNothing);
   });
 
   test('additional repositories reuse Model/Entity and preserve Result when reporting fails', () async {
@@ -699,7 +752,7 @@ void main() {
     await cubit.clearAuth();
     expect(cubit.state.clearAuthStatus, const UseCaseState<void>.success(null));
     await cubit.load();
-    expect(cubit.state, isA<AuthSuccess>());
+    expect(cubit.state.authStatus, isA<UseCaseSuccess<AuthEntity>>());
     expect(cubit.state.refreshAuthStatus, isA<UseCaseLoading<AuthEntity>>());
     expect(cubit.state.clearAuthStatus, isA<UseCaseSuccess<void>>());
     refresh.pending!.complete(const Success(AuthEntity(id: 'refreshed')));
@@ -730,7 +783,7 @@ void main() {
     final cleared = bloc.stream.firstWhere((s) => s.clearCatalogStatus is UseCaseSuccess<void>);
     bloc.add(const CatalogEvent.clearCatalogRequested());
     await cleared;
-    final main = bloc.stream.firstWhere((s) => s is CatalogSuccess);
+    final main = bloc.stream.firstWhere((s) => s.catalogStatus is UseCaseSuccess<CatalogEntity>);
     bloc.add(const CatalogEvent.requested());
     await main;
     expect(bloc.state.refreshCatalogStatus, isA<UseCaseLoading<CatalogEntity>>());
@@ -746,7 +799,7 @@ void main() {
 
   test('central DI wires new actions; unconnected backends return Failure without guessing HTTP', () async {
     final container = GetIt.asNewInstance();
-    await configureDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com'));
+    await configureTestDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com'));
     final cubit = container<AuthCubit>();
     expect(cubit.refreshAuthUseCase, isNotNull);
     expect(cubit.clearAuthUseCase, isNotNull);
@@ -765,7 +818,7 @@ void main() {
     await cubit.refreshAuth();
     expect(cubit.state.refreshAuthStatus, isA<UseCaseFailure<AuthEntity>>());
     await cubit.load();
-    expect(cubit.state, isA<AuthSuccess>());
+    expect(cubit.state.authStatus, isA<UseCaseSuccess<AuthEntity>>());
     await cubit.close();
   });
 
@@ -781,15 +834,18 @@ void main() {
 
   testWidgets('legacy component widget paths retain provider wiring and disposal', (tester) async {
     final container = GetIt.asNewInstance();
-    await configureDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com'));
-    await tester.pumpWidget(MaterialApp(home: FeaturePages.legacyBadge(container)));
+    await tester.runAsync(() => configureTestDependencies(container, const AppConfig(environment: AppEnvironment.dev, apiBaseUrl: 'https://example.com')));
+    await tester.pumpWidget(MaterialApp(home: BlocProvider(
+      create: (_) => container<LegacyBadgeCubit>(),
+      child: const LegacyBadgeWidget(),
+    )));
     final cubit = tester.element(find.byType(LegacyBadgeWidget)).read<LegacyBadgeCubit>();
     cubit.update(7);
     await tester.pump();
     expect(find.text('7'), findsOneWidget);
     await tester.pumpWidget(const SizedBox.shrink());
     expect(cubit.isClosed, isTrue);
-    await disposeDependencies(container);
+    await tester.runAsync(() => disposeDependencies(container));
   });
 
   testWidgets('component without state builds without DI', (tester) async {

@@ -1,0 +1,21 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/test/store_test.dart
+00:00 +0: products: array and nested rating become domain entities
+00:00 +1: carts: domain joins product details without coupling data layers
+00:00 +2: create cart sends typed IDs and quantities and enriches the response
+00:00 +3: invalid cart quantities fail before network activity
+00:00 +4: delete cart uses DELETE with the selected ID
+00:00 +5: users: nested profile maps into a password-free entity
+00:00 +6: profile validation avoids invalid network calls
+00:00 +7: sign in resolves identity, redacts token, and sign out clears memory
+00:00 +8: failed login never creates a session
+00:00 +9: blank credentials fail before transport
+00:00 +10: offline transport maps once to NetworkFailure
+00:00 +11: malformed JSON maps to ValidationFailure
+00:00 +12: unexpected reporter errors cannot escape the Result boundary
+00:00 +13: session token is attached only to the trusted API origin
+00:00 +14: products cubit loads, filters, sorts and runs its generated use case
+00:00 +15: products cubit presents failures
+00:00 +16: cart bloc keeps load, create and delete operation states independent
+00:00 +17: closed controllers ignore late requests
+00:00 +18: flat quantity component enforces bounds and reports changes
+00:00 +19: All tests passed!

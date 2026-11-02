@@ -1,0 +1,827 @@
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+  New project: choose 9 to initialize it first.
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Initialize project
+╰────────────────────────────────────────────╯
+  Set up the application architecture, localization, network services,
+  environments and run profiles using the production app identity.
+
+Detected production app id: com.cleany.cleanyStore
+  prod  com.cleany.cleanyStore
+  dev   com.cleany.cleanyStore.dev
+  uat   com.cleany.cleanyStore.uat
+     1. Retrofit over Dio
+     2. Dio
+› API provider [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/app/app.dart
+  CREATE  lib/app/bootstrap.dart
+  CREATE  lib/app/config/app_environment.dart
+  CREATE  lib/app/config/app_config.dart
+  CREATE  lib/app/di/injection.dart
+  CREATE  lib/app/composition/feature_pages.dart
+  CREATE  lib/app/router/app_router.dart
+  CREATE  lib/app/router/route_names.dart
+  CREATE  lib/core/errors/error_reporter.dart
+  CREATE  lib/core/errors/failure.dart
+  CREATE  lib/core/network/failure_mapper.dart
+  CREATE  lib/core/network/dio/dio_client.dart
+  CREATE  lib/core/network/dio/interceptors/auth_interceptor.dart
+  CREATE  lib/core/network/api_endpoints.dart
+  CREATE  l10n.yaml
+  CREATE  assets/translations/app_en.arb
+  CREATE  assets/translations/app_ar.arb
+  CREATE  lib/app/config/flavor_config.dart
+  CREATE  lib/core/theme/app_theme.dart
+  CREATE  lib/core/widgets/loading_widget.dart
+  CREATE  assets/images/.gitkeep
+  CREATE  assets/icons/.gitkeep
+  CREATE  test/.gitkeep
+  CREATE  integration_test/.gitkeep
+  CREATE  lib/core/storage/.gitkeep
+  CREATE  lib/core/localization/.gitkeep
+  CREATE  lib/core/constants/.gitkeep
+  CREATE  lib/core/utils/.gitkeep
+  CREATE  lib/core/network/retrofit/.gitkeep
+  CREATE  lib/main_dev.dart
+  CREATE  config/flavors/dev.yaml
+  CREATE  lib/main_uat.dart
+  CREATE  config/flavors/uat.yaml
+  CREATE  lib/main_prod.dart
+  CREATE  config/flavors/prod.yaml
+  CREATE  flavorizr.yaml
+  CREATE  .vscode/launch.json
+  CREATE  CLEANY_RUN.md
+  CREATE  .cleany/backups/entrypoints/main_e76a6730108daf90993958ce69898c366b4c606babd8d1f9d7ee1fea4b43a5db.dart
+  UPDATE  lib/main.dart
+  UPDATE  pubspec.yaml
+  CREATE  .cleany/features.json
+  UPDATE  .gitignore
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 387ms ✓
+[0s] dart --version
+[0s] dart --version · 83ms ✓
+[0s] staging
+[0s] staging · 6 inputs copied
+[0s] flutter pub get
+[5s] flutter pub get · 5s
+[8s] flutter pub get · 7754ms ✓
+[8s] flutter gen-l10n
+[9s] flutter gen-l10n · 772ms ✓
+[9s] dart run build_runner build --delete-conflicting-outputs
+[14s] dart run build_runner build --delete-conflicting-outputs · 5s
+[19s] dart run build_runner build --delete-conflicting-outputs · 10s
+[24s] dart run build_runner build --delete-conflicting-outputs · 15s
+[29s] dart run build_runner build --delete-conflicting-outputs · 20s
+[32s] dart run build_runner build --delete-conflicting-outputs · 23173ms ✓
+[32s] flutter analyze --no-pub
+[36s] flutter analyze --no-pub · 3905ms ✓
+[36s] collecting · 47 validated outputs
+[36s] applying · 49 files
+[36s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/products/domain/entities/products_entity.dart
+  CREATE  lib/features/products/domain/repositories/products_repository.dart
+  CREATE  lib/features/products/domain/usecases/get_products.dart
+  CREATE  lib/features/products/data/models/products_model.dart
+  CREATE  lib/core/network/retrofit/products_api.dart
+  CREATE  lib/features/products/data/datasources/products_remote_data_source.dart
+  CREATE  lib/features/products/data/repositories/products_repository_impl.dart
+  CREATE  lib/features/products/presentation/widgets/.gitkeep
+  CREATE  lib/features/products/presentation/cubit/products_state.dart
+  CREATE  lib/features/products/presentation/cubit/products_cubit.dart
+  CREATE  lib/features/products/presentation/pages/products_page.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 383ms ✓
+[0s] dart --version
+[0s] dart --version · 74ms ✓
+[0s] staging
+[0s] staging · 47 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1668ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 888ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20248ms ✓
+[23s] flutter analyze --no-pub
+[26s] flutter analyze --no-pub · 3248ms ✓
+Operation stopped: Project inputs changed during validation. Retry with the current files.
+No generated changes remain applied. Existing edits are preserved.
+     1. Retry this action
+     2. Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case) [products]:      1. Cubit
+     2. Bloc
+› State management [1]:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/carts/domain/entities/carts_entity.dart
+  CREATE  lib/features/carts/domain/repositories/carts_repository.dart
+  CREATE  lib/features/carts/domain/usecases/get_carts.dart
+  CREATE  lib/features/carts/data/models/carts_model.dart
+  CREATE  lib/core/network/retrofit/carts_api.dart
+  CREATE  lib/features/carts/data/datasources/carts_remote_data_source.dart
+  CREATE  lib/features/carts/data/repositories/carts_repository_impl.dart
+  CREATE  lib/features/carts/presentation/widgets/.gitkeep
+  CREATE  lib/features/carts/presentation/bloc/carts_state.dart
+  CREATE  lib/features/carts/presentation/bloc/carts_event.dart
+  CREATE  lib/features/carts/presentation/bloc/carts_bloc.dart
+  CREATE  lib/features/carts/presentation/pages/carts_page.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 369ms ✓
+[0s] dart --version
+[0s] dart --version · 70ms ✓
+[0s] staging
+[0s] staging · 47 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1614ms ✓
+[2s] flutter gen-l10n
+[2s] flutter gen-l10n · 859ms ✓
+[2s] dart run build_runner build --delete-conflicting-outputs
+[7s] dart run build_runner build --delete-conflicting-outputs · 5s
+[12s] dart run build_runner build --delete-conflicting-outputs · 10s
+[17s] dart run build_runner build --delete-conflicting-outputs · 15s
+[22s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20337ms ✓
+[23s] flutter analyze --no-pub
+[26s] flutter analyze --no-pub · 3139ms ✓
+[26s] collecting · 65 validated outputs
+[26s] applying · 25 files
+[26s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/users/domain/entities/users_entity.dart
+  CREATE  lib/features/users/domain/repositories/users_repository.dart
+  CREATE  lib/features/users/domain/usecases/get_users.dart
+  CREATE  lib/features/users/data/models/users_model.dart
+  CREATE  lib/core/network/retrofit/users_api.dart
+  CREATE  lib/features/users/data/datasources/users_remote_data_source.dart
+  CREATE  lib/features/users/data/repositories/users_repository_impl.dart
+  CREATE  lib/features/users/presentation/widgets/.gitkeep
+  CREATE  lib/features/users/presentation/cubit/users_state.dart
+  CREATE  lib/features/users/presentation/cubit/users_cubit.dart
+  CREATE  lib/features/users/presentation/pages/users_page.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 379ms ✓
+[0s] dart --version
+[0s] dart --version · 73ms ✓
+[0s] staging
+[0s] staging · 65 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1879ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 838ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20644ms ✓
+[23s] flutter analyze --no-pub
+[27s] flutter analyze --no-pub · 3186ms ✓
+[27s] collecting · 81 validated outputs
+[27s] applying · 21 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/features/auth/domain/entities/auth_entity.dart
+  CREATE  lib/features/auth/domain/repositories/auth_repository.dart
+  CREATE  lib/features/auth/domain/usecases/get_auth.dart
+  CREATE  lib/features/auth/data/models/auth_model.dart
+  CREATE  lib/core/network/retrofit/auth_api.dart
+  CREATE  lib/features/auth/data/datasources/auth_remote_data_source.dart
+  CREATE  lib/features/auth/data/repositories/auth_repository_impl.dart
+  CREATE  lib/features/auth/presentation/widgets/.gitkeep
+  CREATE  lib/features/auth/presentation/cubit/auth_state.dart
+  CREATE  lib/features/auth/presentation/cubit/auth_cubit.dart
+  CREATE  lib/features/auth/presentation/pages/auth_page.dart
+  UPDATE  lib/app/di/injection.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  lib/app/router/route_names.dart
+  UPDATE  lib/app/router/app_router.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 371ms ✓
+[0s] dart --version
+[0s] dart --version · 71ms ✓
+[0s] staging
+[0s] staging · 81 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1643ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 1269ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20508ms ✓
+[23s] flutter analyze --no-pub
+[27s] flutter analyze --no-pub · 3422ms ✓
+[27s] collecting · 97 validated outputs
+[27s] applying · 21 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create component
+╰────────────────────────────────────────────╯
+  Create a reusable widget directly inside its component folder, with
+  optional Cubit or Bloc and central dependency wiring.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+     3. No state management
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/components/product_card/product_card_widget.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 376ms ✓
+[0s] dart --version
+[0s] dart --version · 71ms ✓
+[0s] staging
+[0s] staging · 97 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1682ms ✓
+[2s] flutter gen-l10n
+[3s] flutter gen-l10n · 814ms ✓
+[3s] dart run build_runner build --delete-conflicting-outputs
+[8s] dart run build_runner build --delete-conflicting-outputs · 5s
+[13s] dart run build_runner build --delete-conflicting-outputs · 10s
+[18s] dart run build_runner build --delete-conflicting-outputs · 15s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20s
+[23s] dart run build_runner build --delete-conflicting-outputs · 20730ms ✓
+[23s] flutter analyze --no-pub
+[26s] flutter analyze --no-pub · 3228ms ✓
+[27s] collecting · 98 validated outputs
+[27s] applying · 3 files
+[27s] completed ✓
+Completed. Staged generation and analysis passed.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create component
+╰────────────────────────────────────────────╯
+  Create a reusable widget directly inside its component folder, with
+  optional Cubit or Bloc and central dependency wiring.
+
+› Name (snake_case):      1. Cubit
+     2. Bloc
+     3. No state management
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]: 
+╭────────────────────────────────────────────╮
+  Review changes
+╰────────────────────────────────────────────╯
+  CREATE  lib/components/status_panel/status_panel_widget.dart
+  UPDATE  lib/app/composition/feature_pages.dart
+  UPDATE  .cleany/features.json
+     1. Apply and validate
+     2. Cancel
+› Continue [2]: Preparing operation. Ctrl+C cancels the active command and requests safe rollback.
+[0s] flutter --version --machine
+[0s] flutter --version --machine · 370ms ✓
+[0s] dart --version
+[0s] dart --version · 79ms ✓
+[0s] staging
+[0s] staging · 98 inputs copied
+[0s] flutter pub get
+[2s] flutter pub get · 1578ms ✓
+[2s] flutter gen-l10n
+[2s] flutter gen-l10n · 801ms ✓
+[2s] dart run build_runner build --delete-conflicting-outputs
+[7s] dart run build_runner build --delete-conflicting-outputs · 5s
+[12s] dart run build_runner build --delete-conflicting-outputs · 10s
+Operation stopped: Operation cancelled; safe rollback has been requested.
+No generated changes remain applied. Existing edits are preserved.
+     1. Retry this action
+     2. Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: Choose a number from the menu.
+
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case): Operation stopped: Use a non-reserved snake_case name, starting with a letter (max 64).
+No generated changes remain applied. Existing edits are preserved.
+     1. Retry this action
+     2. Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case) [1]: Operation stopped: Use a non-reserved snake_case name, starting with a letter (max 64).
+No generated changes remain applied. Existing edits are preserved.
+     1. Retry this action
+     2. Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+
+╭────────────────────────────────────────────╮
+  Create feature
+╰────────────────────────────────────────────╯
+  Create a complete feature with Data, Domain and Presentation, then
+  connect its Cubit or Bloc, dependencies and route.
+
+› Name (snake_case) [3]:      1. Cubit
+     2. Bloc
+› State management:      1. Default directory
+     2. Custom directory inside lib
+     3. Inside an existing feature
+› Location [1]:      1. Default id / GET scaffold
+     2. Define fields and API contract
+› Data contract [1]: Choose a number from 1 to 2.
+› Data contract [3]: › Response field count (1 to 30): Enter a field count from 1 to 30.
+› Response field count (1 to 30) [create_cart]: Format: fieldName:type:jsonKey (example: userName:string:user_name)
+Types: string, int, double, bool, datetime, list<string>, list<int>.
+› Response field 1, lowerCamelCase:type:JSON key: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [3]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [2]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [delete_cart]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [3]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [3]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [get_user_profile]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [2]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [3]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [4]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [sign_in]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [2]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [3]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [4]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [sign_out]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [1]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [6]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [7]: Use fieldName:type:jsonKey.
+› Response field 1, lowerCamelCase:type:JSON key [0]: Operation stopped: Operation cancelled; safe rollback has been requested.
+No generated changes remain applied. Existing edits are preserved.
+     1. Retry this action
+     2. Return to main menu
+› Next step [2]: 
+╭────────────────────────────────────────────╮
+  CLEANY  ·  Flutter Architecture
+╰────────────────────────────────────────────╯
+
+  [ Generation ]
+     1. Create feature
+     2. Create component
+     3. Add use case
+
+  [ Cleanup ]
+     4. Remove feature
+     5. Remove component
+
+  [ Inspection & Management ]
+     6. List features
+     7. List components
+     8. Rename or move an entry
+
+  [ Core & Setup ]
+     9. Initialize project
+    10. Configure native flavors
+
+  [ Maintenance & Recovery ]
+    11. Project doctor / repair
+    12. Recover interrupted operation
+    13. Cleany maintenance / reset
+
+     0. Exit
+› Choose a number: 

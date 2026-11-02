@@ -3,17 +3,27 @@ import 'app_templates.dart';
 import 'network_templates.dart';
 import 'localization_templates.dart';
 import 'use_case_templates.dart';
+import 'theme_templates.dart';
+import 'storage_templates.dart';
+import '../config_value_spec.dart';
 
 Map<String, String> coreTemplates(
   String package,
   ApiProvider provider,
   String appId, {
-  bool includeUseCaseState = false,
+  bool includeUseCaseState = true,
+  List<AppConfigValueSpec> configValues = const [],
+  bool includeLocalStorage = true,
 }) {
   final files = <String, String>{
-    ...appTemplates(),
+    ...appTemplates(
+      configValues: configValues,
+      includeLocalStorage: includeLocalStorage,
+    ),
     ...networkTemplates(),
     ...localizationTemplates(),
+    ...themeTemplates(),
+    if (includeLocalStorage) ...storageTemplates(),
     if (includeUseCaseState) useCaseStatePath: useCaseStateTemplate(),
     'lib/app/config/flavor_config.dart': r'''
 import 'package:flutter/services.dart';
@@ -21,9 +31,10 @@ import 'package:yaml/yaml.dart';
 import 'app_environment.dart';
 
 class FlavorConfig {
-  const FlavorConfig(this.environment, this.apiBaseUrl);
+  const FlavorConfig(this.environment, this.apiBaseUrl, {this.values = const {}});
   final AppEnvironment environment;
   final String apiBaseUrl;
+  final Map<String, Object?> values;
   String get label => environment.name;
   bool get isProduction => environment == AppEnvironment.prod;
 
@@ -34,16 +45,9 @@ class FlavorConfig {
         yaml['api_base_url'] is! String) {
       throw StateError('Invalid public flavor configuration.');
     }
-    return FlavorConfig(environment, yaml['api_base_url'] as String);
+    return FlavorConfig(environment, yaml['api_base_url'] as String,
+      values: Map<String, Object?>.unmodifiable(Map<String, Object?>.from(yaml)));
   }
-}
-''',
-    'lib/core/theme/app_theme.dart': '''
-import 'package:flutter/material.dart';
-
-class AppTheme {
-  AppTheme._();
-  static ThemeData get light => ThemeData(useMaterial3: true);
 }
 ''',
     'lib/core/widgets/loading_widget.dart': '''
@@ -60,7 +64,7 @@ class LoadingWidget extends StatelessWidget {
     'test/.gitkeep': '',
     'integration_test/.gitkeep': '',
   };
-  for (final folder in ['storage', 'localization', 'constants', 'utils']) {
+  for (final folder in ['localization', 'constants', 'utils']) {
     files['lib/core/$folder/.gitkeep'] = '';
   }
   if (provider == ApiProvider.retrofit) {
@@ -76,9 +80,12 @@ Future<void> main() => bootstrap(AppEnvironment.$environment);
 ''';
     files['config/flavors/$environment.yaml'] =
         '''
-# Public configuration only. Supply API_BASE_URL with --dart-define.
+# Public configuration only. Never commit encryption key material here.
+# Change this public scaffold password before release; auto selects a vault key.
 environment: $environment
 api_base_url: ""
+db_secret_key: "pass_key_storage"
+${configValues.map((value) => '${value.yamlKey}: ""').join('\n')}
 ''';
   }
   files['flavorizr.yaml'] =

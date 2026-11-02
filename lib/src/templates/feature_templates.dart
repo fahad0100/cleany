@@ -17,6 +17,10 @@ Map<String, String> featureTemplates({
   FeatureSpec? specification,
   List<UseCaseSpec> useCases = const [],
   bool legacyComponentWidgets = false,
+  bool localComponentScope = true,
+  bool singleState = true,
+  bool splitPrimaryState = false,
+  String? primaryStatus,
 }) {
   final context = FeatureTemplateContext(
     name: name,
@@ -27,6 +31,10 @@ Map<String, String> featureTemplates({
     provider: provider,
     specification: specification,
     legacyComponentWidgets: legacyComponentWidgets,
+    localComponentScope: localComponentScope,
+    singleState: singleState,
+    splitPrimaryState: splitPrimaryState,
+    primaryStatusName: primaryStatus,
   );
   final files = {
     ...featureDomainFiles(context),

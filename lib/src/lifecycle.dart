@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'ast_editor.dart';
+import 'component_integrations.dart';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
@@ -226,6 +227,19 @@ class FeatureLifecycle {
     plan.directoriesToRemove.add(oldRoot);
     for (final entry in entries) {
       final path = entry['path'] as String;
+      // Operations can reference another feature's Entity. Keep that reference
+      // current even when the operation's own feature is not being moved.
+      for (final raw in entry['use_cases'] as List? ?? []) {
+        final operation = raw as Map;
+        final entityPath = operation['entity_path'];
+        if (entityPath is String && paths.containsKey(entityPath)) {
+          operation['entity_path'] = paths[entityPath];
+          final entityType = operation['entity_type'];
+          if (symbols.containsKey(entityType)) {
+            operation['entity_type'] = symbols[entityType];
+          }
+        }
+      }
       if (path == oldRoot || p.posix.isWithin(oldRoot, path)) {
         entry['path'] = '$newRoot${path.substring(oldRoot.length)}';
       }
@@ -302,6 +316,7 @@ class FeatureLifecycle {
     }
     registry['template_version'] = templateVersion;
     plan.write(registryPath, prettyJson(registry));
+    planComponentPageCleanup(plan);
     return plan;
   }
 

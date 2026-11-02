@@ -1,0 +1,55 @@
+{
+  "unit_tests_passed": 182,
+  "default_opt_in_tests_skipped": 6,
+  "generated_app_providers": [
+    "dio",
+    "retrofit"
+  ],
+  "custom_contract_providers": [
+    "dio",
+    "retrofit"
+  ],
+  "native_builds": {
+    "android": [
+      "dev",
+      "uat",
+      "prod"
+    ],
+    "ios": [
+      "dev",
+      "uat",
+      "prod"
+    ],
+    "macos": [
+      "dev",
+      "uat",
+      "prod"
+    ]
+  },
+  "ios_simulator_launches": [
+    "dev",
+    "uat",
+    "prod"
+  ],
+  "store_clone": {
+    "doctor": "passed",
+    "feature_entity_use_case": "passed",
+    "alternate_users_entity_use_case": "passed",
+    "existing_tests_passed": 19
+  },
+  "measurements": [
+    {
+      "provider": "dio",
+      "cold_ms": 25765,
+      "warm_ms": 9599
+    },
+    {
+      "provider": "retrofit",
+      "cold_ms": 48542,
+      "warm_ms": 9521
+    }
+  ],
+  "package_dry_run_warning": "Uncommitted repository changes; nothing published",
+  "release_version_changed": false,
+  "resolver_portability": "passed"
+}

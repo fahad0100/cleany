@@ -1,0 +1,31 @@
+Computing fixes in flutter_example...
+Applying fixes...
+
+lib/app/composition/feature_pages.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/components/quantity_stepper/cubit/quantity_stepper_cubit.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/components/quantity_stepper/quantity_stepper_widget.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/features/auth/data/repositories/auth_repository_impl.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/features/auth/domain/usecases/sign_in.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/features/auth/presentation/pages/auth_page.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/features/carts/domain/usecases/create_cart.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/features/carts/presentation/pages/carts_page.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+lib/features/products/presentation/cubit/products_cubit.dart
+  curly_braces_in_flow_control_structures - 1 fix
+
+9 fixes made in 9 files.

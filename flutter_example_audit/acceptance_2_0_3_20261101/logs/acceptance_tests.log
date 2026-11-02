@@ -1,0 +1,25 @@
+00:00 +0: loading /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart
+00:00 +0: /Users/fahad/Documents/cleany/cleany/flutter_example/test/store_test.dart: products: array and nested rating become domain entities
+00:00 +1: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: central DI injects both existing-Entity actions without making guessed API requests
+00:00 +2: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: central DI injects both existing-Entity actions without making guessed API requests
+00:00 +3: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: central DI injects both existing-Entity actions without making guessed API requests
+00:00 +4: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: central DI injects both existing-Entity actions without making guessed API requests
+00:00 +5: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: central DI injects both existing-Entity actions without making guessed API requests
+00:00 +6: /Users/fahad/Documents/cleany/cleany/flutter_example/test/store_test.dart: users: nested profile maps into a password-free entity
+00:00 +7: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: different Model/Entity shapes reach explicit Data mapping hooks safely
+00:00 +8: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: different Model/Entity shapes reach explicit Data mapping hooks safely
+00:00 +9: /Users/fahad/Documents/cleany/cleany/flutter_example/test/store_test.dart: sign in resolves identity, redacts token, and sign out clears memory
+00:00 +10: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: all thirteen field types serialize and become Entity values
+00:00 +11: /Users/fahad/Documents/cleany/cleany/flutter_example/test/store_test.dart: failed login never creates a session
+00:00 +12: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +13: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +14: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +15: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +16: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +17: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +18: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +19: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +20: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +21: /Users/fahad/Documents/cleany/cleany/flutter_example/test/cleany_203_acceptance_test.dart: fresh flat Cubit component renders updates and ignores closed actions
+00:00 +22: /Users/fahad/Documents/cleany/cleany/flutter_example/test/store_test.dart: flat quantity component enforces bounds and reports changes
+00:00 +23: All tests passed!

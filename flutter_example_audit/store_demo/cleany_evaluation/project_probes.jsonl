@@ -1,0 +1,3 @@
+{"probe":"add_use_case_products","error":"Model/Entity field rating needs an explicit mapper before adding this use case.","applied":false}
+{"probe":"add_use_case_auth","files":["lib/features/auth/domain/usecases/review_probe_action.dart","lib/features/auth/domain/repositories/auth_repository.dart","lib/features/auth/data/repositories/auth_repository_impl.dart","lib/features/auth/presentation/cubit/auth_state.dart","lib/features/auth/presentation/cubit/auth_cubit.dart","lib/features/auth/data/datasources/auth_remote_data_source.dart","lib/app/di/injection.dart",".cleany/features.json"],"applied":false}
+{"probe":"doctor","error":"Choose a supported field type.","applied":false}

@@ -1,0 +1,10 @@
+  0s retrofit_generator on 86 inputs; integration_test/store_flow_test.dart
+  0s retrofit_generator on 86 inputs: 76 skipped, 1 output, 9 no-op
+  0s freezed on 86 inputs; integration_test/store_flow_test.dart
+  0s freezed on 86 inputs: 76 skipped, 10 no-op
+  0s json_serializable on 172 inputs; integration_test/store_flow_test.dart
+  3s json_serializable on 172 inputs: 1 no-op; spent 3s analyzing; integration_test/store_flow_test.freezed.dart
+  3s json_serializable on 172 inputs: 150 skipped, 22 no-op; spent 3s analyzing
+  0s source_gen:combining_builder on 172 inputs; integration_test/store_flow_test.dart
+  0s source_gen:combining_builder on 172 inputs: 169 skipped, 1 output, 2 no-op
+  Built with build_runner/aot in 4s; wrote 2 outputs.

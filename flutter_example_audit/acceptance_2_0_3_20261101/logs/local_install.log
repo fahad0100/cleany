@@ -1,0 +1,13 @@
+Resolving dependencies...
+Downloading packages...
+  built_collection 5.1.2 (6.0.0 available)
+> cleany 2.0.3 from path .. (was 2.0.2 from path ..)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.3 (2.4.4 available)
+  xml 7.0.1 (7.1.0 available)
+Changed 1 dependency!
+7 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.

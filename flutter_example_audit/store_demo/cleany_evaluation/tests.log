@@ -1,0 +1,169 @@
+00:00 +0: loading test/safety_regression_test.dart
+00:00 +0: test/safety_regression_test.dart: builder cannot replace an existing asset excluded from staging
+00:00 +1: test/safety_regression_test.dart: an explicit existing asset target can collect validated builder changes
+00:00 +2: test/safety_regression_test.dart: doctor repairs one missing DI binding and preserves custom integrations
+00:00 +3: test/safety_regression_test.dart: secondary journal recovers with missing primary metadata
+00:00 +4: test/safety_regression_test.dart: secondary journal recovers with corrupt primary metadata
+00:00 +5: test/safety_regression_test.dart: unknown transaction preserves every available backup
+00:00 +6: test/safety_regression_test.dart: tampered manifests preserve backups and original files
+00:00 +7: test/safety_regression_test.dart: observer exceptions after commit return success with warnings
+00:00 +8: test/safety_regression_test.dart: observer cannot mutate the approved plan during application
+00:00 +9: test/safety_regression_test.dart: rename preserves unrelated bytes and foreign symbols with identical names
+00:01 +10: test/safety_regression_test.dart: conditional URI alternatives move without rewriting foreign symbols
+00:01 +11: test/safety_regression_test.dart: staging follows recursively included local analysis and build configuration
+00:01 +12: test/safety_regression_test.dart: staging failure keeps its original diagnostic
+00:01 +13: test/safety_regression_test.dart: mode-only builder outputs are applied and rollback restores modes
+00:01 +14: test/safety_regression_test.dart: reset and doctor restore required assets without losing custom assets
+00:01 +15: test/safety_regression_test.dart: native identity properties never leak between platforms
+00:01 +16: test/safety_regression_test.dart: field and destination validation precede builders
+00:01 +17: test/safety_regression_test.dart: CLI retries retain inputs, require approval again and log each operation separately
+00:01 +18: test/safety_regression_test.dart: rollback preserves concurrent permission edits as conflicts
+00:01 +19: test/safety_regression_test.dart: incomplete public environments fail before starting commands
+00:01 +20: test/safety_regression_test.dart: a concurrent edit during output collection is never adopted as baseline
+00:01 +21: test/safety_regression_test.dart: renamed ownership protects a customized binding during stale cleanup
+00:02 +22: test/safety_regression_test.dart: process-tree tool failures still terminate the active command
+00:02 +23: test/safety_regression_test.dart: a bad progress observer cannot fail a managed command
+00:02 +24: test/safety_regression_test.dart: committed recovery is reported as applied rather than rolled back
+00:02 +25: test/safety_regression_test.dart: recovery retains unreferenced backups while restoring safe records
+00:02 +26: test/safety_regression_test.dart: builder entrypoints outside standard folders bring their local imports
+00:02 +27: test/safety_regression_test.dart: Freezed public variants and aliased route owners rename together
+00:02 +28: test/safety_regression_test.dart: a foreign prefixed symbol inside the moved directory stays foreign
+00:02 +29: test/safety_regression_test.dart: import insertion distinguishes aliases and canonical relative URIs
+00:02 +30: test/safety_regression_test.dart: mixed conditional imports are preserved for manual removal
+00:02 +31: test/safety_regression_test.dart: native configurations resolve independently without Cartesian mixing
+00:02 +32: test/safety_regression_test.dart: successful recovery clears an earlier failed CLI exit status
+00:02 +33: loading test/run_configuration_test.dart
+00:02 +33: test/run_configuration_test.dart: init supplies six explicit environment/native profiles and a dev main
+00:03 +34: test/run_configuration_test.dart: JSONC merge preserves comments, strings, custom profiles, inputs and trailing commas
+00:03 +35: test/run_configuration_test.dart: Flutter scaffold main is rewired with its widget classes and exact original backup preserved
+00:03 +36: test/run_configuration_test.dart: default Flutter counter main is rewired while all widget declarations remain usable
+00:03 +37: test/run_configuration_test.dart: customizing a child of the default Flutter counter keeps the original entrypoint
+00:03 +38: test/run_configuration_test.dart: custom entrypoint and same-name customized launch profile are preserved
+00:03 +39: test/run_configuration_test.dart: a customized MyApp using only Flutter imports is never treated as the empty scaffold
+00:03 +40: test/run_configuration_test.dart: invalid JSONC refuses initialization before source writes
+00:03 +41: test/run_configuration_test.dart: Doctor repairs missing profile/input entries and a legacy Flutter main without rewriting custom JSONC
+00:03 +42: test/run_configuration_test.dart: Doctor updates old generated native setup references and preserves customized run guides
+00:03 +43: test/run_configuration_test.dart: reset preserves custom profiles and tracks run configuration ownership
+00:04 +44: loading test/use_case_test.dart
+00:04 +44: test/use_case_test.dart: adds independent entity and void actions for cubit/retrofit
+00:04 +45: test/use_case_test.dart: adds independent entity and void actions for cubit/dio
+00:05 +46: test/use_case_test.dart: adds independent entity and void actions for bloc/retrofit
+00:05 +47: test/use_case_test.dart: adds independent entity and void actions for bloc/dio
+00:05 +48: test/use_case_test.dart: validates selection, names, collisions and preserves read-only plans
+00:05 +49: test/use_case_test.dart: Doctor restores operation sources and shared state and rebuilds lost metadata
+00:06 +50: test/use_case_test.dart: rename preserves operation names and removal clears their DI registrations
+00:06 +51: test/use_case_test.dart: DI node ownership does not absorb another feature operation with a shared prefix
+00:06 +52: test/use_case_test.dart: preserves customized DI arguments, route paths and ownership baselines
+00:06 +53: test/use_case_test.dart: reuses actual current Entity and Model fields and rejects guessed conversions
+00:07 +54: test/use_case_test.dart: rejects existing event factories, Freezed variants and unowned shared state without writes
+00:07 +55: test/use_case_test.dart: Bloc rename updates extra event types while preserving explicit operation names
+00:07 +56: test/use_case_test.dart: legacy separate repositories survive new shared actions, Doctor and rename
+00:07 +57: test/use_case_test.dart: shared actions preserve renamed repository dependencies and reject existing methods
+00:08 +58: test/use_case_test.dart: CLI filters features, offers both return types and cancels without writes
+00:08 +59: loading test/component_layout_test.dart
+00:08 +59: test/component_layout_test.dart: flat cubit component survives repair, discovery, rename/move and removal
+00:08 +60: test/component_layout_test.dart: legacy cubit component retains its widgets directory during Doctor repair and discovery
+00:08 +61: test/component_layout_test.dart: flat bloc component survives repair, discovery, rename/move and removal
+00:09 +62: test/component_layout_test.dart: legacy bloc component retains its widgets directory during Doctor repair and discovery
+00:09 +63: test/component_layout_test.dart: flat none component survives repair, discovery, rename/move and removal
+00:09 +64: test/component_layout_test.dart: legacy none component retains its widgets directory during Doctor repair and discovery
+00:09 +65: test/component_layout_test.dart: flat components named widgets are recovered even inside a widgets parent
+00:09 +66: test/component_layout_test.dart: components inside a feature are discovered as nested flat components
+00:09 +67: loading test/cli_menu_test.dart
+00:09 +67: test/cli_menu_test.dart: numbered sections and commands follow the requested order in plain and colored terminals
+00:10 +68: test/cli_menu_test.dart: every selected command explains its behavior before its first prompt
+00:10 +69: test/cli_menu_test.dart: Arabic command digits and maintenance shortcut route to their new command identities
+00:10 +70: loading test/generator_test.dart
+00:10 +70: test/generator_test.dart: validates Flutter SDK rather than mobile platform directories
+00:10 +71: test/generator_test.dart: initialization preserves pubspec metadata, comments, assets, and main
+00:11 +72: test/generator_test.dart: initialization refuses every existing file before writing
+00:11 +73: test/generator_test.dart: rejects invalid or reserved name ""
+00:11 +74: test/generator_test.dart: rejects invalid or reserved name "../auth"
+00:11 +75: test/generator_test.dart: rejects invalid or reserved name "a/b"
+00:11 +76: test/generator_test.dart: rejects invalid or reserved name "Auth"
+00:11 +77: test/generator_test.dart: rejects invalid or reserved name "two words"
+00:11 +78: test/generator_test.dart: rejects invalid or reserved name "class"
+00:11 +79: test/generator_test.dart: rejects invalid or reserved name "class_"
+00:11 +80: test/generator_test.dart: rejects invalid or reserved name "a__b"
+00:11 +81: test/generator_test.dart: rejects invalid or reserved name "_auth"
+00:11 +82: test/generator_test.dart: rejects invalid or reserved name "9auth"
+00:11 +83: test/generator_test.dart: rejects invalid or reserved name "nul"
+00:11 +84: test/generator_test.dart: rejects invalid or reserved name "a-b"
+00:11 +85: test/generator_test.dart: rejects invalid or reserved name "é"
+00:11 +86: test/generator_test.dart: rejects invalid or reserved name "string"
+00:11 +87: test/generator_test.dart: rejects invalid or reserved name "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+00:11 +88: test/generator_test.dart: menu cancellation is read only and does not invoke commands
+00:11 +89: test/generator_test.dart: custom path, subfeatures, components and central DI
+00:11 +90: test/generator_test.dart: all component state options use small templates
+00:11 +91: test/generator_test.dart: datasource propagates JSON, repository maps once, presentation uses entity
+00:11 +92: test/generator_test.dart: Dio provider omits Retrofit packages and generated APIs
+00:11 +93: test/generator_test.dart: names collide across paths and after snake case normalization
+00:11 +94: test/generator_test.dart: unsafe paths and symlinks are rejected
+00:11 +95: test/generator_test.dart: menu selects state by number each time and rejects command arguments
+00:11 +96: test/generator_test.dart: compact response fields create a feature using state 1 without transport prompts
+00:12 +97: test/generator_test.dart: compact response fields create a feature using state 2 without transport prompts
+00:12 +98: test/generator_test.dart: compact field validation retries the current prompt and preserves earlier fields
+00:12 +99: test/generator_test.dart: EOF during compact fields cancels without creating a feature
+00:12 +100: test/generator_test.dart: registry corruption stops generation
+00:12 +101: test/generator_test.dart: failed commands never commit and return nonzero status
+00:12 +102: test/generator_test.dart: write failure rolls back overwritten files, new files, registry, and directories
+00:12 +103: test/generator_test.dart: concurrent generation lock and stale plans preserve user edits
+00:12 +104: test/generator_test.dart: durable journal recovers interrupted writes
+00:12 +105: test/generator_test.dart: staged outputs are included and checked before commit
+00:13 +106: test/generator_test.dart: AST integration survives nested blocks, comments and strings
+00:13 +107: test/generator_test.dart: AST preserves library and part ordering and rejects member collisions
+00:13 +108: test/generator_test.dart: rollback preserves pre-existing empty directories
+00:13 +109: test/generator_test.dart: user edit during staging prevents every commit
+00:13 +110: test/generator_test.dart: relative dependency paths are rebased only in staging
+00:13 +111: test/generator_test.dart: recovery preserves concurrent user edits and its backup
+00:13 +112: test/generator_test.dart: planned null snapshots stay null even if a new file appears
+00:13 +113: test/generator_test.dart: reverting a planned edit removes the change
+00:13 +114: test/generator_test.dart: recovery clears interrupted temporary writes before restoring
+00:13 +115: test/generator_test.dart: staging excludes root platforms but preserves similarly named features
+00:13 +116: test/generator_test.dart: detects native production app id and derives flavor suffixes
+00:13 +117: test/generator_test.dart: detects Groovy application id and iOS ids while excluding test bundles
+00:13 +118: test/generator_test.dart: ambiguous native ids require a choice rather than changing production id
+00:13 +119: test/generator_test.dart: init configures official ARB localization and documents every Dart file
+00:13 +120: test/generator_test.dart: feature and stateful component builds read their controller explicitly
+00:13 +121: test/generator_test.dart: removal updates registry, DI, factories, routes and nested entries
+00:14 +122: test/generator_test.dart: last component removal cleans state imports and retains other kinds
+00:14 +123: test/generator_test.dart: failed deletion restores files and registry byte for byte
+00:14 +124: test/generator_test.dart: menu remove cancellation preserves the selected component
+00:14 +125: test/generator_test.dart: menu initializes with detected id without asking for a replacement
+00:14 +126: test/generator_test.dart: numbered create and remove actions apply without command flags
+00:15 +127: test/generator_test.dart: incomplete menu input cancels creation without modifying files
+00:15 +128: loading test/advanced_test.dart
+00:15 +128: test/advanced_test.dart: ownership prevents deleting a hand-authored API for a component
+00:15 +129: test/advanced_test.dart: builder ownership derives from a recorded template source
+00:15 +130: test/advanced_test.dart: rollback restores safe files despite a later concurrent user edit
+00:15 +131: test/advanced_test.dart: validated test and asset outputs are applied, not silently ignored
+00:16 +132: test/advanced_test.dart: unsupported output paths fail before any original source commit
+00:16 +133: test/advanced_test.dart: staging excludes unrelated large/sensitive files and streams fingerprints
+00:16 +134: test/advanced_test.dart: dead legacy locks recover automatically and live locks remain exclusive
+00:16 +135: test/advanced_test.dart: cache cleanup preserves registry and recovery backups
+00:16 +136: test/advanced_test.dart: reset archives user changes in managed folders and starts empty
+00:16 +137: test/advanced_test.dart: doctor rebuilds missing registry and missing DI/route registrations
+00:16 +138: test/advanced_test.dart: maintenance shortcut uses menus and validates settings without builders
+00:16 +139: test/advanced_test.dart: doctor restores nested parent metadata after losing the registry
+00:17 +140: test/advanced_test.dart: doctor narrows broad constraints and repairs SDK dependencies
+00:17 +141: test/advanced_test.dart: doctor removes stale directory records and composition safely
+00:17 +142: test/advanced_test.dart: rename/move rewrites imports, parts, symbols, descendants and registry
+00:17 +143: test/advanced_test.dart: AST integration accepts returned lists and named list variables
+00:17 +144: test/advanced_test.dart: app ids resolve static Gradle and xcconfig properties without executing code
+00:17 +145: test/advanced_test.dart: typed fields and API parameters stay out of Domain transport concerns
+00:17 +146: test/advanced_test.dart: managed commands enforce deadlines and cancellation
+00:18 +147: test/advanced_test.dart: failed commands never emit a successful progress marker
+00:18 +148: test/advanced_test.dart: asynchronous cancellation during commit restores applied files
+00:18 +149: test/advanced_test.dart: outputs changed during analysis are rejected before commit
+00:18 +150: test/advanced_test.dart: manifest changes during analysis cannot be hidden by portable restoration
+00:18 +151: test/advanced_test.dart: native flavor failure leaves original platform files unchanged
+00:18 +152: test/advanced_test.dart: doctor reconstructs custom fields and contracts from source when registry is lost
+00:18 +153: test/advanced_test.dart: expression DI and static route lists are integrated without text signatures
+00:18 +154: test/advanced_test.dart: kernel lock is released automatically when its owner process dies
+00:22 +155: test/advanced_test.dart: corrupt backup does not block restoring other journal records
+00:22 +156: test/advanced_test.dart: registry cannot claim unrelated files as project-owned
+00:22 +157: test/advanced_test.dart: macOS flavor plan isolates processors and keeps production identity
+00:22 +158: loading test/generated_app_test.dart
+00:22 +158: test/generated_app_test.dart: generated retrofit app builds, analyzes and passes runtime tests
+00:22 +158 ~1: test/generated_app_test.dart: generated dio app builds, analyzes and passes runtime tests
+00:22 +158 ~2: All tests passed!

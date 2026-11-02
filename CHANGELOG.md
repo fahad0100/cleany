@@ -1,5 +1,31 @@
 # Changelog
 
+- Add **App config value** to collect dev, uat and prod String values, preserve flavor YAML/custom code, and generate typed AppConfig fields with String.fromEnvironment overrides, including explicitly empty custom values.
+- Expose the same DI-owned AppConfig and AppLocalStorage instances through root providers for context.read access in pages; preserve constructor injection for controllers and Data services and app-owned disposal.
+- Add read-only bool AppConfig.isDebug based on Flutter kDebugMode across all environments; reserve IS_DEBUG against custom configuration keys.
+- Initialize encrypted Sembast key/value storage with typed CRUD, LocalKeys, optional collection decoding, authenticated AES-256-GCM values and HMAC record identifiers. Use pass_key_storage as the scaffold password with PBKDF2-HMAC-SHA256 and a random persisted salt; retain optional auto vault keys and 32-byte base64 raw keys.
+- Group the six database, cipher, key-store and exception helpers under core/storage/storage_extension; document platform prerequisites, public configuration limits and explicit key/password migrations.
+- Keep menu numbering sequential: App config value 11, Project Doctor 12, recovery 13 and maintenance/reset 14; retain Apply and validate / Cancel review.
+- Recover registered configuration field names with Doctor, restore missing generated configuration/bootstrap/storage files, preserve valid environment choices during archived reset, and retain legacy storage profiles during repair. Archive malformed flavor YAML before resetting to defaults.
+- Add configuration key/CLI/rollback/repair tests and generated Flutter checks for context access, all flavor values, dart-define precedence, encryption, password/key loss, tampering, persistence, concurrent vault initialization, DI disposal and web compilation.
+- Synchronize the package and generated-template version at 2.0.4 and refresh the README, installation examples and English usage guide for pub.dev.
+- Pin generated apps to Sizer 3.1.3, wrap MaterialApp.router before evaluating responsive themes, and split light/dark Material 3 styling into AppColors, AppTextTheme and AppTheme. Add bounded responsive typography/spacing and preserve system text scaling.
+- Support explicit/system theme modes and safe Doctor integration for recognizable legacy MaterialApp roots; keep theme repair, dependencies, reset and responsive widget tests consistent.
+- Generate Cubit/Bloc features and components with one typed primary status field, such as homeStatus, inside their Freezed State; update it with copyWith and render initial/loading/success/failure using when callbacks. Added operations keep their own independent typed status fields.
+- Include shared operation state during bootstrap and track presentation state style and primary field names through Doctor, registry recovery, refactoring, and use-case additions, preserving existing legacy union and three-field contracts.
+- Remove obsolete generated component page factories before generation/Doctor validation, preserve required widget constructor inputs, and stop recreating legacy component factories or controller registrations during repair.
+
+## [2.0.3] - 2026-11-01
+
+- Generate self-contained components with local Cubit/Bloc providers and automatic disposal, without central DI or FeaturePages entries; preserve previous component wiring during repair and refactoring.
+- Preserve customized Models during Doctor inspection and report unsupported discovered schemas without aborting the project report.
+- Default added use cases to the feature Entity, allow selecting another existing Domain Entity, and create typed Data mapping hooks when Model and Entity shapes differ.
+- Track selected Entity references through repair, discovery and rename/move without rewriting existing schemas.
+- Support raw lists, numeric lists, lists of JSON maps, JSON maps, sets and dynamic fields, with case-insensitive input and correct Dart type normalization.
+- Reuse project-local validated compiler metadata while staging fresh inputs and rerunning builders and analysis; clear failed/interrupted caches and support maintenance cleanup.
+- Preserve default native app icons when Flavorizr does not generate per-flavor catalogs.
+- Add actual generated-contract runtime tests and Android/iOS/macOS dev, uat and prod native build jobs.
+
 ## [2.0.2] - 2026-10-31
 
 - Reorganize the colored CLI into Generation, Cleanup, Inspection & Management, Core & Setup, and Maintenance & Recovery, using the new 1–13 numbering.

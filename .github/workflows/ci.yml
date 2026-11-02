@@ -22,8 +22,8 @@ jobs:
           cache: true
       - run: dart pub get
       - run: dart format --output=none --set-exit-if-changed lib bin test example
-      - run: dart analyze --fatal-infos
-      - run: dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart --concurrency=1
+      - run: dart analyze --fatal-infos lib bin test example
+      - run: dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart test/component_page_cleanup_test.dart test/single_state_test.dart test/responsive_theme_test.dart test/custom_contract_test.dart test/app_config_values_test.dart --concurrency=1
       - run: dart run example/cleany_example.dart
       - run: dart doc --output .dart_tool/api-docs
       - run: dart pub publish --dry-run
@@ -37,8 +37,8 @@ jobs:
           sdk: '3.13.0'
       - run: dart pub get
       - run: dart pub downgrade
-      - run: dart analyze --fatal-infos
-      - run: dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart --concurrency=1
+      - run: dart analyze --fatal-infos lib bin test example
+      - run: dart test test/generator_test.dart test/advanced_test.dart test/safety_regression_test.dart test/use_case_test.dart test/run_configuration_test.dart test/cli_menu_test.dart test/component_layout_test.dart test/single_state_test.dart test/responsive_theme_test.dart test/custom_contract_test.dart test/app_config_values_test.dart --concurrency=1
   generated-apps:
     runs-on: macos-latest
     timeout-minutes: 30
@@ -49,6 +49,38 @@ jobs:
           channel: stable
           cache: true
       - run: dart pub get
-      - run: dart test test/generated_app_test.dart --concurrency=1 --reporter expanded
+      - run: dart test test/generated_app_test.dart test/contract_flutter_test.dart test/component_flutter_test.dart test/responsive_theme_flutter_test.dart test/config_storage_flutter_test.dart --concurrency=1 --reporter expanded
         env:
           CLEANY_FLUTTER_INTEGRATION: 'true'
+
+  native-flavors:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: android
+          - os: macos-latest
+            platform: ios
+          - os: macos-latest
+            platform: macos
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        if: matrix.platform == 'android'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+        if: matrix.platform == 'android'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: dart pub get
+      - run: dart test test/native_flavors_test.dart --concurrency=1 --reporter expanded
+        env:
+          CLEANY_NATIVE_INTEGRATION: 'true'
+          CLEANY_NATIVE_PLATFORMS: ${{ matrix.platform }}

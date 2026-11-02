@@ -1,0 +1,74 @@
+Resolving dependencies...
+Downloading packages...
+Got dependencies!
+Publishing cleany 2.0.2 to https://pub.dev:
+├── CHANGELOG.md (5 KB)
+├── LICENSE (1 KB)
+├── README.md (27 KB)
+├── analysis_options.yaml (<1 KB)
+├── bin
+│   └── cleany.dart (<1 KB)
+├── doc
+│   ├── PUBDEV_REPORT.md (2 KB)
+│   └── USAGE_AR.md (11 KB)
+├── example
+│   ├── README.md (<1 KB)
+│   └── cleany_example.dart (<1 KB)
+├── lib
+│   ├── cleany.dart (<1 KB)
+│   └── src
+│       ├── ast_editor.dart (19 KB)
+│       ├── cli.dart (24 KB)
+│       ├── cli_executor.dart (2 KB)
+│       ├── cli_menu.dart (3 KB)
+│       ├── command_runner.dart (6 KB)
+│       ├── component_layout.dart (<1 KB)
+│       ├── dependencies.dart (3 KB)
+│       ├── doctor.dart (22 KB)
+│       ├── environment_config.dart (1 KB)
+│       ├── generator.dart (30 KB)
+│       ├── journal_store.dart (2 KB)
+│       ├── lifecycle.dart (22 KB)
+│       ├── maintenance.dart (9 KB)
+│       ├── native_identity.dart (8 KB)
+│       ├── operation.dart (4 KB)
+│       ├── project.dart (6 KB)
+│       ├── project_lock.dart (2 KB)
+│       ├── registry.dart (7 KB)
+│       ├── run_configuration.dart (14 KB)
+│       ├── specification.dart (9 KB)
+│       ├── templates
+│       │   ├── app_templates.dart (6 KB)
+│       │   ├── core_templates.dart (3 KB)
+│       │   ├── documentation.dart (3 KB)
+│       │   ├── feature_context.dart (1 KB)
+│       │   ├── feature_data.dart (4 KB)
+│       │   ├── feature_domain.dart (1 KB)
+│       │   ├── feature_presentation.dart (4 KB)
+│       │   ├── feature_templates.dart (1 KB)
+│       │   ├── localization_templates.dart (<1 KB)
+│       │   ├── network_templates.dart (4 KB)
+│       │   └── use_case_templates.dart (10 KB)
+│       ├── transaction.dart (37 KB)
+│       ├── use_case_editor.dart (10 KB)
+│       ├── use_case_support.dart (6 KB)
+│       └── workspace.dart (11 KB)
+├── pubspec.yaml (<1 KB)
+└── test
+    ├── advanced_test.dart (27 KB)
+    ├── cli_menu_test.dart (5 KB)
+    ├── component_layout_test.dart (7 KB)
+    ├── fixtures
+    │   ├── FLUTTER_LICENSE (1 KB)
+    │   └── flutter_counter_main.dart.txt (4 KB)
+    ├── generated_app_test.dart (38 KB)
+    ├── generator_test.dart (38 KB)
+    ├── run_configuration_test.dart (10 KB)
+    ├── safety_regression_test.dart (26 KB)
+    └── use_case_test.dart (26 KB)
+
+Total compressed archive size: 133 KB.
+Validating package...
+The server may enforce additional checks.
+
+Package has 0 warnings.

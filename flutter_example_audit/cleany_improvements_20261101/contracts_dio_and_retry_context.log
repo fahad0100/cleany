@@ -1,0 +1,154 @@
+00:00 +0: loading test/contract_flutter_test.dart
+00:00 +0: custom contracts, alternate Entity and warm validation (retrofit)
+[retrofit] applying 43 files
+[retrofit] completed 
+[retrofit] applying 16 files
+[retrofit] completed 
+[retrofit] applying 17 files
+[retrofit] completed 
+[retrofit] applying 16 files
+[retrofit] completed 
+[retrofit] applying 9 files
+[retrofit] completed 
+[retrofit] applying 9 files
+[retrofit] completed 
+[retrofit] flutter --version --machine 
+[retrofit] flutter --version --machine 562ms
+[retrofit] dart --version 
+[retrofit] dart --version 131ms
+[retrofit] staging 
+[retrofit] staging fresh compiler cache
+[retrofit] staging 81 inputs copied
+[retrofit] flutter pub get 
+[retrofit] flutter pub get 201s
+[retrofit] flutter pub get 205s
+[retrofit] flutter pub get 210s
+[retrofit] flutter pub get 215s
+[retrofit] flutter pub get 220s
+[retrofit] flutter pub get 225s
+[retrofit] flutter pub get 230s
+[retrofit] flutter pub get 235s
+[retrofit] flutter pub get 240s
+[retrofit] flutter pub get 245s
+[retrofit] flutter pub get 250s
+[retrofit] flutter pub get 255s
+[retrofit] flutter pub get 260s
+[retrofit] flutter pub get 265s
+[retrofit] flutter pub get 270s
+[retrofit] flutter pub get 275s
+[retrofit] flutter pub get 280s
+[retrofit] flutter pub get 285s
+[retrofit] flutter pub get 290s
+[retrofit] flutter pub get 295s
+[retrofit] flutter pub get 300s
+05:04 +0 -1: custom contracts, alternate Entity and warm validation (retrofit) [E]
+  flutter pub get exceeded 300s. No project changes were applied.
+  package:cleany/src/command_runner.dart 158:7  executeManagedCommand
+  ===== asynchronous gap ===========================
+  package:cleany/src/transaction.dart 594:11    GenerationTransaction._run
+  ===== asynchronous gap ===========================
+  package:cleany/src/transaction.dart 337:11    GenerationTransaction.apply
+  ===== asynchronous gap ===========================
+  test/contract_flutter_test.dart 198:11        main.<fn>
+  
+05:04 +0 -1: custom contracts, alternate Entity and warm validation (dio)
+[dio] applying 42 files
+[dio] completed 
+[dio] applying 15 files
+[dio] completed 
+[dio] applying 16 files
+[dio] completed 
+[dio] applying 15 files
+[dio] completed 
+[dio] applying 9 files
+[dio] completed 
+[dio] applying 9 files
+[dio] completed 
+[dio] flutter --version --machine 
+[dio] flutter --version --machine 368ms
+[dio] dart --version 
+[dio] dart --version 77ms
+[dio] staging 
+[dio] staging fresh compiler cache
+[dio] staging 77 inputs copied
+[dio] flutter pub get 
+[dio] flutter pub get 3173ms
+[dio] flutter gen-l10n 
+[dio] flutter gen-l10n 766ms
+[dio] dart run build_runner build 
+[dio] dart run build_runner build 5s
+[dio] dart run build_runner build 10s
+[dio] dart run build_runner build 15s
+[dio] dart run build_runner build 20s
+[dio] dart run build_runner build 24112ms
+[dio] flutter analyze --no-pub 
+[dio] flutter analyze --no-pub 2644ms
+[dio] collecting 95 validated outputs
+[dio] applying 22 files
+[dio] completed 
+[dio] flutter --version --machine 
+[dio] flutter --version --machine 371ms
+[dio] dart --version 
+[dio] dart --version 75ms
+[dio] staging 
+[dio] staging fresh compiler cache
+[dio] staging 95 inputs copied
+[dio] flutter pub get 
+[dio] flutter pub get 1490ms
+[dio] flutter gen-l10n 
+[dio] flutter gen-l10n 761ms
+[dio] dart run build_runner build 
+[dio] dart run build_runner build 5s
+[dio] dart run build_runner build 10s
+[dio] dart run build_runner build 15s
+[dio] dart run build_runner build 20s
+[dio] dart run build_runner build 20526ms
+[dio] flutter analyze --no-pub 
+[dio] flutter analyze --no-pub 2355ms
+[dio] collecting 96 validated outputs
+[dio] applying 4 files
+[dio] completed 
+[dio] flutter --version --machine 
+[dio] flutter --version --machine 372ms
+[dio] dart --version 
+[dio] dart --version 78ms
+[dio] staging 
+[dio] staging reusing validated compiler cache
+[dio] staging 96 inputs copied
+[dio] flutter pub get 
+[dio] flutter pub get 1510ms
+[dio] flutter gen-l10n 
+[dio] flutter gen-l10n 758ms
+[dio] dart run build_runner build 
+[dio] dart run build_runner build 4423ms
+[dio] flutter analyze --no-pub 
+[dio] flutter analyze --no-pub 2282ms
+[dio] collecting 97 validated outputs
+[dio] applying 3 files
+[dio] completed 
+VALIDATION_TIMING dio: cold=25765ms warm=9599ms
+[dio] flutter --version --machine 
+[dio] flutter --version --machine 370ms
+[dio] dart --version 
+[dio] dart --version 73ms
+[dio] staging 
+[dio] staging reusing validated compiler cache
+[dio] staging 96 inputs copied
+[dio] flutter pub get 
+[dio] flutter pub get 1516ms
+[dio] flutter gen-l10n 
+[dio] flutter gen-l10n 772ms
+[dio] dart run build_runner build 
+[dio] dart run build_runner build 1204ms
+[dio] flutter analyze --no-pub 
+[dio] flutter analyze --no-pub 1840ms
+[dio] collecting 97 validated outputs
+[dio] applying 2 files
+[dio] completed 
+07:09 +1 -1: Some tests failed.
+
+Failing tests:
+  test/contract_flutter_test.dart: custom contracts, alternate Entity and warm validation (retrofit)
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

@@ -1,6 +1,6 @@
 name: cleany
-description: Interactive Flutter architecture CLI for features and components with Cubit or Bloc, Freezed, safe generation, project repair, and native flavors.
-version: 2.0.2
+description: Interactive Flutter architecture CLI for features, components and use cases, with Cubit or Bloc, safe generation, environment configuration and encrypted local storage.
+version: 2.0.4
 homepage: https://github.com/fahad0100/cleany
 repository: https://github.com/fahad0100/cleany.git
 issue_tracker: https://github.com/fahad0100/cleany/issues

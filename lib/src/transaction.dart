@@ -298,12 +298,15 @@ class GenerationTransaction {
             validatePublicFlavor(plan.read(path), environment, path);
           }
         }
-        if (identical(executor, executeCommand)) await _validateToolchain();
+        final cacheIdentity = identical(executor, executeCommand)
+            ? await _validateToolchain()
+            : null;
         context.report('staging');
         workspace = StagedWorkspace(
           project,
           context,
           platforms: plan.platformRoots,
+          cacheIdentity: cacheIdentity,
         );
         final explicitTargets = plan.files.keys.toSet();
         final baseline = await workspace.create();
@@ -337,12 +340,7 @@ class GenerationTransaction {
           }
         }
         if (build) {
-          await _run('dart', [
-            'run',
-            'build_runner',
-            'build',
-            '--delete-conflicting-outputs',
-          ], stage.path);
+          await _run('dart', ['run', 'build_runner', 'build'], stage.path);
         }
         for (final command in plan.commands) {
           await _run(command.executable, command.arguments, stage.path);
@@ -512,7 +510,9 @@ class GenerationTransaction {
       );
     } finally {
       try {
-        if (workspace != null) await workspace.dispose();
+        if (workspace != null) {
+          await workspace.dispose(preserveCache: committed);
+        }
       } on Object catch (error) {
         context.warn('Staging cleanup failed: $error');
       }
@@ -530,7 +530,7 @@ class GenerationTransaction {
     );
   }
 
-  Future<void> _validateToolchain() async {
+  Future<String> _validateToolchain() async {
     final flutter = await executeManagedCommand(
       'flutter',
       ['--version', '--machine'],
@@ -572,6 +572,16 @@ class GenerationTransaction {
         );
       }
     }
+    return digestBytes(
+      utf8.encode(
+        jsonEncode({
+          'format': 1,
+          'flutter': metadata,
+          'dart': actual,
+          'executable': Platform.resolvedExecutable,
+        }),
+      ),
+    );
   }
 
   Future<void> _run(

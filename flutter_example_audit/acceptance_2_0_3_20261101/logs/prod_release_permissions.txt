@@ -1,0 +1,3 @@
+package: com.cleany.cleanyStore
+permission: com.cleany.cleanyStore.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='com.cleany.cleanyStore.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'

@@ -136,24 +136,29 @@ dependencies:
           final state = project.read(
             '$root/presentation/${mode.name}/profile_state.dart',
           );
-          expect('refreshProfileStatus'.allMatches(state).length, 4);
-          expect('clearProfileStatus'.allMatches(state).length, 4);
+          expect('refreshProfileStatus'.allMatches(state).length, 1);
+          expect('clearProfileStatus'.allMatches(state).length, 1);
           final controller = project.read(
             '$root/presentation/${mode.name}/profile_${mode.name}.dart',
           );
           expect(
             controller,
-            contains('refreshProfileStatus: state.refreshProfileStatus'),
+            contains(
+              'refreshProfileStatus: const UseCaseState<ProfileEntity>.loading()',
+            ),
           );
           expect(
             controller,
-            contains('clearProfileStatus: state.clearProfileStatus'),
+            contains('clearProfileStatus: const UseCaseState<void>.loading()'),
           );
           expect(controller, contains('state.copyWith('));
           // Constant named constructors have a different unresolved AST shape
           // from success/failure calls. Loading must preserve action progress.
           expect(controller, isNot(contains('const ProfileState.loading()')));
-          expect(controller, contains('ProfileState.loading(\n'));
+          expect(
+            controller,
+            contains('profileStatus: const UseCaseState.loading()'),
+          );
           expect(
             project.read('$root/domain/usecases/clear_profile.dart'),
             contains('Result<void, Failure>'),
@@ -445,7 +450,7 @@ dependencies:
     },
   );
 
-  test('reuses actual current Entity and Model fields and rejects guessed conversions', () async {
+  test('reuses current Entity/Model fields and scaffolds explicit customized mappings', () async {
     await initialize();
     await source(
       generator.generate(name: 'home', state: StateManagement.cubit),
@@ -498,13 +503,28 @@ dependencies:
     model.writeAsStringSync(
       model.readAsStringSync().replaceFirst('int score', 'String score'),
     );
+    final customized = generator.addUseCase(
+      feature: 'home',
+      name: 'another_home',
+      returnType: UseCaseReturnType.entity,
+    );
     expect(
-      () => generator.addUseCase(
-        feature: 'home',
-        name: 'another_home',
-        returnType: UseCaseReturnType.entity,
+      customized.read(
+        'lib/features/home/data/repositories/home_repository_impl.dart',
       ),
-      throwsA(isA<GenerationException>()),
+      contains('_mapAnotherHomeEntity(HomeModel model)'),
+    );
+    expect(
+      customized.files.containsKey(
+        'lib/features/home/domain/entities/home_entity.dart',
+      ),
+      isFalse,
+    );
+    expect(
+      customized.files.containsKey(
+        'lib/features/home/data/models/home_model.dart',
+      ),
+      isFalse,
     );
     // Completion operations require no Model/Entity conversion.
     expect(
@@ -522,6 +542,15 @@ dependencies:
   test('rejects existing event factories, Freezed variants and unowned shared state without writes', () async {
     await initialize();
     await source(generator.generate(name: 'home', state: StateManagement.bloc));
+    final eventFile = File(
+      project.file('lib/features/home/presentation/bloc/home_event.dart'),
+    );
+    final collision = AstEditor(eventFile.readAsStringSync())
+      ..addMembers(
+        'HomeEvent',
+        'const factory HomeEvent.custom() = HomeSuccess;',
+      );
+    eventFile.writeAsStringSync(collision.source);
     for (final name in ['home_success', 'home_requested']) {
       expect(
         () => generator.addUseCase(
@@ -557,6 +586,11 @@ dependencies:
     final shared = File(project.file(useCaseStatePath));
     shared.parent.createSync(recursive: true);
     shared.writeAsStringSync('// custom owned file\n');
+    final unowned = generator.readRegistry();
+    (unowned['project_files'] as List).removeWhere(
+      (record) => record['path'] == useCaseStatePath,
+    );
+    File(project.file(registryPath)).writeAsStringSync(prettyJson(unowned));
     expect(
       () => generator.addUseCase(
         feature: 'home',
@@ -805,7 +839,7 @@ class ManualAction { Future<Result<HomeEntity, Failure>> call({required String i
       await source(
         generator.generate(name: 'home', state: StateManagement.cubit),
       );
-      final answers = ['3', '1', 'refresh_home', '2', '2', '0'].iterator;
+      final answers = ['3', '1', 'refresh_home', '2', '', '2', '0'].iterator;
       final review = StringBuffer();
       expect(
         await runCli(
